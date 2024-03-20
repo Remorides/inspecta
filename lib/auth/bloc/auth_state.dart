@@ -19,10 +19,6 @@ class AuthState extends Equatable {
   const AuthState.unauthenticated()
       : this._(status: AuthStatus.unauthenticated);
 
-  /// Session found but expired (data integrity)
-  const AuthState.expired()
-      : this._(status: AuthStatus.expired);
-
   /// value to show authStatus
   final AuthStatus status;
   /// user authenticated

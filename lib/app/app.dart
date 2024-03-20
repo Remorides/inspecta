@@ -19,6 +19,7 @@ class App extends StatelessWidget {
 
   /// [AuthRepo] instance
   final AuthRepo authRepo;
+
   /// [OMDKLocalData] instance
   final OMDKLocalData omdkLocalData;
 
@@ -27,8 +28,6 @@ class App extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<AuthRepo>(create: (context) => authRepo),
-        // RepositoryProvider<ThemeRepo>(
-        //     create: (context) => ThemeRepo(omdkLocalData),),
       ],
       child: MultiProvider(
         providers: [
@@ -70,14 +69,17 @@ class AppView extends StatelessWidget {
                   (route) => false,
                 );
               case AuthStatus.unauthenticated:
+
+                /// Session doesn't exist
+                /// redirect user to login page
                 _navigator.pushAndRemoveUntil(
                   LoginPage.route(),
                   (route) => false,
                 );
-              case AuthStatus.expired:
-
-              /// Choose what do you want to do if local session is expired
               case AuthStatus.unknown:
+
+                /// Initial and default status of AuthStatus
+                /// Wait for changes
                 break;
             }
           },

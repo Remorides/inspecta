@@ -47,8 +47,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       case AuthStatus.unknown:
         return emit(const AuthState.unknown());
-      case AuthStatus.expired:
-        return emit(const AuthState.expired());
     }
   }
 
