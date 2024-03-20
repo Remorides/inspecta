@@ -39,6 +39,8 @@ dependencies:
   #Firebase
   firebase_analytics: ^10.8.8
   firebase_crashlytics: ^3.4.17
+  dio: ^5.4.1
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_flavorizr: ^2.2.1

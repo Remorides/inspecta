@@ -9,7 +9,9 @@ import 'package:opera_api_auth/opera_api_auth.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+/// Authentication bloc
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  /// create [AuthBloc] instance
   AuthBloc({
     required AuthRepo authRepo,
   }): _authRepo = authRepo, super(const AuthState.unknown()) {
