@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/auth/auth.dart';
 import 'package:omdk/auth_login/view/login_page.dart';
+import 'package:omdk/home/home.dart';
 import 'package:omdk/home/view/home_page.dart';
 import 'package:omdk/splash/splash.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:provider/provider.dart';
+import 'package:opera_api_asset/opera_api_asset.dart';
 
 /// Create base [App] to instance repo layer
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   /// Build [App] instance
   const App({
     required this.authRepo,
+    required this.assetRepo,
+    required this.assetListRepo,
     required this.omdkLocalData,
     super.key,
   });
@@ -20,33 +24,65 @@ class App extends StatelessWidget {
   /// [AuthRepo] instance
   final AuthRepo authRepo;
 
+  /// [EntityRepo] instance
+  final EntityRepo<Asset> assetRepo;
+
+  /// [EntityRepo] instance
+  final EntityRepo<AssetListItem> assetListRepo;
+
   /// [OMDKLocalData] instance
   final OMDKLocalData omdkLocalData;
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+/// AppState builder
+class _AppState extends State<App> {
+
+  @override
+  void dispose() {
+    widget.authRepo.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<AuthRepo>(create: (context) => authRepo),
+        RepositoryProvider<AuthRepo>(create: (context) => widget.authRepo),
+        RepositoryProvider<EntityRepo<Asset>>(
+          create: (context) => widget.assetRepo,
+        ),
+        RepositoryProvider<EntityRepo<AssetListItem>>(
+          create: (context) => widget.assetListRepo,
+        ),
       ],
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => ThemeRepo(omdkLocalData)),
+          ChangeNotifierProvider(
+              create: (_) => ThemeRepo(widget.omdkLocalData)),
         ],
         child: BlocProvider(
-          create: (_) => AuthBloc(authRepo: authRepo),
-          child: AppView(),
+          create: (_) => AuthBloc(authRepo: widget.authRepo),
+          child: const AppView(),
         ),
       ),
     );
   }
 }
 
-/// App view redirect user to login or home page due auth
-class AppView extends StatelessWidget {
+///
+class AppView extends StatefulWidget {
   /// create [AppView] instance
-  AppView({super.key});
+  const AppView({super.key});
 
+  @override
+  State<AppView> createState() => _AppViewState();
+}
+
+/// App view redirect user to login or home page due auth
+class _AppViewState extends State<AppView> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   NavigatorState get _navigator => _navigatorKey.currentState!;

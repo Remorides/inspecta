@@ -16,7 +16,10 @@ dependencies:
   equatable: ^2.0.5
   flutter_bloc: ^8.1.4
   bloc: ^8.1.3
+  bloc_concurrency: ^0.2.5
+  isar: ^3.1.0+1
   meta: ^1.11.0
+  stream_transform: ^2.1.0
 
   #Opera API:
   omdk_api:
