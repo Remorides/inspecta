@@ -39,6 +39,22 @@ dependencies:
       url: https://github.com/Remorides/omdk-repo.git
       ref: main
 
+  opera_api_auth:
+    git:
+      url: https://github.com/Remorides/opera-api-auth.git
+      ref: main
+
+  opera_api_entity:
+    git:
+      url: https://github.com/Remorides/opera-api-entity.git
+      ref: main
+
+  #Entity: opera asset
+  opera_api_asset:
+    git:
+      url: https://github.com/Remorides/opera-api-asset.git
+      ref: main
+
   #Firebase
   firebase_analytics: ^10.8.8
   firebase_crashlytics: ^3.4.17
