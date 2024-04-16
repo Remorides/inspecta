@@ -77,10 +77,12 @@ class SimpleTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => simpleTextBloc ?? SimpleTextBloc(
-        isEmptyAllowed: isEmptyAllowed,
-        isNullable: isTextValueNullable,
-      ),
+      create: (context) =>
+          simpleTextBloc ??
+          SimpleTextBloc(
+            isEmptyAllowed: isEmptyAllowed,
+            isNullable: isTextValueNullable,
+          ),
       child: _SimpleTextFieldView(
         labelText: labelText,
         textFocusNode: textFocusNode,
@@ -136,6 +138,8 @@ class _SimpleTextFieldView extends StatefulWidget {
 }
 
 class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
+  bool _passwordVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -156,12 +160,10 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      widget.labelText,
+                      widget.labelText.toUpperCase(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: state.status == SimpleTextStatus.failure
-                          ? context.theme?.inputDecorationTheme.errorStyle
-                          : context.theme?.inputDecorationTheme.labelStyle,
+                      style: context.theme?.inputDecorationTheme.labelStyle,
                     ),
                   ),
                 ],
@@ -202,7 +204,7 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                         keyboardType: widget.keyboardType,
                         textCapitalization: widget.textCapitalization,
                         textInputAction: widget.textInputAction,
-                        obscureText: widget.isObscured,
+                        obscureText: widget.isObscured && !_passwordVisible,
                         maxLines:
                             widget.textInputAction == TextInputAction.newline
                                 ? null
@@ -227,11 +229,22 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                           errorBorder: InputBorder.none,
                           focusedErrorBorder: InputBorder.none,
                           alignLabelWithHint: true,
-                          helperText: '',
                           hintText: widget.placeholder,
                           hintMaxLines: widget.maxLines,
-                          hintStyle:
-                              context.theme?.inputDecorationTheme.hintStyle,
+                          suffixIcon: widget.isObscured
+                              ? IconButton(
+                                  icon: Icon(
+                                    _passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                )
+                              : null,
                         ),
                       ),
                     ),

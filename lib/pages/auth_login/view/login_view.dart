@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/appbars/omdk_appbar.dart';
 import 'package:omdk/elements/buttons/elevated_button/elevated_button.dart';
+import 'package:omdk/elements/buttons/outlined_button/outlined_button.dart';
 import 'package:omdk/elements/keyboard/keyboard.dart';
 import 'package:omdk/elements/scaffolds/omdk_scaffold.dart';
 import 'package:omdk/elements/spacers/space_widget.dart';
 import 'package:omdk/elements/texts/simple_text_field/simple_text_field.dart';
 import 'package:omdk/pages/auth_login/login.dart';
-import 'package:omdk_repo/omdk_repo.dart';
 
 /// Login form class provide all required field to login
 class LoginView extends StatelessWidget {
@@ -17,16 +17,19 @@ class LoginView extends StatelessWidget {
 
   /// Focus node of CompanyCode field
   final companyCodeFN = FocusNode();
+
   /// [SimpleTextBloc] of CompanyCode field
   final companyCodeB = SimpleTextBloc(isEmptyAllowed: false, isNullable: false);
 
   /// Focus node of username field
   final usernameFN = FocusNode();
+
   /// [SimpleTextBloc] of username field
   final usernameB = SimpleTextBloc(isEmptyAllowed: false, isNullable: false);
 
   /// Focus node of password field
   final passwordFN = FocusNode();
+
   /// [SimpleTextBloc] of password field
   final passwordB = SimpleTextBloc(isEmptyAllowed: false, isNullable: false);
 
@@ -75,7 +78,8 @@ class LoginView extends StatelessWidget {
                 widgetFN: passwordFN,
                 widgetB: passwordB,
               ),
-              const Padding(padding: EdgeInsets.all(12)),
+              const Padding(padding: EdgeInsets.all(24)),
+              const _ConfigurationsButton(),
               _LoginButton(
                 companyCodeB: companyCodeB,
                 usernameB: usernameB,
@@ -224,9 +228,35 @@ class _LoginButton extends StatelessWidget {
                 },
                 child: Text(
                   'Login'.toUpperCase(),
-                  style: context.theme?.textTheme.labelMedium?.copyWith(
-                    color: Colors.white,
-                  ),
+                  // style: context.theme?.textTheme.labelMedium?.copyWith(
+                  //   color: const Color(0xFFDB4E1E),
+                  //   fontSize: 16,
+                  //   fontWeight: FontWeight.w700,
+                  // ),
+                ),
+              );
+      },
+    );
+  }
+}
+
+class _ConfigurationsButton extends StatelessWidget {
+  /// Create [_ConfigurationsButton] instance
+  const _ConfigurationsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        return (state.status == LoadingStatus.inProgress)
+            ? const CircularProgressIndicator(
+                color: Colors.red,
+              )
+            : OMDKOutlinedButton(
+                key: const Key('configurationForm_button'),
+                onPressed: () {},
+                child: const Text(
+                  'Manage Configurations',
                 ),
               );
       },
