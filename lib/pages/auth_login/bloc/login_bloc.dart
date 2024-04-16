@@ -6,6 +6,7 @@ import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_auth/opera_api_auth.dart';
 
 part 'login_event.dart';
+
 part 'login_state.dart';
 
 /// [Bloc] logic in login form widget
@@ -19,47 +20,53 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginUsernameChanged>(_onUsernameChanged);
     on<LoginPasswordChanged>(_onPasswordChanged);
     on<LoginSubmitted>(_onSubmitted);
+    on<EmptyField>(_onEmptyField);
   }
 
   final AuthRepo _authRepo;
 
   void _onCompanyCodeChanged(
-      LoginCompanyCodeChanged event,
-      Emitter<LoginState> emit,
-      ) {
+    LoginCompanyCodeChanged event,
+    Emitter<LoginState> emit,
+  ) {
     emit(
       state.copyWith(
+        status: LoadingStatus.initial,
         companyCode: event.companyCode,
       ),
     );
   }
+
   void _onUsernameChanged(
-      LoginUsernameChanged event,
-      Emitter<LoginState> emit,
-      ) {
+    LoginUsernameChanged event,
+    Emitter<LoginState> emit,
+  ) {
     emit(
       state.copyWith(
+        status: LoadingStatus.initial,
         username: event.username,
       ),
     );
   }
 
   void _onPasswordChanged(
-      LoginPasswordChanged event,
-      Emitter<LoginState> emit,
-      ) {
+    LoginPasswordChanged event,
+    Emitter<LoginState> emit,
+  ) {
     emit(
       state.copyWith(
+        status: LoadingStatus.initial,
         password: event.password,
       ),
     );
   }
 
   Future<void> _onSubmitted(
-      LoginSubmitted event,
-      Emitter<LoginState> emit,
-      ) async {
+    LoginSubmitted event,
+    Emitter<LoginState> emit,
+  ) async {
     emit(state.copyWith(status: LoadingStatus.inProgress));
+
     try {
       await _authRepo.logIn(
         authLogin: AuthLogin(
@@ -70,7 +77,22 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       emit(state.copyWith(status: LoadingStatus.done));
     } catch (_) {
-      emit(state.copyWith(status: LoadingStatus.failure));
+      emit(
+        state.copyWith(
+            status: LoadingStatus.failure,
+            errorText: 'Authentication failure, please try again',),
+      );
     }
+  }
+
+  Future<void> _onEmptyField(
+      EmptyField event,
+      Emitter<LoginState> emit,
+      ) async {
+    emit(
+      state.copyWith(
+        status: LoadingStatus.failure,
+        errorText: 'Some field are empty, please check it and retry',),
+    );
   }
 }

@@ -6,26 +6,23 @@ import 'package:omdk_repo/omdk_repo.dart';
 
 /// Login page builder
 class LoginPage extends StatelessWidget {
+  /// Create [LoginPage] instance
   const LoginPage({super.key});
 
+  /// Global route of login page
   static Route<void> route() {
     return CupertinoPageRoute<void>(builder: (_) => const LoginPage());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: BlocProvider(
-          create: (context) {
-            return LoginBloc(
-              authRepo: RepositoryProvider.of<AuthRepo>(context),
-            );
-          },
-          child: LoginForm(),
-        ),
-      ),
+    return BlocProvider(
+      create: (context) {
+        return LoginBloc(
+          authRepo: RepositoryProvider.of<AuthRepo>(context),
+        );
+      },
+      child: LoginView(),
     );
   }
 }

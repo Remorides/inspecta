@@ -10,5 +10,5 @@ Future<void> main() async {
   final omdkApi = OMDKApi();
   final omdkLocalData = OMDKLocalData();
 
-  bootstrap(omdkApi: omdkApi, omdkLocalData: omdkLocalData);
+  await bootstrap(omdkApi: omdkApi, omdkLocalData: omdkLocalData);
 }

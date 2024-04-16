@@ -60,6 +60,7 @@ dependencies:
   firebase_crashlytics: ^3.4.17
   dio: ^5.4.1
   provider: ^6.1.2
+  keyboard_actions: ^4.2.0
 
 dev_dependencies:
   flutter_flavorizr: ^2.2.1

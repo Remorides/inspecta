@@ -47,3 +47,9 @@ final class LoginSubmitted extends LoginEvent {
   /// [LoginSubmitted] instance
   const LoginSubmitted();
 }
+
+/// Event to submit input data and await for result
+final class EmptyField extends LoginEvent {
+  /// [EmptyField] instance
+  const EmptyField();
+}

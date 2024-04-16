@@ -4,6 +4,7 @@ import 'package:omdk/pages/home/enums/home_tab.dart';
 
 part 'home_state.dart';
 
+/// Cubit to manage HomeCubit state
 class HomeCubit extends Cubit<HomeState> {
   /// create [HomeCubit] instance with default [HomeState]
   HomeCubit() : super(const HomeState());

@@ -60,6 +60,7 @@ class _AppState extends State<App> {
         providers: [
           ChangeNotifierProvider(
             create: (_) => ThemeRepo(widget.omdkLocalData),
+            lazy: true,
           ),
         ],
         child: BlocProvider(
@@ -80,7 +81,7 @@ class AppView extends StatefulWidget {
   State<AppView> createState() => _AppViewState();
 }
 
-/// App view redirect user to login or home page due auth
+/// App widget redirect user to login or home page due auth
 class _AppViewState extends State<AppView> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 

@@ -12,10 +12,10 @@ import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_api_auth/opera_api_auth.dart';
 
 /// Bootstrap class load custom BlocObserver and create repoLayer instance
-void bootstrap({
+Future<void> bootstrap({
   required OMDKApi omdkApi,
   required OMDKLocalData omdkLocalData,
-}) {
+}) async {
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };
@@ -36,15 +36,12 @@ void bootstrap({
     OperaApiAssetListItem(omdkApi.apiClient.client),
   );
 
-  runZonedGuarded(
-    () => runApp(
-      App(
-        authRepo: authRepo,
-        omdkLocalData: omdkLocalData,
-        assetRepo: assetRepo,
-        assetListRepo: assetListRepo,
-      ),
+  runApp(
+    App(
+      authRepo: authRepo,
+      omdkLocalData: omdkLocalData,
+      assetRepo: assetRepo,
+      assetListRepo: assetListRepo,
     ),
-    (error, stackTrace) => log(error.toString(), stackTrace: stackTrace),
   );
 }

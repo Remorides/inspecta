@@ -10,6 +10,7 @@ class SimpleTextField extends StatelessWidget {
     required this.onEditingComplete,
     required this.labelText,
     required this.textFocusNode,
+    this.simpleTextBloc,
     this.initialText = '',
     this.nextFocusNode,
     this.keyboardType = TextInputType.text,
@@ -24,6 +25,9 @@ class SimpleTextField extends StatelessWidget {
     this.isTextValueNullable = false,
     super.key,
   });
+
+  /// Optional param to allow user to create bloc externally
+  final SimpleTextBloc? simpleTextBloc;
 
   /// Result function with input data
   final void Function(String?) onEditingComplete;
@@ -73,7 +77,7 @@ class SimpleTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SimpleTextBloc(
+      create: (context) => simpleTextBloc ?? SimpleTextBloc(
         isEmptyAllowed: isEmptyAllowed,
         isNullable: isTextValueNullable,
       ),
@@ -164,6 +168,17 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
               ),
               Opacity(
                 opacity: (!widget.enabled) ? 0.5 : 1,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 22),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffffffff),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  height: (52 + ((widget.maxLines - 1) * 16)).toDouble(),
+                ),
+              ),
+              Opacity(
+                opacity: (!widget.enabled) ? 0.5 : 1,
                 child: AbsorbPointer(
                   absorbing: false,
                   child: Container(
@@ -205,7 +220,6 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                             FocusScope.of(context).requestFocus(FocusNode());
                           }
                         },
-                        style: context.theme?.textTheme.bodyMedium,
                         decoration: InputDecoration(
                           filled: false,
                           enabledBorder: InputBorder.none,

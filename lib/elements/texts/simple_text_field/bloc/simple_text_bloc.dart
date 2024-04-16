@@ -36,10 +36,20 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
   ) async {
     emit(state.copyWith(status: SimpleTextStatus.validating));
     if (!state.isNullable && state.text == null) {
-      return emit(state.copyWith(status: SimpleTextStatus.failure));
+      return emit(
+        state.copyWith(
+          status: SimpleTextStatus.failure,
+          errorText: '* Mandatory field',
+        ),
+      );
     }
     if (!state.isEmptyAllowed && state.text != null && state.text!.isEmpty) {
-      return emit(state.copyWith(status: SimpleTextStatus.failure));
+      return emit(
+        state.copyWith(
+          status: SimpleTextStatus.failure,
+          errorText: '* This field cannot be empty',
+        ),
+      );
     }
     return emit(state.copyWith(status: SimpleTextStatus.success));
   }
