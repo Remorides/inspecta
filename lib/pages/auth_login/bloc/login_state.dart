@@ -12,7 +12,7 @@ final class LoginState {
     this.errorText = '',
   });
 
-  /// Login status enum is used to notify error in authentication
+  /// Login status enums is used to notify error in authentication
   /// or provide authentication progress status
   final LoadingStatus status;
 

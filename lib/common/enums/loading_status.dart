@@ -1,4 +1,4 @@
-/// Generic enum to show data loading status
+/// Generic enums to show data loading status
 enum LoadingStatus {
   /// default value
   initial,

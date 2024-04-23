@@ -259,10 +259,28 @@ class _ConfigurationsButton extends StatelessWidget {
     return OMDKOutlinedButton(
       key: const Key('configurationForm_button'),
       //onPressed: () => OMDKFullBottomSheet.show(context),
-      onPressed: () => OMDKBottomSheetNavigation.show(context),
+      //onPressed: () => OMDKBottomSheetNavigation.show(context),
+      onPressed: () => _showDialog(context),
       child: const Text(
         'Manage Configurations',
       ),
     );
   }
+
+  void _showDialog(BuildContext context) => showDialog<void>(
+    barrierColor: Colors.black.withOpacity(0.5),
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext alertContext) {
+      return OMDKAlert(
+        title: 'general_',
+        message: const Text('general'),
+        onClose: null,
+        close: 'Close',
+        onConfirm: () {},
+        buttonAlignment: ActionButtonAlignment.vertical,
+        confirm: 'Confirm',
+      );
+    },
+  );
 }

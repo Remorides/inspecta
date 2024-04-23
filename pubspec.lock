@@ -157,10 +157,10 @@ packages:
     dependency: "direct main"
     description:
       name: catcher_2
-      sha256: c302ce6469bcd13d601faddfccdb7d3f8e9593b6e9ae5632c46b95868a230173
+      sha256: "2c2c6f8cf8c817730cd1dbb010d55292396930e7a3d42c04c3039e3fd411a2f8"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.5"
+    version: "1.2.6"
   characters:
     dependency: transitive
     description:
@@ -668,10 +668,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_ios
-      sha256: f4a6f62be96d6fd268f32a6bf8ef444cd8e3fff64d16923c6e6fe55e0c84a761
+      sha256: f74064bc548b5164a033ec05638e23c91be1a249c255e0f56319dddffd759794
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.10"
+    version: "0.8.10+1"
   image_picker_linux:
     dependency: transitive
     description:
@@ -894,7 +894,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "74be842c5e95cb5b297b669ee87d2d660ba6b5d0"
+      resolved-ref: "9e8d71ab774aecb70f19563a4f6e79c58be22ee6"
       url: "https://github.com/Remorides/omdk-local-data.git"
     source: git
     version: "0.1.0+1"
@@ -946,10 +946,10 @@ packages:
     dependency: transitive
     description:
       name: package_info_plus
-      sha256: "2c582551839386fa7ddbc7770658be7c0f87f388a4bff72066478f597c34d17f"
+      sha256: b93d8b4d624b4ea19b0a5a208b2d6eff06004bc3ce74c06040b120eeadd00ce0
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "8.0.0"
   package_info_plus_platform_interface:
     dependency: transitive
     description:

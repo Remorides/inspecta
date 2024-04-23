@@ -3,6 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/enums/enums.dart';
+import 'package:omdk/elements/alerts/alerts.dart';
+import 'package:omdk/elements/alerts/simple_alert/simple_alert.dart';
 import 'package:omdk/elements/elements.dart';
 import 'package:omdk/pages/auth_login/login.dart';
 import 'package:omdk/pages/auth_reset_password/view/auth_reset_password_page.dart';

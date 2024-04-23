@@ -44,7 +44,7 @@ class SimpleTextField extends StatelessWidget {
   /// initial text of widget
   final String initialText;
 
-  /// Set input type of data with [TextInputType] enum
+  /// Set input type of data with [TextInputType] enums
   final TextInputType keyboardType;
 
   /// If input data is text you can capitalize is

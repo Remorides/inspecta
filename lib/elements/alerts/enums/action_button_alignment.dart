@@ -1,0 +1,4 @@
+enum ActionButtonAlignment {
+  vertical,
+  horizontal;
+}

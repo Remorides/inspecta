@@ -1,4 +1,4 @@
-/// Generic enum to set label position in ui widget
+/// Generic enums to set label position in ui widget
 enum LabelPosition {
   /// top position
   top,
