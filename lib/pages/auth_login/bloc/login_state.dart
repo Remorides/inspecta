@@ -2,7 +2,7 @@ part of 'login_bloc.dart';
 
 /// Login form bloc
 @immutable
-final class LoginState extends Equatable {
+final class LoginState {
   /// [LoginState] instance with default data
   const LoginState({
     this.status = LoadingStatus.initial,
@@ -44,13 +44,4 @@ final class LoginState extends Equatable {
       errorText: errorText ?? this.errorText,
     );
   }
-
-  @override
-  List<Object> get props => [
-        status,
-        companyCode,
-        username,
-        password,
-        errorText,
-      ];
 }

@@ -1,8 +1,14 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:omdk/common/enums/enums.dart';
+import 'package:omdk/elements/elements.dart';
 import 'package:omdk/pages/auth_login/login.dart';
+import 'package:omdk/pages/auth_reset_password/view/auth_reset_password_page.dart';
 import 'package:omdk_repo/omdk_repo.dart';
+
+part 'login_view.dart';
 
 /// Login page builder
 class LoginPage extends StatelessWidget {
@@ -22,7 +28,7 @@ class LoginPage extends StatelessWidget {
           authRepo: RepositoryProvider.of<AuthRepo>(context),
         );
       },
-      child: LoginView(),
+      child: _LoginView(),
     );
   }
 }

@@ -61,6 +61,7 @@ dependencies:
   dio: ^5.4.1
   provider: ^6.1.2
   keyboard_actions: ^4.2.0
+  modal_bottom_sheet: ^3.0.0
 
 dev_dependencies:
   flutter_flavorizr: ^2.2.1

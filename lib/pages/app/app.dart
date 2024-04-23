@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/pages/auth/bloc/auth_bloc.dart';
 import 'package:omdk/pages/auth_login/view/login_page.dart';
@@ -89,6 +90,19 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        systemStatusBarContrastEnforced: true,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
+      ),
+    );
+
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge,
+      overlays: [SystemUiOverlay.top],
+    );
+
     return MaterialApp(
       theme: context.theme,
       navigatorKey: _navigatorKey,

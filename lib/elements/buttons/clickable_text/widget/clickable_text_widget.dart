@@ -32,7 +32,7 @@ class OMDKTextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => cubit ?? ClickableTextCubit(enabled: enabled),
-      child: _OMDKClickableText(
+      child: _OMDKTextButton(
         key: key,
         onPressed: onPressed,
         text: text,
@@ -42,8 +42,8 @@ class OMDKTextButton extends StatelessWidget {
   }
 }
 
-class _OMDKClickableText extends StatelessWidget {
-  const _OMDKClickableText({
+class _OMDKTextButton extends StatelessWidget {
+  const _OMDKTextButton({
     required this.onPressed,
     required this.text,
     super.key,
@@ -59,18 +59,14 @@ class _OMDKClickableText extends StatelessWidget {
     final state = context.select((ClickableTextCubit cubit) => cubit.state);
     return RichText(
       text: TextSpan(
-        children: <TextSpan>[
-          TextSpan(
-            text: text,
-            style: state.enabled
-                ? style
-                : context.theme?.inputDecorationTheme.labelStyle?.copyWith(
-                    color: context.theme!.disabledColor.withOpacity(0.8),
-                  ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = (state.enabled) ? onPressed : null,
-          ),
-        ],
+        text: text,
+        style: state.enabled
+            ? style
+            : context.theme?.inputDecorationTheme.labelStyle?.copyWith(
+          color: context.theme!.disabledColor.withOpacity(0.8),
+        ),
+        recognizer: TapGestureRecognizer()
+          ..onTap = (state.enabled) ? onPressed : null,
       ),
     );
   }

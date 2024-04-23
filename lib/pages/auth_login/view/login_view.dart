@@ -1,19 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/appbars/omdk_appbar.dart';
-import 'package:omdk/elements/buttons/elevated_button/elevated_button.dart';
-import 'package:omdk/elements/buttons/outlined_button/outlined_button.dart';
-import 'package:omdk/elements/keyboard/keyboard.dart';
-import 'package:omdk/elements/scaffolds/omdk_scaffold.dart';
-import 'package:omdk/elements/spacers/space_widget.dart';
-import 'package:omdk/elements/texts/simple_text_field/simple_text_field.dart';
-import 'package:omdk/pages/auth_login/login.dart';
+part of 'login_page.dart';
 
 /// Login form class provide all required field to login
-class LoginView extends StatelessWidget {
-  /// create [LoginView] instance
-  LoginView({super.key});
+class _LoginView extends StatelessWidget {
+  /// Build [_LoginView] instance
+  _LoginView();
 
   /// Focus node of CompanyCode field
   final companyCodeFN = FocusNode();
@@ -45,48 +35,44 @@ class LoginView extends StatelessWidget {
             );
         }
       },
-      child: OMDKScaffold(
-        appBar: OMDKAppBar().appBar(
-          context: context,
-          title: 'Login',
-        ),
-        backgroundLogo: false,
-        body: CustomKeyboardActions(
-          focusNodes: [
-            companyCodeFN,
-            usernameFN,
-            passwordFN,
+      child: OMDKAnimatedPage(
+        appBarTitle: 'Login',
+        withBottomBar: false,
+        focusNodeList: [
+          companyCodeFN,
+          usernameFN,
+          passwordFN,
+        ],
+        bodyPage: ListView(
+          padding: EdgeInsets.zero,
+          physics: const BouncingScrollPhysics(),
+          children: [
+            const Space.vertical(40),
+            _CompanyCodeInput(
+              widgetFN: companyCodeFN,
+              widgetB: companyCodeB,
+              nextWidgetFN: usernameFN,
+            ),
+            const Space.vertical(20),
+            _UsernameInput(
+              widgetFN: usernameFN,
+              widgetB: usernameB,
+              nextWidgetFN: passwordFN,
+            ),
+            const Space.vertical(20),
+            _PasswordInput(
+              widgetFN: passwordFN,
+              widgetB: passwordB,
+            ),
+            const _ResetPassword(),
+            const Space.vertical(100),
+            const _ConfigurationsButton(),
+            _LoginButton(
+              companyCodeB: companyCodeB,
+              usernameB: usernameB,
+              passwordB: passwordB,
+            ),
           ],
-          child: ListView(
-            padding: EdgeInsets.zero,
-            physics: const BouncingScrollPhysics(),
-            children: [
-              const Space.vertical(40),
-              _CompanyCodeInput(
-                widgetFN: companyCodeFN,
-                widgetB: companyCodeB,
-                nextWidgetFN: usernameFN,
-              ),
-              const Padding(padding: EdgeInsets.all(12)),
-              _UsernameInput(
-                widgetFN: usernameFN,
-                widgetB: usernameB,
-                nextWidgetFN: passwordFN,
-              ),
-              const Padding(padding: EdgeInsets.all(12)),
-              _PasswordInput(
-                widgetFN: passwordFN,
-                widgetB: passwordB,
-              ),
-              const Padding(padding: EdgeInsets.all(24)),
-              const _ConfigurationsButton(),
-              _LoginButton(
-                companyCodeB: companyCodeB,
-                usernameB: usernameB,
-                passwordB: passwordB,
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -226,16 +212,40 @@ class _LoginButton extends StatelessWidget {
                     context.read<LoginBloc>().add(const EmptyField());
                   }
                 },
-                child: Text(
-                  'Login'.toUpperCase(),
-                  // style: context.theme?.textTheme.labelMedium?.copyWith(
-                  //   color: const Color(0xFFDB4E1E),
-                  //   fontSize: 16,
-                  //   fontWeight: FontWeight.w700,
-                  // ),
+                child: const Text(
+                  'Login',
                 ),
               );
       },
+    );
+  }
+}
+
+class _ResetPassword extends StatelessWidget {
+  /// Create [_ResetPassword] instance
+  const _ResetPassword();
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        children: <TextSpan>[
+          TextSpan(
+            text: 'Forgot your password? ',
+            style: context.theme?.textTheme.bodySmall,
+          ),
+          TextSpan(
+            text: 'Recovery',
+            style: context.theme?.textTheme.bodySmall?.copyWith(
+              color: context.theme?.primaryColor,
+              fontWeight: FontWeight.w600,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap =
+                  () => Navigator.of(context).push(ResetPasswordPage.route()),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -246,20 +256,13 @@ class _ConfigurationsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
-      builder: (context, state) {
-        return (state.status == LoadingStatus.inProgress)
-            ? const CircularProgressIndicator(
-                color: Colors.red,
-              )
-            : OMDKOutlinedButton(
-                key: const Key('configurationForm_button'),
-                onPressed: () {},
-                child: const Text(
-                  'Manage Configurations',
-                ),
-              );
-      },
+    return OMDKOutlinedButton(
+      key: const Key('configurationForm_button'),
+      //onPressed: () => OMDKFullBottomSheet.show(context),
+      onPressed: () => OMDKBottomSheetNavigation.show(context),
+      child: const Text(
+        'Manage Configurations',
+      ),
     );
   }
 }

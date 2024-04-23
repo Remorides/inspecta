@@ -182,15 +182,12 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
               Opacity(
                 opacity: (!widget.enabled) ? 0.5 : 1,
                 child: AbsorbPointer(
-                  absorbing: false,
+                  absorbing: !widget.enabled,
                   child: Container(
                     margin: const EdgeInsets.only(
-                      top: 22,
+                      top: 24,
                       left: 10,
-                      right: 15,
-                    ),
-                    constraints: BoxConstraints(
-                      minHeight: (52 + ((widget.maxLines - 1) * 16)).toDouble(),
+                      right: 5,
                     ),
                     child: Focus(
                       onFocusChange: (bool focus) {
@@ -245,6 +242,7 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                                   },
                                 )
                               : null,
+                          suffixIconColor: Colors.grey,
                         ),
                       ),
                     ),

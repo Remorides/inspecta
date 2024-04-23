@@ -157,10 +157,10 @@ packages:
     dependency: "direct main"
     description:
       name: catcher_2
-      sha256: "3c8f6cedc8c5eab61192830096d4f303900a5d0bddbf96a07ff9f7a8d5ff8fcd"
+      sha256: c302ce6469bcd13d601faddfccdb7d3f8e9593b6e9ae5632c46b95868a230173
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.4"
+    version: "1.2.5"
   characters:
     dependency: transitive
     description:
@@ -644,18 +644,18 @@ packages:
     dependency: transitive
     description:
       name: image_picker
-      sha256: "1f498d086203360cca099d20ffea2963f48c39ce91bdd8a3b6d4a045786b02c8"
+      sha256: fe9ee64ccb8d599a5dfb0e21cc6652232c610bcf667af4e79b9eb175cc30a7a5
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.8"
+    version: "1.1.0"
   image_picker_android:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: "844c6da4e4f2829dffdab97816bca09d0e0977e8dcef7450864aba4e07967a58"
+      sha256: "8e75431a62b7feb4fd55cb4a5c6f0ac4564460ec5dc09f9c4a0d50a5ce7c4cb9"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.9+6"
+    version: "0.8.10"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -668,10 +668,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_ios
-      sha256: "917a5cadd67d052554cfb258595e54217de53fac5b52939426e26319a02e6297"
+      sha256: f4a6f62be96d6fd268f32a6bf8ef444cd8e3fff64d16923c6e6fe55e0c84a761
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.9+2"
+    version: "0.8.10"
   image_picker_linux:
     dependency: transitive
     description:
@@ -864,6 +864,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.3"
+  modal_bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: modal_bottom_sheet
+      sha256: eac66ef8cb0461bf069a38c5eb0fa728cee525a531a8304bd3f7b2185407c67e
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   nested:
     dependency: transitive
     description:
@@ -886,7 +894,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "8ea379db82a3468a7a04ae0fefdd153bbb245dfd"
+      resolved-ref: "74be842c5e95cb5b297b669ee87d2d660ba6b5d0"
       url: "https://github.com/Remorides/omdk-local-data.git"
     source: git
     version: "0.1.0+1"
@@ -938,18 +946,18 @@ packages:
     dependency: transitive
     description:
       name: package_info_plus
-      sha256: cb44f49b6e690fa766f023d5b22cac6b9affe741dd792b6ac7ad4fabe0d7b097
+      sha256: "2c582551839386fa7ddbc7770658be7c0f87f388a4bff72066478f597c34d17f"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.0"
+    version: "7.0.0"
   package_info_plus_platform_interface:
     dependency: transitive
     description:
       name: package_info_plus_platform_interface
-      sha256: "9bc8ba46813a4cc42c66ab781470711781940780fd8beddd0c3da62506d3a6c6"
+      sha256: f49918f3433a3146047372f9d4f1f847511f2acd5cd030e1f44fe5a50036b70e
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "3.0.0"
   path:
     dependency: transitive
     description:
@@ -1082,10 +1090,10 @@ packages:
     dependency: transitive
     description:
       name: pointycastle
-      sha256: "70fe966348fe08c34bf929582f1d8247d9d9408130723206472b4687227e4333"
+      sha256: "79fbafed02cfdbe85ef3fd06c7f4bc2cbcba0177e61b765264853d4253b21744"
       url: "https://pub.dev"
     source: hosted
-    version: "3.8.0"
+    version: "3.9.0"
   pool:
     dependency: transitive
     description:
@@ -1130,10 +1138,10 @@ packages:
     dependency: transitive
     description:
       name: sentry
-      sha256: fe99a06970b909a491b7f89d54c9b5119772e3a48a400308a6e129625b333f5b
+      sha256: "961630a4dba41cebd692612421fd3805a991ebd8ef4a8d84a6c179e6b89eaf22"
       url: "https://pub.dev"
     source: hosted
-    version: "7.19.0"
+    version: "8.0.0"
   shelf:
     dependency: transitive
     description:

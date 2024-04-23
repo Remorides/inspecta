@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/loaders/bottom_loader.dart';
+import 'package:omdk/elements/loaders/bottom_loader/bottom_loader.dart';
 import 'package:omdk/common/enums/loading_status.dart';
 import 'package:omdk/pages/asset_rt_isar/asset_rt_isar.dart';
 import 'package:omdk_repo/omdk_repo.dart';

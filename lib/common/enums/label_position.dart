@@ -4,7 +4,7 @@ enum LabelPosition {
   top,
   /// left position
   left,
-  /// bottom position
+  /// bottom_bars position
   bottom,
   /// right position
   right;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/enums/loading_status.dart';
-import 'package:omdk/elements/loaders/bottom_loader.dart';
+import 'package:omdk/elements/loaders/bottom_loader/bottom_loader.dart';
 import 'package:omdk/pages/asset_api/bloc/asset_api_bloc.dart';
 import 'package:omdk/pages/asset_api/widgets/asset_api_list_item.dart';
 import 'package:omdk_repo/omdk_repo.dart';
