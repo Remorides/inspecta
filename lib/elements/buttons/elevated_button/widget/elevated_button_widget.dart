@@ -16,6 +16,7 @@ class OMDKElevatedButton extends StatelessWidget {
     this.style,
     this.enabled = true,
     this.autofocus = true,
+    this.focusNode,
   });
 
   final ElevatedButtonCubit? cubit;
@@ -27,6 +28,7 @@ class OMDKElevatedButton extends StatelessWidget {
   final bool autofocus;
   final bool enabled;
   final Widget child;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +42,7 @@ class OMDKElevatedButton extends StatelessWidget {
         onFocusChange: onFocusChange,
         style: style,
         autofocus: autofocus,
+        focusNode: focusNode,
         child: child,
       ),
     );
@@ -56,6 +59,7 @@ class _OMDKElevatedButton extends StatelessWidget {
     this.onFocusChange,
     this.style,
     this.autofocus = false,
+    this.focusNode,
   });
 
   final void Function() onPressed;
@@ -65,6 +69,7 @@ class _OMDKElevatedButton extends StatelessWidget {
   final ButtonStyle? style;
   final bool autofocus;
   final Widget child;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +88,7 @@ class _OMDKElevatedButton extends StatelessWidget {
               ),
             ),
       autofocus: autofocus,
+      focusNode: focusNode,
       child: child,
     );
   }

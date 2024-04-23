@@ -20,6 +20,37 @@ class OMDKAlert extends StatelessWidget {
     super.key,
   });
 
+  /// Method to call to show alert
+  static void show(
+    BuildContext context,
+    OMDKAlert alert, {
+    bool barrierDismissible = false,
+    Color? barrierColor,
+  }) =>
+      showDialog<void>(
+        barrierColor: barrierColor ?? Colors.black.withOpacity(0.5),
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext alertContext) {
+          return alert;
+        },
+      );
+
+  /// Example widget
+  static OMDKAlert get example => OMDKAlert(
+        title: 'Example',
+        message: const Text('Example body widget'),
+        confirm: 'Confirm',
+        close: 'Close',
+        onConfirm: () {
+          debugPrint('Confirm button pressed');
+        },
+        onClose: () {
+          debugPrint('Close button pressed');
+        },
+        buttonAlignment: ActionButtonAlignment.vertical,
+      );
+
   /// Title text
   final String title;
 
@@ -144,8 +175,8 @@ class OMDKAlert extends StatelessWidget {
         height: _circleRadius * 2,
         child: Center(
           child: Icon(
-            Icons.warning,
-            size: 30,
+            Icons.warning_amber_rounded,
+            size: 40,
             color: context.theme?.dialogTheme.iconColor,
           ),
         ),

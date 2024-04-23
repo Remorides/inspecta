@@ -23,6 +23,9 @@ class _LoginView extends StatelessWidget {
   /// [SimpleTextBloc] of password field
   final passwordB = SimpleTextBloc(isEmptyAllowed: false, isNullable: false);
 
+  /// Focus node of login button field
+  final loginFN = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoginBloc, LoginState>(
@@ -63,6 +66,7 @@ class _LoginView extends StatelessWidget {
             _PasswordInput(
               widgetFN: passwordFN,
               widgetB: passwordB,
+              nextWidgetFN: loginFN,
             ),
             const _ResetPassword(),
             const Space.vertical(100),
@@ -71,6 +75,7 @@ class _LoginView extends StatelessWidget {
               companyCodeB: companyCodeB,
               usernameB: usernameB,
               passwordB: passwordB,
+              loginFN: loginFN,
             ),
           ],
         ),
@@ -148,10 +153,12 @@ class _PasswordInput extends StatelessWidget {
   const _PasswordInput({
     required this.widgetFN,
     required this.widgetB,
+    this.nextWidgetFN,
   });
 
   final FocusNode widgetFN;
   final SimpleTextBloc widgetB;
+  final FocusNode? nextWidgetFN;
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +173,7 @@ class _PasswordInput extends StatelessWidget {
           labelText: 'Password',
           isObscured: true,
           textFocusNode: widgetFN,
+          nextFocusNode: nextWidgetFN,
         );
       },
     );
@@ -178,11 +186,13 @@ class _LoginButton extends StatelessWidget {
     required this.companyCodeB,
     required this.usernameB,
     required this.passwordB,
+    this.loginFN,
   });
 
   final SimpleTextBloc companyCodeB;
   final SimpleTextBloc usernameB;
   final SimpleTextBloc passwordB;
+  final FocusNode? loginFN;
 
   @override
   Widget build(BuildContext context) {
@@ -194,6 +204,7 @@ class _LoginButton extends StatelessWidget {
               )
             : OMDKElevatedButton(
                 key: const Key('loginForm_continue_button'),
+                focusNode: loginFN,
                 onPressed: () {
                   if (state.companyCode.isEmpty) {
                     companyCodeB.add(ValidateData());
@@ -260,27 +271,11 @@ class _ConfigurationsButton extends StatelessWidget {
       key: const Key('configurationForm_button'),
       //onPressed: () => OMDKFullBottomSheet.show(context),
       //onPressed: () => OMDKBottomSheetNavigation.show(context),
-      onPressed: () => _showDialog(context),
-      child: const Text(
-        'Manage Configurations',
+      onPressed: () => OMDKAlert.show(
+        context,
+        OMDKAlert.example,
       ),
+      child: const Text('Manage Configurations'),
     );
   }
-
-  void _showDialog(BuildContext context) => showDialog<void>(
-    barrierColor: Colors.black.withOpacity(0.5),
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext alertContext) {
-      return OMDKAlert(
-        title: 'general_',
-        message: const Text('general'),
-        onClose: null,
-        close: 'Close',
-        onConfirm: () {},
-        buttonAlignment: ActionButtonAlignment.vertical,
-        confirm: 'Confirm',
-      );
-    },
-  );
 }

@@ -16,6 +16,7 @@ class OMDKOutlinedButton extends StatelessWidget {
     this.style,
     this.enabled = true,
     this.autofocus = true,
+    this.focusNode,
   });
 
   final OutlinedButtonCubit? cubit;
@@ -27,6 +28,7 @@ class OMDKOutlinedButton extends StatelessWidget {
   final bool autofocus;
   final bool enabled;
   final Widget child;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +42,7 @@ class OMDKOutlinedButton extends StatelessWidget {
         onFocusChange: onFocusChange,
         style: style,
         autofocus: autofocus,
+        focusNode: focusNode,
         child: child,
       ),
     );
@@ -56,6 +59,7 @@ class _OMDKOutlinedButton extends StatelessWidget {
     this.onFocusChange,
     this.style,
     this.autofocus = false,
+    this.focusNode,
   });
 
   final void Function() onPressed;
@@ -64,6 +68,7 @@ class _OMDKOutlinedButton extends StatelessWidget {
   final void Function(bool)? onFocusChange;
   final ButtonStyle? style;
   final bool autofocus;
+  final FocusNode? focusNode;
   final Widget child;
 
   @override
@@ -89,6 +94,7 @@ class _OMDKOutlinedButton extends StatelessWidget {
               ),
             ),
       autofocus: autofocus,
+      focusNode: focusNode,
       child: child,
     );
   }
