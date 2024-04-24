@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/elements/elements.dart';
@@ -149,13 +152,28 @@ class _OMDKAnimatedPage extends StatelessWidget {
             : _buildBodyPage(context),
       );
 
-  Widget _buildBodyPage(BuildContext context) => SafeArea(
-        child: CustomKeyboardActions(
-          focusNodes: focusNodeList,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: bodyPage,
-          ),
+  Widget _buildBodyPage(BuildContext context) {
+    if (kIsWeb) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: bodyPage,
         ),
       );
+    }
+    return SafeArea(
+      child: (Platform.isAndroid || Platform.isIOS)
+          ? CustomKeyboardActions(
+              focusNodes: focusNodeList,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: bodyPage,
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: bodyPage,
+            ),
+    );
+  }
 }

@@ -8,7 +8,6 @@ import 'package:omdk/pages/app/app_bloc_observer.dart';
 import 'package:omdk_api/omdk_api.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_api_auth/opera_api_auth.dart';
 
 /// Bootstrap class load custom BlocObserver and create repoLayer instance
@@ -28,20 +27,11 @@ Future<void> bootstrap({
     localData: omdkLocalData,
     omdkApi: omdkApi,
   );
-  final assetRepo = EntityRepo(
-    OperaApiAsset(omdkApi.apiClient.client),
-    entityIsarSchema: AssetSchema,
-  );
-  final assetListRepo = EntityRepo(
-    OperaApiAssetListItem(omdkApi.apiClient.client),
-  );
 
   runApp(
     App(
       authRepo: authRepo,
       omdkLocalData: omdkLocalData,
-      assetRepo: assetRepo,
-      assetListRepo: assetListRepo,
     ),
   );
 }

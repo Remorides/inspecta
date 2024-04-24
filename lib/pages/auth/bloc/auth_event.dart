@@ -16,7 +16,24 @@ final class _AuthStatusChanged extends AuthEvent {
 }
 
 /// User request to logout
-final class AuthLogoutRequested extends AuthEvent {
+final class LogoutRequested extends AuthEvent {
   @override
   List<Object?> get props => [];
+}
+
+/// Register to auth stream event
+final class RestoreSession extends AuthEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+/// Request to validate input
+final class ValidateOTP extends AuthEvent {
+
+  const ValidateOTP({required this.otp});
+
+  final String otp;
+
+  @override
+  List<Object?> get props => [otp];
 }

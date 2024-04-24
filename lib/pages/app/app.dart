@@ -5,11 +5,10 @@ import 'package:omdk/elements/alerts/alerts.dart';
 import 'package:omdk/pages/auth/bloc/auth_bloc.dart';
 import 'package:omdk/pages/auth_login/view/login_page.dart';
 import 'package:omdk/pages/home/view/home_page.dart';
+import 'package:omdk/pages/otp_fails/otp_fails.dart';
 import 'package:omdk/pages/splash/view/splash_page.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:opera_api_asset/opera_api_asset.dart';
-import 'package:opera_api_auth/opera_api_auth.dart';
 import 'package:provider/provider.dart';
 
 /// Create base [App] to instance repo layer
@@ -17,20 +16,12 @@ class App extends StatefulWidget {
   /// Build [App] instance
   const App({
     required this.authRepo,
-    required this.assetRepo,
-    required this.assetListRepo,
     required this.omdkLocalData,
     super.key,
   });
 
   /// [AuthRepo] instance
   final AuthRepo authRepo;
-
-  /// [EntityRepo] instance
-  final EntityRepo<Asset> assetRepo;
-
-  /// [EntityRepo] instance
-  final EntityRepo<AssetListItem> assetListRepo;
 
   /// [OMDKLocalData] instance
   final OMDKLocalData omdkLocalData;
@@ -47,17 +38,14 @@ class _AppState extends State<App> {
     super.dispose();
   }
 
+  //Get params from url
+  final paramOTP = Uri.base.queryParameters['otp'];
+
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<AuthRepo>(create: (context) => widget.authRepo),
-        RepositoryProvider<EntityRepo<Asset>>(
-          create: (context) => widget.assetRepo,
-        ),
-        RepositoryProvider<EntityRepo<AssetListItem>>(
-          create: (context) => widget.assetListRepo,
-        ),
       ],
       child: MultiProvider(
         providers: [
@@ -67,7 +55,12 @@ class _AppState extends State<App> {
           ),
         ],
         child: BlocProvider(
-          create: (_) => AuthBloc(authRepo: widget.authRepo),
+          create: (_) => AuthBloc(authRepo: widget.authRepo)
+            ..add(
+              paramOTP != null
+                  ? ValidateOTP(otp: paramOTP!)
+                  : RestoreSession(),
+            ),
           child: const AppView(),
         ),
       ),
@@ -90,9 +83,6 @@ class _AppViewState extends State<AppView> {
 
   NavigatorState get _navigator => _navigatorKey.currentState!;
 
-  //Get params from url
-  final paramOTP = Uri.base.queryParameters['otp'];
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -113,24 +103,13 @@ class _AppViewState extends State<AppView> {
       navigatorKey: _navigatorKey,
       builder: (context, child) {
         return BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             switch (state.status) {
               case AuthStatus.authenticated:
-                if (paramOTP != null) {
-                  try {
-                    context.read<AuthRepo>().validateOTP(
-                          authOTP: AuthOTP(
-                            oneTimePassword: paramOTP!,
-                          ),
-                        );
-                  } on Exception {
-                    OMDKAlert.show(context, OMDKAlert.example);
-                  }
-                }
 
                 /// Redirect user to home page only if
                 /// local session is validated
-                _navigator.pushAndRemoveUntil(
+                await _navigator.pushAndRemoveUntil(
                   HomePage.route(),
                   (route) => false,
                 );
@@ -138,7 +117,7 @@ class _AppViewState extends State<AppView> {
 
                 /// Session doesn't exist
                 /// redirect user to login page
-                _navigator.pushAndRemoveUntil(
+                await _navigator.pushAndRemoveUntil(
                   LoginPage.route(),
                   (route) => false,
                 );
@@ -147,6 +126,12 @@ class _AppViewState extends State<AppView> {
                 /// Initial and default status of AuthStatus
                 /// Wait for changes
                 break;
+
+              case AuthStatus.otpFailed:
+                await _navigator.pushAndRemoveUntil(
+                  OTPFailsPage.route(),
+                      (route) => false,
+                );
             }
           },
           child: child,

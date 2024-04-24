@@ -11,6 +11,12 @@ class AuthState extends Equatable {
   /// Default state on start app
   const AuthState.unknown() : this._();
 
+  /// Default state on start app
+  const AuthState.otpFails() : this._(
+    status: AuthStatus.otpFailed,
+    user: AuthenticatedUser.empty,
+  );
+
   /// User authenticated
   const AuthState.authenticated(AuthenticatedUser user)
       : this._(status: AuthStatus.authenticated, user: user);
@@ -21,6 +27,7 @@ class AuthState extends Equatable {
 
   /// value to show authStatus
   final AuthStatus status;
+
   /// user authenticated
   final AuthenticatedUser user;
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/extensions/extension_list.dart';
 import 'package:omdk/elements/dividers/divider.dart';
 import 'package:omdk/elements/drawers/models/drawer_item.dart';
+import 'package:omdk/pages/auth/auth.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class OMDKAnimatedDrawer extends StatefulWidget {
@@ -18,7 +20,6 @@ class OMDKAnimatedDrawer extends StatefulWidget {
 }
 
 class _OMDKAnimatedDrawer extends State<OMDKAnimatedDrawer> {
-
   final _items = const <DrawerItem>[
     DrawerItem(
       title: 'Privacy Policy',
@@ -62,7 +63,11 @@ class _OMDKAnimatedDrawer extends State<OMDKAnimatedDrawer> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            onTap: () {},
+            onTap: (i.title == 'Sign out')
+                ? () => context
+                    .read<AuthBloc>()
+                    .add(LogoutRequested())
+                : null,
             leading: i.icon,
           ),
       ].separateWith(const OMDKDivider()),

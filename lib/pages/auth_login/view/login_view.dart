@@ -41,44 +41,84 @@ class _LoginView extends StatelessWidget {
       child: OMDKAnimatedPage(
         appBarTitle: 'Login',
         withBottomBar: false,
+        withDrawer: false,
         focusNodeList: [
           companyCodeFN,
           usernameFN,
           passwordFN,
         ],
-        bodyPage: ListView(
-          padding: EdgeInsets.zero,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            const Space.vertical(40),
-            _CompanyCodeInput(
-              widgetFN: companyCodeFN,
-              widgetB: companyCodeB,
-              nextWidgetFN: usernameFN,
-            ),
-            const Space.vertical(20),
-            _UsernameInput(
-              widgetFN: usernameFN,
-              widgetB: usernameB,
-              nextWidgetFN: passwordFN,
-            ),
-            const Space.vertical(20),
-            _PasswordInput(
-              widgetFN: passwordFN,
-              widgetB: passwordB,
-              nextWidgetFN: loginFN,
-            ),
-            const _ResetPassword(),
-            const Space.vertical(100),
-            const _ConfigurationsButton(),
-            _LoginButton(
-              companyCodeB: companyCodeB,
-              usernameB: usernameB,
-              passwordB: passwordB,
-              loginFN: loginFN,
-            ),
-          ],
-        ),
+        bodyPage: ResponsiveWidget.isSmallScreen(context)
+            ? ListView(
+                padding: EdgeInsets.zero,
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  const Space.vertical(40),
+                  _CompanyCodeInput(
+                    widgetFN: companyCodeFN,
+                    widgetB: companyCodeB,
+                    nextWidgetFN: usernameFN,
+                  ),
+                  const Space.vertical(20),
+                  _UsernameInput(
+                    widgetFN: usernameFN,
+                    widgetB: usernameB,
+                    nextWidgetFN: passwordFN,
+                  ),
+                  const Space.vertical(20),
+                  _PasswordInput(
+                    widgetFN: passwordFN,
+                    widgetB: passwordB,
+                    nextWidgetFN: loginFN,
+                  ),
+                  const Space.vertical(100),
+                  const _ConfigurationsButton(),
+                  const Space.vertical(10),
+                  _LoginButton(
+                    companyCodeB: companyCodeB,
+                    usernameB: usernameB,
+                    passwordB: passwordB,
+                    loginFN: loginFN,
+                  ),
+                ],
+              )
+            : Center(
+                child: SizedBox(
+                  width: 300,
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      const Space.vertical(40),
+                      _CompanyCodeInput(
+                        widgetFN: companyCodeFN,
+                        widgetB: companyCodeB,
+                        nextWidgetFN: usernameFN,
+                      ),
+                      const Space.vertical(20),
+                      _UsernameInput(
+                        widgetFN: usernameFN,
+                        widgetB: usernameB,
+                        nextWidgetFN: passwordFN,
+                      ),
+                      const Space.vertical(20),
+                      _PasswordInput(
+                        widgetFN: passwordFN,
+                        widgetB: passwordB,
+                        nextWidgetFN: loginFN,
+                      ),
+                      const Space.vertical(100),
+                      const _ConfigurationsButton(),
+                      const Space.vertical(10),
+                      _LoginButton(
+                        companyCodeB: companyCodeB,
+                        usernameB: usernameB,
+                        passwordB: passwordB,
+                        loginFN: loginFN,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -228,35 +268,6 @@ class _LoginButton extends StatelessWidget {
                 ),
               );
       },
-    );
-  }
-}
-
-class _ResetPassword extends StatelessWidget {
-  /// Create [_ResetPassword] instance
-  const _ResetPassword();
-
-  @override
-  Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        children: <TextSpan>[
-          TextSpan(
-            text: 'Forgot your password? ',
-            style: context.theme?.textTheme.bodySmall,
-          ),
-          TextSpan(
-            text: 'Recovery',
-            style: context.theme?.textTheme.bodySmall?.copyWith(
-              color: context.theme?.primaryColor,
-              fontWeight: FontWeight.w600,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap =
-                  () => Navigator.of(context).push(ResetPasswordPage.route()),
-          ),
-        ],
-      ),
     );
   }
 }

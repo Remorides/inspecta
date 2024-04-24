@@ -8,6 +8,7 @@ class DrawerItem {
     this.route,
     this.icon,
     this.arguments,
+    this.onTap,
   });
 
   /// Callback action
@@ -15,4 +16,5 @@ class DrawerItem {
   final String? route;
   final Icon? icon;
   final Object? arguments;
+  final void Function()? onTap;
 }
