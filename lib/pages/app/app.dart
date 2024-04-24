@@ -91,9 +91,7 @@ class _AppViewState extends State<AppView> {
   NavigatorState get _navigator => _navigatorKey.currentState!;
 
   //Get params from url
-  final paramGuid = Uri.base.queryParameters['guid'];
   final paramOTP = Uri.base.queryParameters['otp'];
-  final paramClose = Uri.base.queryParameters['close'];
 
   @override
   Widget build(BuildContext context) {
