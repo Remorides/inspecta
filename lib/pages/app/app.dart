@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:omdk/elements/alerts/alerts.dart';
 import 'package:omdk/pages/auth/bloc/auth_bloc.dart';
 import 'package:omdk/pages/auth_login/view/login_page.dart';
 import 'package:omdk/pages/home/view/home_page.dart';
@@ -8,6 +9,7 @@ import 'package:omdk/pages/splash/view/splash_page.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
+import 'package:opera_api_auth/opera_api_auth.dart';
 import 'package:provider/provider.dart';
 
 /// Create base [App] to instance repo layer
@@ -88,6 +90,11 @@ class _AppViewState extends State<AppView> {
 
   NavigatorState get _navigator => _navigatorKey.currentState!;
 
+  //Get params from url
+  final paramGuid = Uri.base.queryParameters['guid'];
+  final paramOTP = Uri.base.queryParameters['otp'];
+  final paramClose = Uri.base.queryParameters['close'];
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -111,6 +118,17 @@ class _AppViewState extends State<AppView> {
           listener: (context, state) {
             switch (state.status) {
               case AuthStatus.authenticated:
+                if (paramOTP != null) {
+                  try {
+                    context.read<AuthRepo>().validateOTP(
+                          authOTP: AuthOTP(
+                            oneTimePassword: paramOTP!,
+                          ),
+                        );
+                  } on Exception {
+                    OMDKAlert.show(context, OMDKAlert.example);
+                  }
+                }
 
                 /// Redirect user to home page only if
                 /// local session is validated
