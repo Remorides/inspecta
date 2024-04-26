@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:omdk/elements/alerts/simple_alert/simple_alert.dart';
 import 'package:omdk/elements/elements.dart';
-import 'package:omdk/pages/auth_login/login.dart';
 
 /// Login page builder
 class OTPFailsPage extends StatefulWidget {
@@ -33,11 +32,11 @@ class _OTPFailsPageState extends State<OTPFailsPage> {
                 message: const Text('OTP is not valid'),
                 confirm: 'OK',
                 onConfirm: () async {
-                  await Navigator.pushAndRemoveUntil(
-                    context,
-                    LoginPage.route(),
-                    (route) => false,
-                  );
+                  // await Navigator.pushAndRemoveUntil(
+                  //   context,
+                  //   LoginPage.route(),
+                  //   (route) => false,
+                  // );
                 },
               ),
             )
@@ -49,11 +48,11 @@ class _OTPFailsPageState extends State<OTPFailsPage> {
                   message: const Text('OTP is not valid'),
                   confirm: 'OK',
                   onConfirm: () async {
-                    await Navigator.pushAndRemoveUntil(
-                      context,
-                      LoginPage.route(),
-                      (route) => false,
-                    );
+                    // await Navigator.pushAndRemoveUntil(
+                    //   context,
+                    //   LoginPage.route(),
+                    //   (route) => false,
+                    // );
                   },
                 ),
               ),

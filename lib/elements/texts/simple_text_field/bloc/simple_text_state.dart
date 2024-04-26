@@ -1,7 +1,7 @@
 part of 'simple_text_bloc.dart';
 
 /// State of [SimpleTextBloc]
-final class SimpleTextState {
+final class SimpleTextState extends Equatable {
   /// Create [SimpleTextState] instance
   const SimpleTextState({
     required this.isNullable,
@@ -45,4 +45,12 @@ final class SimpleTextState {
         initialText: initialText ?? this.initialText,
         errorText: errorText ?? this.errorText,
       );
+
+  @override
+  List<Object?> get props => [
+        status,
+        text,
+        initialText,
+        errorText,
+      ];
 }

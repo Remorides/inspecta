@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:omdk/elements/texts/simple_text_field/simple_text_field.dart ';
 
@@ -34,7 +35,13 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
     InitialText event,
     Emitter<SimpleTextState> emit,
   ) async {
-    emit(state.copyWith(initialText: event.initialText));
+    emit(
+      state.copyWith(
+        initialText: event.initialText,
+        text: event.initialText,
+        errorText: '',
+      ),
+    );
   }
 
   Future<void> _onValidateData(

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:omdk/common/enums/enums.dart';
+import 'package:omdk/elements/elements.dart';
 import 'package:omdk_api/omdk_api.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
@@ -17,6 +18,8 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     on<InitAssetReference>(_onInitAssetReference);
     on<TicketNameChanged>(_onTicketNameChanged);
     on<TicketDescChanged>(_onTicketDescChanged);
+    on<TicketPriorityChanged>(_onTicketPriorityChanged);
+    on<TicketEditing>(_onEditingMode);
   }
 
   /// [OMDKRepo] instance
@@ -54,6 +57,17 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     }
   }
 
+  void _onEditingMode(
+      TicketEditing event,
+      Emitter<OpenTicketState> emit,
+      ){
+    emit(
+      state.copyWith(
+        activeFieldBloc: event.bloc,
+      ),
+    );
+  }
+
   void _onTicketNameChanged(
       TicketNameChanged event,
       Emitter<OpenTicketState> emit,
@@ -71,7 +85,18 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       ) {
     emit(
       state.copyWith(
-        ticketName: event.desc,
+        ticketDescription: event.desc,
+      ),
+    );
+  }
+
+  void _onTicketPriorityChanged(
+      TicketPriorityChanged event,
+      Emitter<OpenTicketState> emit,
+      ) {
+    emit(
+      state.copyWith(
+        ticketPriority: event.priority,
       ),
     );
   }

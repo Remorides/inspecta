@@ -23,6 +23,7 @@ class SimpleTextField extends StatelessWidget {
     this.customBoxBorder,
     this.isEmptyAllowed = false,
     this.isTextValueNullable = false,
+    this.onTap,
     super.key,
   });
 
@@ -31,6 +32,9 @@ class SimpleTextField extends StatelessWidget {
 
   /// Result function with input data
   final void Function(String?) onEditingComplete;
+
+  /// Manage on tap event
+  final void Function()? onTap;
 
   /// Label text
   final String labelText;
@@ -84,6 +88,7 @@ class SimpleTextField extends StatelessWidget {
             isNullable: isTextValueNullable,
           ),
       child: _SimpleTextFieldView(
+        onTap: onTap,
         labelText: labelText,
         textFocusNode: textFocusNode,
         initialText: initialText,
@@ -107,6 +112,7 @@ class _SimpleTextFieldView extends StatefulWidget {
     required this.labelText,
     required this.textFocusNode,
     required this.onEditingComplete,
+    this.onTap,
     this.initialText = '',
     this.nextFocusNode,
     this.keyboardType = TextInputType.text,
@@ -120,6 +126,7 @@ class _SimpleTextFieldView extends StatefulWidget {
   });
 
   final void Function(String?) onEditingComplete;
+  final void Function()? onTap;
   final String labelText;
   final FocusNode textFocusNode;
   final FocusNode? nextFocusNode;
@@ -143,7 +150,6 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
 
   @override
   void initState() {
-    _controller.text = widget.initialText;
     super.initState();
   }
 
@@ -205,6 +211,7 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                         },
                         child: TextField(
                           controller: _controller,
+                          onTap: widget.onTap,
                           readOnly: !widget.enabled,
                           focusNode: widget.textFocusNode,
                           keyboardType: widget.keyboardType,
