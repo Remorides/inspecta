@@ -139,130 +139,140 @@ class _SimpleTextFieldView extends StatefulWidget {
 
 class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
   bool _passwordVisible = false;
+  final _controller = TextEditingController();
 
   @override
   void initState() {
+    _controller.text = widget.initialText;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SimpleTextBloc, SimpleTextState>(
-      builder: (context, state) {
-        if (state.status == SimpleTextStatus.success) {
-          widget.onEditingComplete(state.text);
+    return BlocListener<SimpleTextBloc, SimpleTextState>(
+      listener: (context, state){
+        if(state.initialText != null){
+          _controller.text = state.initialText!;
         }
-        return SizedBox(
-          height: (100 + ((widget.maxLines - 1) * 16)).toDouble(),
-          child: Stack(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      widget.labelText.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.theme?.inputDecorationTheme.labelStyle,
+      },
+      child: BlocBuilder<SimpleTextBloc, SimpleTextState>(
+        builder: (context, state) {
+          if (state.status == SimpleTextStatus.success) {
+            widget.onEditingComplete(state.text);
+          }
+          return SizedBox(
+            height: (100 + ((widget.maxLines - 1) * 16)).toDouble(),
+            child: Stack(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        widget.labelText.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.theme?.inputDecorationTheme.labelStyle,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Opacity(
-                opacity: (!widget.enabled) ? 0.5 : 1,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 22),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffffffff),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  height: (52 + ((widget.maxLines - 1) * 16)).toDouble(),
+                  ],
                 ),
-              ),
-              Opacity(
-                opacity: (!widget.enabled) ? 0.5 : 1,
-                child: AbsorbPointer(
-                  absorbing: !widget.enabled,
+                Opacity(
+                  opacity: (!widget.enabled) ? 0.5 : 1,
                   child: Container(
-                    margin: const EdgeInsets.only(
-                      top: 24,
-                      left: 10,
-                      right: 5,
+                    margin: const EdgeInsets.only(top: 22),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffffffff),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Focus(
-                      onFocusChange: (bool focus) {
-                        if (!focus) {
-                          context.read<SimpleTextBloc>().add(ValidateData());
-                        }
-                      },
-                      child: TextField(
-                        readOnly: !widget.enabled,
-                        focusNode: widget.textFocusNode,
-                        keyboardType: widget.keyboardType,
-                        textCapitalization: widget.textCapitalization,
-                        textInputAction: widget.textInputAction,
-                        obscureText: widget.isObscured && !_passwordVisible,
-                        maxLines:
-                            widget.textInputAction == TextInputAction.newline
-                                ? null
-                                : widget.maxLines,
-                        onChanged: (text) => context
-                            .read<SimpleTextBloc>()
-                            .add(TextChanged(text)),
-                        onEditingComplete: () {
-                          context.read<SimpleTextBloc>().add(ValidateData());
-                          if (widget.nextFocusNode != null) {
-                            FocusScope.of(context)
-                                .requestFocus(widget.nextFocusNode);
-                          } else {
-                            FocusScope.of(context).unfocus();
-                            FocusScope.of(context).requestFocus(FocusNode());
+                    height: (52 + ((widget.maxLines - 1) * 16)).toDouble(),
+                  ),
+                ),
+                Opacity(
+                  opacity: (!widget.enabled) ? 0.5 : 1,
+                  child: AbsorbPointer(
+                    absorbing: !widget.enabled,
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                        top: 24,
+                        left: 10,
+                        right: 5,
+                      ),
+                      child: Focus(
+                        onFocusChange: (bool focus) {
+                          if (!focus) {
+                            context.read<SimpleTextBloc>().add(ValidateData());
                           }
                         },
-                        decoration: InputDecoration(
-                          filled: false,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          focusedErrorBorder: InputBorder.none,
-                          alignLabelWithHint: true,
-                          hintText: widget.placeholder,
-                          hintMaxLines: widget.maxLines,
-                          suffixIcon: widget.isObscured
-                              ? IconButton(
-                                  icon: Icon(
-                                    _passwordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _passwordVisible = !_passwordVisible;
-                                    });
-                                  },
-                                )
-                              : null,
-                          suffixIconColor: Colors.grey,
+                        child: TextField(
+                          controller: _controller,
+                          readOnly: !widget.enabled,
+                          focusNode: widget.textFocusNode,
+                          keyboardType: widget.keyboardType,
+                          textCapitalization: widget.textCapitalization,
+                          textInputAction: widget.textInputAction,
+                          obscureText: widget.isObscured && !_passwordVisible,
+                          maxLines:
+                          widget.textInputAction == TextInputAction.newline
+                              ? null
+                              : widget.maxLines,
+                          onChanged: (text) => context
+                              .read<SimpleTextBloc>()
+                              .add(TextChanged(text)),
+                          onEditingComplete: () {
+                            context.read<SimpleTextBloc>().add(ValidateData());
+                            if (widget.nextFocusNode != null) {
+                              FocusScope.of(context)
+                                  .requestFocus(widget.nextFocusNode);
+                            } else {
+                              FocusScope.of(context).unfocus();
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            }
+                          },
+                          decoration: InputDecoration(
+                            filled: false,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            focusedErrorBorder: InputBorder.none,
+                            alignLabelWithHint: true,
+                            hintText: widget.placeholder,
+                            hintMaxLines: widget.maxLines,
+                            suffixIcon: widget.isObscured
+                                ? IconButton(
+                              icon: Icon(
+                                _passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                            )
+                                : null,
+                            suffixIconColor: Colors.grey,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              if (state.status == SimpleTextStatus.failure)
-                Positioned(
-                  bottom: 5,
-                  child: Text(
-                    state.errorText,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.theme?.inputDecorationTheme.errorStyle,
+                if (state.status == SimpleTextStatus.failure)
+                  Positioned(
+                    bottom: 5,
+                    child: Text(
+                      state.errorText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.theme?.inputDecorationTheme.errorStyle,
+                    ),
                   ),
-                ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

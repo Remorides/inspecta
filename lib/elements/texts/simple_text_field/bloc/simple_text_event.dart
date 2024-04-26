@@ -15,6 +15,15 @@ final class TextChanged extends SimpleTextEvent {
   final String text;
 }
 
+/// Event to set initial text
+final class InitialText extends SimpleTextEvent {
+  /// Create [InitialText] instance
+  const InitialText(this.initialText);
+
+  /// New text
+  final String initialText;
+}
+
 /// Event to request field reset
 final class ResetText extends SimpleTextEvent {}
 

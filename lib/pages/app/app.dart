@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/alerts/alerts.dart';
 import 'package:omdk/pages/auth/bloc/auth_bloc.dart';
 import 'package:omdk/pages/auth_login/view/login_page.dart';
-import 'package:omdk/pages/home/view/home_page.dart';
+import 'package:omdk/pages/open_ticket/view/open_ticket_page.dart';
 import 'package:omdk/pages/otp_fails/otp_fails.dart';
 import 'package:omdk/pages/splash/view/splash_page.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_repo/omdk_repo.dart';
+import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:provider/provider.dart';
 
 /// Create base [App] to instance repo layer
@@ -17,11 +17,19 @@ class App extends StatefulWidget {
   const App({
     required this.authRepo,
     required this.omdkLocalData,
+    required this.assetRepo,
+    required this.assetListRepo,
     super.key,
   });
 
   /// [AuthRepo] instance
   final AuthRepo authRepo;
+
+  /// [EntityRepo] instance
+  final EntityRepo<Asset> assetRepo;
+
+  /// [EntityRepo] instance
+  final EntityRepo<AssetListItem> assetListRepo;
 
   /// [OMDKLocalData] instance
   final OMDKLocalData omdkLocalData;
@@ -46,6 +54,12 @@ class _AppState extends State<App> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<AuthRepo>(create: (context) => widget.authRepo),
+        RepositoryProvider<EntityRepo<Asset>>(
+          create: (context) => widget.assetRepo,
+        ),
+        RepositoryProvider<EntityRepo<AssetListItem>>(
+          create: (context) => widget.assetListRepo,
+        ),
       ],
       child: MultiProvider(
         providers: [
@@ -110,7 +124,7 @@ class _AppViewState extends State<AppView> {
                 /// Redirect user to home page only if
                 /// local session is validated
                 await _navigator.pushAndRemoveUntil(
-                  HomePage.route(),
+                  OpenTicketPage.route(),
                   (route) => false,
                 );
               case AuthStatus.unauthenticated:

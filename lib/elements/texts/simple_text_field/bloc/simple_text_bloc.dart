@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:omdk/elements/texts/simple_text_field/simple_text_field.dart ';
 
@@ -11,8 +10,8 @@ part 'simple_text_state.dart';
 class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
   /// Create [SimpleTextBloc] instance
   SimpleTextBloc({
-    required bool isEmptyAllowed,
-    required bool isNullable,
+    bool isEmptyAllowed = false,
+    bool isNullable = false,
   }) : super(
           SimpleTextState(
             isEmptyAllowed: isEmptyAllowed,
@@ -20,6 +19,7 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
           ),
         ) {
     on<TextChanged>(_onTextChanges);
+    on<InitialText>(_onInitialText);
     on<ValidateData>(_onValidateData);
   }
 
@@ -27,7 +27,14 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
     TextChanged event,
     Emitter<SimpleTextState> emit,
   ) async {
-    emit(state.copyWith(text: event.text));
+    emit(state.copyWith(text: event.text, errorText: ''));
+  }
+
+  Future<void> _onInitialText(
+    InitialText event,
+    Emitter<SimpleTextState> emit,
+  ) async {
+    emit(state.copyWith(initialText: event.initialText));
   }
 
   Future<void> _onValidateData(

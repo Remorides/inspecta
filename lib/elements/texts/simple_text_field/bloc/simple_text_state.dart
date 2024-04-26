@@ -1,13 +1,14 @@
 part of 'simple_text_bloc.dart';
 
 /// State of [SimpleTextBloc]
-final class SimpleTextState extends Equatable {
+final class SimpleTextState {
   /// Create [SimpleTextState] instance
   const SimpleTextState({
     required this.isNullable,
     required this.isEmptyAllowed,
     this.status = SimpleTextStatus.initial,
     this.text,
+    this.initialText,
     this.errorText = '',
   });
 
@@ -16,6 +17,9 @@ final class SimpleTextState extends Equatable {
 
   /// Current text value
   final String? text;
+
+  /// Current text value
+  final String? initialText;
 
   /// String with reported error
   final String errorText;
@@ -30,6 +34,7 @@ final class SimpleTextState extends Equatable {
   SimpleTextState copyWith({
     SimpleTextStatus? status,
     String? text,
+    String? initialText,
     String? errorText,
   }) =>
       SimpleTextState(
@@ -37,9 +42,7 @@ final class SimpleTextState extends Equatable {
         isEmptyAllowed: isEmptyAllowed,
         status: status ?? this.status,
         text: text ?? this.text,
+        initialText: initialText ?? this.initialText,
         errorText: errorText ?? this.errorText,
       );
-
-  @override
-  List<Object?> get props => [status, text, errorText];
 }
