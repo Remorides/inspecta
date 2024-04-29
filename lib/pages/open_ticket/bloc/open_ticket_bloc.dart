@@ -14,8 +14,12 @@ part 'open_ticket_state.dart';
 
 class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   /// Create [OpenTicketBloc] instance
-  OpenTicketBloc({required this.assetRepo}) : super(const OpenTicketState()) {
+  OpenTicketBloc({
+    required this.assetRepo,
+    required this.schemaRepo,
+  }) : super(const OpenTicketState()) {
     on<InitAssetReference>(_onInitAssetReference);
+    on<InitSchemas>(_onInitSchemas);
     on<TicketNameChanged>(_onTicketNameChanged);
     on<TicketDescChanged>(_onTicketDescChanged);
     on<TicketPriorityChanged>(_onTicketPriorityChanged);
@@ -24,6 +28,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
 
   /// [OMDKRepo] instance
   final EntityRepo<Asset> assetRepo;
+  final EntityRepo<SchemaListItem> schemaRepo;
 
   Future<void> _onInitAssetReference(
     InitAssetReference event,
@@ -34,11 +39,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       return emit(state.copyWith(loadingStatus: LoadingStatus.failure));
     }
     try {
-      final response = await assetRepo.getAPIItem(guid: event.guid!);
-      final result = switch (response) {
-        Success<dynamic, Exception>(value: final asset) => asset as Asset,
-        Failure<dynamic, Exception>(exception: final e) => throw e,
-      };
+      final result = await assetRepo.getAPIItem(guid: event.guid!);
       emit(
         state.copyWith(
           loadingStatus: LoadingStatus.done,
@@ -57,10 +58,32 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     }
   }
 
+  Future<void> _onInitSchemas(
+    InitSchemas event,
+    Emitter<OpenTicketState> emit,
+  ) async {
+    try {
+      final schemas = await schemaRepo.getAPIItems(
+        0,
+        15,
+        optionalParams: {
+          'EntityType': JEntityType.Asset.name,
+          'SchemaType': JSchemaType.SchemaAndDataAndParent.name,
+          'IsDefault': false,
+          'IsEnabled': false,
+          'IncludeData': true,
+        },
+      );
+      emit(state.copyWith(schemas: schemas));
+    } catch (_) {
+      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+    }
+  }
+
   void _onEditingMode(
-      TicketEditing event,
-      Emitter<OpenTicketState> emit,
-      ){
+    TicketEditing event,
+    Emitter<OpenTicketState> emit,
+  ) {
     emit(
       state.copyWith(
         activeFieldBloc: event.bloc,
@@ -69,9 +92,9 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   }
 
   void _onTicketNameChanged(
-      TicketNameChanged event,
-      Emitter<OpenTicketState> emit,
-      ) {
+    TicketNameChanged event,
+    Emitter<OpenTicketState> emit,
+  ) {
     emit(
       state.copyWith(
         ticketName: event.name,
@@ -80,9 +103,9 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   }
 
   void _onTicketDescChanged(
-      TicketDescChanged event,
-      Emitter<OpenTicketState> emit,
-      ) {
+    TicketDescChanged event,
+    Emitter<OpenTicketState> emit,
+  ) {
     emit(
       state.copyWith(
         ticketDescription: event.desc,
@@ -91,9 +114,9 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   }
 
   void _onTicketPriorityChanged(
-      TicketPriorityChanged event,
-      Emitter<OpenTicketState> emit,
-      ) {
+    TicketPriorityChanged event,
+    Emitter<OpenTicketState> emit,
+  ) {
     emit(
       state.copyWith(
         ticketPriority: event.priority,

@@ -12,8 +12,9 @@ class _OpenTicketView extends StatefulWidget {
 class _OpenTicketViewState extends State<_OpenTicketView> {
   final _controllerKeyboard = TextEditingController();
 
-  final Map<String, dynamic> mapBlock = <String, dynamic>{
-    'blocKeyboard': VirtualKeyboardBloc(),
+  final blocKeyboard = VirtualKeyboardBloc();
+
+  final Map<String, SimpleTextBloc> mapBlock = <String, SimpleTextBloc>{
     'blocAssetReference': SimpleTextBloc(),
     'blocName': SimpleTextBloc(),
     'blocDesc': SimpleTextBloc(),
@@ -50,14 +51,14 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                     : Center(child: twoColumnLayout(context)),
               ),
               CustomVirtualKeyboard(
-                bloc: mapBlock['blocKeyboard'] as VirtualKeyboardBloc,
+                bloc: blocKeyboard,
                 focusNode: mapFocusNode['focusKeyboard']!,
                 controller: _controllerKeyboard,
                 onKeyPress: (key) => _onKeyPress(
                   context,
                   key,
                   activeBloc,
-                  mapBlock['blocKeyboard'] as VirtualKeyboardBloc,
+                  blocKeyboard,
                 ),
               ),
             ],
@@ -105,20 +106,20 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
             child: ListView(
               children: [
                 _AssetReference(
-                  bloc: mapBlock['blocAssetReference'] as SimpleTextBloc,
+                  bloc: mapBlock['blocAssetReference']!,
                 ),
                 const Space.vertical(20),
                 _TicketNameInput(
-                  keyboardBloc: mapBlock['blocKeyboard'] as VirtualKeyboardBloc,
+                  keyboardBloc: blocKeyboard,
                   widgetFN: mapFocusNode['focusName']!,
-                  widgetB: mapBlock['blocName'] as SimpleTextBloc,
+                  widgetB: mapBlock['blocName']!,
                   nextWidgetFN: mapFocusNode['focusDesc'],
                 ),
                 const Space.vertical(20),
                 _TicketDescInput(
-                  keyboardBloc: mapBlock['blocKeyboard'] as VirtualKeyboardBloc,
+                  keyboardBloc: blocKeyboard,
                   widgetFN: mapFocusNode['focusDesc']!,
-                  widgetB: mapBlock['blocDesc'] as SimpleTextBloc,
+                  widgetB: mapBlock['blocDesc']!,
                   nextWidgetFN: mapFocusNode['focusPriority'],
                 ),
                 const Space.vertical(20),
@@ -129,18 +130,36 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
             ),
           ),
           Expanded(
-            child: ListView(
-              children: [
-                Container(
-                  height: 200,
-                ),
-              ],
-            ),
+            child: ListView(),
           ),
         ],
       );
 
-  Widget singleColumnLayout(BuildContext context) => ListView();
+  Widget singleColumnLayout(BuildContext context) => ListView(
+    children: [
+      _AssetReference(
+        bloc: mapBlock['blocAssetReference']!,
+      ),
+      const Space.vertical(20),
+      _TicketNameInput(
+        keyboardBloc: blocKeyboard,
+        widgetFN: mapFocusNode['focusName']!,
+        widgetB: mapBlock['blocName']!,
+        nextWidgetFN: mapFocusNode['focusDesc'],
+      ),
+      const Space.vertical(20),
+      _TicketDescInput(
+        keyboardBloc: blocKeyboard,
+        widgetFN: mapFocusNode['focusDesc']!,
+        widgetB: mapBlock['blocDesc']!,
+        nextWidgetFN: mapFocusNode['focusPriority'],
+      ),
+      const Space.vertical(20),
+      _TicketPriorityInput(
+        widgetFN: mapFocusNode['focusPriority']!,
+      ),
+    ],
+  );
 }
 
 class _AssetReference extends StatelessWidget {

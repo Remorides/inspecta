@@ -29,18 +29,18 @@ packages:
     dependency: transitive
     description:
       name: app_tracking_transparency
-      sha256: ce9311f0e393dbd6b1cb4aeaf609e2db8ba20b1327ca67d07c11ef4876f843a8
+      sha256: "7b011da3165ebb5a2f93d19da22e43a94b45bb6471c825b7d163b30eff937d30"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.5"
   archive:
     dependency: transitive
     description:
       name: archive
-      sha256: "22600aa1e926be775fa5fe7e6894e7fb3df9efda8891c73f70fb3262399a432d"
+      sha256: "0763b45fa9294197a2885c8567927e2830ade852e5c896fd4ab7e0e348d0f373"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.10"
+    version: "3.5.0"
   args:
     dependency: transitive
     description:
@@ -756,10 +756,10 @@ packages:
     dependency: transitive
     description:
       name: json_annotation
-      sha256: b10a7b2ff83d83c777edba3c6a0f97045ddadd56c944e1a23a3fdf43a1bf4467
+      sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.1"
+    version: "4.9.0"
   jwt_decoder:
     dependency: transitive
     description:
@@ -893,7 +893,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "498d768b677789ad0e3eb0b309a9ed67c3372df8"
+      resolved-ref: "067d8448e6973ab0039c636f378ed21d9fa5c555"
       url: "https://github.com/Remorides/omdk-api.git"
     source: git
     version: "0.1.0+1"
@@ -911,7 +911,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "859b87d35a618daa9284f43eb03b766695e32519"
+      resolved-ref: e3b44f260b9c42be224fb467e3f729e277d0e8e1
       url: "https://github.com/Remorides/omdk-repo.git"
     source: git
     version: "0.1.0+1"
@@ -920,7 +920,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "0db5e5a4dcd4f62418f36e7cbe46234c5eef2253"
+      resolved-ref: "99287bbc28b68e45c26b3d6b32b006e06dec99dd"
       url: "https://github.com/Remorides/opera-api-asset.git"
     source: git
     version: "0.1.0+1"
@@ -938,7 +938,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "872be811248a3e6c88374624042a03eaeec04f0f"
+      resolved-ref: "5c97947ac4e15d1bba24920dc768090deb58074a"
       url: "https://github.com/Remorides/opera-api-entity.git"
     source: git
     version: "0.1.0+1"
@@ -1327,10 +1327,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "0a989dc7ca2bb51eac91e8fd00851297cfffd641aa7538b165c62637ca0eaa4a"
+      sha256: "0eaf06e3446824099858367950a813472af675116bf63f008a4c2a75ae13e9cb"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.0"
+    version: "5.5.0"
   win32_registry:
     dependency: transitive
     description:

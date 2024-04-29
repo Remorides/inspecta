@@ -5,6 +5,7 @@ final class OpenTicketState extends Equatable {
   /// Create [OpenTicketState] instance
   const OpenTicketState({
     this.loadingStatus = LoadingStatus.initial,
+    this.schemas = const [],
     this.jMainNode,
     this.ticketName = '',
     this.ticketDescription = '',
@@ -14,6 +15,7 @@ final class OpenTicketState extends Equatable {
 
   final LoadingStatus loadingStatus;
   final JMainNode? jMainNode;
+  final List<SchemaListItem> schemas;
   final String ticketName;
   final String ticketDescription;
   final String ticketPriority;
@@ -21,6 +23,7 @@ final class OpenTicketState extends Equatable {
 
   OpenTicketState copyWith({
     LoadingStatus? loadingStatus,
+    List<SchemaListItem>? schemas,
     JMainNode? jMainNode,
     String? ticketName,
     String? ticketDescription,
@@ -29,6 +32,7 @@ final class OpenTicketState extends Equatable {
   }) {
     return OpenTicketState(
       loadingStatus: loadingStatus ?? this.loadingStatus,
+      schemas: schemas ?? this.schemas,
       jMainNode: jMainNode ?? this.jMainNode,
       ticketName: ticketName ?? this.ticketName,
       ticketDescription: ticketDescription ?? this.ticketDescription,
@@ -40,6 +44,7 @@ final class OpenTicketState extends Equatable {
   @override
   List<Object?> get props => [
         loadingStatus,
+        schemas,
         jMainNode,
         ticketName,
         ticketDescription,

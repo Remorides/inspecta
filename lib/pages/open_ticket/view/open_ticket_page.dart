@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/elements.dart';
-import 'package:omdk/elements/texts/simple_text_field/bloc/simple_text_bloc.dart';
 import 'package:omdk/pages/open_ticket/bloc/open_ticket_bloc.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
@@ -26,10 +25,11 @@ class OpenTicketPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          OpenTicketBloc(assetRepo: context.read<EntityRepo<Asset>>())
-            ..add(InitAssetReference(guid: _paramGUID)),
-      child: _OpenTicketView(),
+      create: (context) => OpenTicketBloc(
+        assetRepo: context.read<EntityRepo<Asset>>(),
+        schemaRepo: context.read<EntityRepo<SchemaListItem>>(),
+      )..add(InitAssetReference(guid: _paramGUID)),
+      child: const _OpenTicketView(),
     );
   }
 }

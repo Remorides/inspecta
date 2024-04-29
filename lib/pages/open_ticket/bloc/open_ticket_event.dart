@@ -3,7 +3,6 @@ part of 'open_ticket_bloc.dart';
 @immutable
 sealed class OpenTicketEvent extends Equatable {}
 
-/// Event to get asset_isar from remote server
 final class InitAssetReference extends OpenTicketEvent {
   InitAssetReference({required this.guid});
 
@@ -11,6 +10,13 @@ final class InitAssetReference extends OpenTicketEvent {
 
   @override
   List<Object?> get props => [guid];
+}
+
+final class InitSchemas extends OpenTicketEvent {
+  InitSchemas();
+
+  @override
+  List<Object?> get props => [];
 }
 
 final class TicketNameChanged extends OpenTicketEvent {

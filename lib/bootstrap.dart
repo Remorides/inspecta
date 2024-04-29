@@ -35,8 +35,8 @@ Future<void> bootstrap({
     entityIsarSchema: (!kIsWeb) ? AssetSchema : null,
   );
 
-  final assetListRepo = EntityRepo(
-    OperaApiAssetListItem(omdkApi.apiClient.client),
+  final schemaListRepo = EntityRepo(
+    OperaApiSchemaListItem(omdkApi.apiClient.client),
   );
 
   runApp(
@@ -44,7 +44,7 @@ Future<void> bootstrap({
       assetRepo: assetRepo,
       authRepo: authRepo,
       omdkLocalData: omdkLocalData,
-      assetListRepo: assetListRepo,
+      schemaListRepo: schemaListRepo,
     ),
   );
 }

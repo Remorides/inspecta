@@ -18,7 +18,7 @@ class App extends StatefulWidget {
     required this.authRepo,
     required this.omdkLocalData,
     required this.assetRepo,
-    required this.assetListRepo,
+    required this.schemaListRepo,
     super.key,
   });
 
@@ -29,7 +29,7 @@ class App extends StatefulWidget {
   final EntityRepo<Asset> assetRepo;
 
   /// [EntityRepo] instance
-  final EntityRepo<AssetListItem> assetListRepo;
+  final EntityRepo<SchemaListItem> schemaListRepo;
 
   /// [OMDKLocalData] instance
   final OMDKLocalData omdkLocalData;
@@ -57,8 +57,8 @@ class _AppState extends State<App> {
         RepositoryProvider<EntityRepo<Asset>>(
           create: (context) => widget.assetRepo,
         ),
-        RepositoryProvider<EntityRepo<AssetListItem>>(
-          create: (context) => widget.assetListRepo,
+        RepositoryProvider<EntityRepo<SchemaListItem>>(
+          create: (context) => widget.schemaListRepo,
         ),
       ],
       child: MultiProvider(
