@@ -920,7 +920,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "99287bbc28b68e45c26b3d6b32b006e06dec99dd"
+      resolved-ref: "260e035b398efd6a9096b4fccaa440fb54db9ef5"
       url: "https://github.com/Remorides/opera-api-asset.git"
     source: git
     version: "0.1.0+1"

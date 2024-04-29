@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/elements.dart';
-import 'package:omdk_api/omdk_api.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_api_entity/opera_api_entity.dart';
@@ -20,6 +19,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   }) : super(const OpenTicketState()) {
     on<InitAssetReference>(_onInitAssetReference);
     on<InitSchemas>(_onInitSchemas);
+    on<SelectedSchemaChanged>(_onSchemaChanges);
     on<TicketNameChanged>(_onTicketNameChanged);
     on<TicketDescChanged>(_onTicketDescChanged);
     on<TicketPriorityChanged>(_onTicketPriorityChanged);
@@ -67,11 +67,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         0,
         15,
         optionalParams: {
-          'EntityType': JEntityType.Asset.name,
-          'SchemaType': JSchemaType.SchemaAndDataAndParent.name,
-          'IsDefault': false,
-          'IsEnabled': false,
-          'IncludeData': true,
+          'EntityType': JEntityType.Ticket.name,
         },
       );
       emit(state.copyWith(schemas: schemas));
@@ -80,47 +76,38 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     }
   }
 
+  Future<void> _onSchemaChanges(
+    SelectedSchemaChanged event,
+    Emitter<OpenTicketState> emit,
+  ) async {
+    emit(state.copyWith(selectedSchemaIndex: event.schemaIndex));
+  }
+
   void _onEditingMode(
     TicketEditing event,
     Emitter<OpenTicketState> emit,
   ) {
-    emit(
-      state.copyWith(
-        activeFieldBloc: event.bloc,
-      ),
-    );
+    emit(state.copyWith(activeFieldBloc: event.bloc));
   }
 
   void _onTicketNameChanged(
     TicketNameChanged event,
     Emitter<OpenTicketState> emit,
   ) {
-    emit(
-      state.copyWith(
-        ticketName: event.name,
-      ),
-    );
+    emit(state.copyWith(ticketName: event.name));
   }
 
   void _onTicketDescChanged(
     TicketDescChanged event,
     Emitter<OpenTicketState> emit,
   ) {
-    emit(
-      state.copyWith(
-        ticketDescription: event.desc,
-      ),
-    );
+    emit(state.copyWith(ticketDescription: event.desc));
   }
 
   void _onTicketPriorityChanged(
     TicketPriorityChanged event,
     Emitter<OpenTicketState> emit,
   ) {
-    emit(
-      state.copyWith(
-        ticketPriority: event.priority,
-      ),
-    );
+    emit(state.copyWith(ticketPriority: event.priority));
   }
 }

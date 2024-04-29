@@ -126,6 +126,8 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                 _TicketPriorityInput(
                   widgetFN: mapFocusNode['focusPriority']!,
                 ),
+                const Space.vertical(20),
+                const _TicketSchemaInput(),
               ],
             ),
           ),
@@ -136,30 +138,30 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
       );
 
   Widget singleColumnLayout(BuildContext context) => ListView(
-    children: [
-      _AssetReference(
-        bloc: mapBlock['blocAssetReference']!,
-      ),
-      const Space.vertical(20),
-      _TicketNameInput(
-        keyboardBloc: blocKeyboard,
-        widgetFN: mapFocusNode['focusName']!,
-        widgetB: mapBlock['blocName']!,
-        nextWidgetFN: mapFocusNode['focusDesc'],
-      ),
-      const Space.vertical(20),
-      _TicketDescInput(
-        keyboardBloc: blocKeyboard,
-        widgetFN: mapFocusNode['focusDesc']!,
-        widgetB: mapBlock['blocDesc']!,
-        nextWidgetFN: mapFocusNode['focusPriority'],
-      ),
-      const Space.vertical(20),
-      _TicketPriorityInput(
-        widgetFN: mapFocusNode['focusPriority']!,
-      ),
-    ],
-  );
+        children: [
+          _AssetReference(
+            bloc: mapBlock['blocAssetReference']!,
+          ),
+          const Space.vertical(20),
+          _TicketNameInput(
+            keyboardBloc: blocKeyboard,
+            widgetFN: mapFocusNode['focusName']!,
+            widgetB: mapBlock['blocName']!,
+            nextWidgetFN: mapFocusNode['focusDesc'],
+          ),
+          const Space.vertical(20),
+          _TicketDescInput(
+            keyboardBloc: blocKeyboard,
+            widgetFN: mapFocusNode['focusDesc']!,
+            widgetB: mapBlock['blocDesc']!,
+            nextWidgetFN: mapFocusNode['focusPriority'],
+          ),
+          const Space.vertical(20),
+          _TicketPriorityInput(
+            widgetFN: mapFocusNode['focusPriority']!,
+          ),
+        ],
+      );
 }
 
 class _AssetReference extends StatelessWidget {
@@ -290,6 +292,76 @@ class _TicketPriorityInput extends StatelessWidget {
           labelText: 'Priority',
           focusNode: widgetFN,
           nextFocusNode: nextWidgetFN,
+        );
+      },
+    );
+  }
+}
+
+class _TicketSchemaInput extends StatelessWidget {
+  /// Create [_TicketSchemaInput] instance
+  const _TicketSchemaInput();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
+      buildWhen: (previous, current) =>
+          previous.selectedSchemaIndex != current.selectedSchemaIndex ||
+          previous.schemas != current.schemas,
+      builder: (context, state) {
+        return SizedBox(
+          height: 213,
+          child: Stack(
+            children: [
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      'Typology',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.theme?.inputDecorationTheme.labelStyle,
+                    ),
+                  ),
+                ],
+              ),
+              Opacity(
+                opacity: 1,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 22),
+                  child: ListView.builder(
+                    itemCount: state.schemas.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: (index == state.selectedSchemaIndex)
+                              ? context.theme?.primaryColor
+                              : Colors.transparent,
+                        ),
+                        child: ListTile(
+                          selected: index == state.selectedSchemaIndex,
+                          selectedColor: Colors.white,
+                          onTap: () => context
+                              .read<OpenTicketBloc>()
+                              .add(SelectedSchemaChanged(index)),
+                          title: Text(
+                            '${state.schemas[index].name}',
+                            style: (index == state.selectedSchemaIndex)
+                                ? const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            )
+                                : const TextStyle(
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

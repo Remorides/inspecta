@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/elements.dart';
@@ -28,7 +29,9 @@ class OpenTicketPage extends StatelessWidget {
       create: (context) => OpenTicketBloc(
         assetRepo: context.read<EntityRepo<Asset>>(),
         schemaRepo: context.read<EntityRepo<SchemaListItem>>(),
-      )..add(InitAssetReference(guid: _paramGUID)),
+      )
+        ..add(InitAssetReference(guid: _paramGUID))
+        ..add(InitSchemas()),
       child: const _OpenTicketView(),
     );
   }
