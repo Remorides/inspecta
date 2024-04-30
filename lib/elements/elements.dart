@@ -5,6 +5,7 @@ export 'buttons/buttons.dart';
 export 'date_time_pickers/date_time_pickers.dart';
 export 'dividers/divider.dart';
 export 'drawers/drawers.dart';
+export 'jfields/jfields.dart';
 export 'keyboard/keyboard.dart';
 export 'loaders/loaders.dart';
 export 'pages/pages.dart';

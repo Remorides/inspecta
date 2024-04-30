@@ -8,6 +8,7 @@ import 'package:omdk/pages/app/app.dart';
 import 'package:omdk/pages/app/app_bloc_observer.dart';
 import 'package:omdk_api/omdk_api.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
+import 'package:omdk_mapping/omdk_mapping.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_api_auth/opera_api_auth.dart';
@@ -39,12 +40,18 @@ Future<void> bootstrap({
     OperaApiSchemaListItem(omdkApi.apiClient.client),
   );
 
+  final mappingRepo = EntityRepo(
+    OmdkMapping(omdkApi.apiClient.client),
+    entityIsarSchema: (!kIsWeb) ? MappingVersionSchema : null,
+  );
+
   runApp(
     App(
       assetRepo: assetRepo,
       authRepo: authRepo,
       omdkLocalData: omdkLocalData,
       schemaListRepo: schemaListRepo,
+      mappingRepo: mappingRepo,
     ),
   );
 }

@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/elements.dart';
+import 'package:omdk/elements/keyboard/keyboard.dart';
+import 'package:omdk/elements/keyboard/virtual_keyboard/bloc/virtual_keyboard_bloc.dart';
+import 'package:omdk/elements/keyboard/virtual_keyboard/virtual_keyboard.dart';
+import 'package:omdk/elements/texts/simple_text_field/bloc/simple_text_bloc.dart';
 import 'package:omdk/pages/open_ticket/bloc/open_ticket_bloc.dart';
+import 'package:omdk_mapping/omdk_mapping.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
@@ -29,6 +34,7 @@ class OpenTicketPage extends StatelessWidget {
       create: (context) => OpenTicketBloc(
         assetRepo: context.read<EntityRepo<Asset>>(),
         schemaRepo: context.read<EntityRepo<SchemaListItem>>(),
+        mappingRepo: context.read<EntityRepo<MappingVersion>>(),
       )
         ..add(InitAssetReference(guid: _paramGUID))
         ..add(InitSchemas()),

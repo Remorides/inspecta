@@ -8,7 +8,6 @@ final class SimpleTextState extends Equatable {
     required this.isEmptyAllowed,
     this.status = SimpleTextStatus.initial,
     this.text,
-    this.initialText,
     this.errorText = '',
   });
 
@@ -17,9 +16,6 @@ final class SimpleTextState extends Equatable {
 
   /// Current text value
   final String? text;
-
-  /// Current text value
-  final String? initialText;
 
   /// String with reported error
   final String errorText;
@@ -42,7 +38,6 @@ final class SimpleTextState extends Equatable {
         isEmptyAllowed: isEmptyAllowed,
         status: status ?? this.status,
         text: text ?? this.text,
-        initialText: initialText ?? this.initialText,
         errorText: errorText ?? this.errorText,
       );
 
@@ -50,7 +45,6 @@ final class SimpleTextState extends Equatable {
   List<Object?> get props => [
         status,
         text,
-        initialText,
         errorText,
       ];
 }

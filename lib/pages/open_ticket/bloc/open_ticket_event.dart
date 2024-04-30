@@ -20,12 +20,15 @@ final class InitSchemas extends OpenTicketEvent {
 }
 
 final class SelectedSchemaChanged extends OpenTicketEvent {
-  SelectedSchemaChanged(this.schemaIndex);
+  SelectedSchemaChanged({
+    required this.schemaGuid, this.schemaIndex,
+  });
 
   final int? schemaIndex;
+  final String schemaGuid;
 
   @override
-  List<Object?> get props => [schemaIndex];
+  List<Object?> get props => [schemaIndex, schemaGuid];
 }
 
 final class TicketNameChanged extends OpenTicketEvent {

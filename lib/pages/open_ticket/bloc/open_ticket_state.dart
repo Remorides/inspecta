@@ -7,6 +7,7 @@ final class OpenTicketState extends Equatable {
     this.loadingStatus = LoadingStatus.initial,
     this.schemas = const [],
     this.selectedSchemaIndex,
+    this.schemaMapping,
     this.jMainNode,
     this.ticketName = '',
     this.ticketDescription = '',
@@ -17,6 +18,7 @@ final class OpenTicketState extends Equatable {
   final LoadingStatus loadingStatus;
   final JMainNode? jMainNode;
   final List<SchemaListItem> schemas;
+  final MappingVersion? schemaMapping;
   final int? selectedSchemaIndex;
   final String ticketName;
   final String ticketDescription;
@@ -27,6 +29,7 @@ final class OpenTicketState extends Equatable {
     LoadingStatus? loadingStatus,
     List<SchemaListItem>? schemas,
     int? selectedSchemaIndex,
+    MappingVersion? schemaMapping,
     JMainNode? jMainNode,
     String? ticketName,
     String? ticketDescription,
@@ -37,6 +40,7 @@ final class OpenTicketState extends Equatable {
       loadingStatus: loadingStatus ?? this.loadingStatus,
       schemas: schemas ?? this.schemas,
       selectedSchemaIndex: selectedSchemaIndex ?? this.selectedSchemaIndex,
+      schemaMapping: schemaMapping ?? this.schemaMapping,
       jMainNode: jMainNode ?? this.jMainNode,
       ticketName: ticketName ?? this.ticketName,
       ticketDescription: ticketDescription ?? this.ticketDescription,
@@ -50,6 +54,7 @@ final class OpenTicketState extends Equatable {
         loadingStatus,
         schemas,
         selectedSchemaIndex,
+        schemaMapping,
         jMainNode,
         ticketName,
         ticketDescription,

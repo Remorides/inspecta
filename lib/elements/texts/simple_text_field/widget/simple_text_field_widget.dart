@@ -156,9 +156,16 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SimpleTextBloc, SimpleTextState>(
-      listener: (context, state){
-        if(state.initialText != null){
-          _controller.text = state.initialText!;
+      listenWhen: (previous, current) =>
+          previous.text != current.text,
+      listener: (context, state) {
+        if(state.text != null){
+          _controller.value = TextEditingValue(
+            text: state.text!,
+            selection: TextSelection.fromPosition(
+              TextPosition(offset: state.text!.length),
+            ),
+          );
         }
       },
       child: BlocBuilder<SimpleTextBloc, SimpleTextState>(
@@ -219,11 +226,10 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                           textInputAction: widget.textInputAction,
                           obscureText: widget.isObscured && !_passwordVisible,
                           maxLines:
-                          widget.textInputAction == TextInputAction.newline
-                              ? null
-                              : widget.maxLines,
-                          onChanged: (text) => context
-                              .read<SimpleTextBloc>()
+                              widget.textInputAction == TextInputAction.newline
+                                  ? null
+                                  : widget.maxLines,
+                          onChanged: (text) => context.read<SimpleTextBloc>()
                               .add(TextChanged(text)),
                           onEditingComplete: () {
                             context.read<SimpleTextBloc>().add(ValidateData());
@@ -246,17 +252,17 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                             hintMaxLines: widget.maxLines,
                             suffixIcon: widget.isObscured
                                 ? IconButton(
-                              icon: Icon(
-                                _passwordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _passwordVisible = !_passwordVisible;
-                                });
-                              },
-                            )
+                                    icon: Icon(
+                                      _passwordVisible
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _passwordVisible = !_passwordVisible;
+                                      });
+                                    },
+                                  )
                                 : null,
                             suffixIconColor: Colors.grey,
                           ),

@@ -20,7 +20,7 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
           ),
         ) {
     on<TextChanged>(_onTextChanges);
-    on<InitialText>(_onInitialText);
+    //on<InitialText>(_onInitialText);
     on<ValidateData>(_onValidateData);
   }
 
@@ -31,18 +31,18 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
     emit(state.copyWith(text: event.text, errorText: ''));
   }
 
-  Future<void> _onInitialText(
-    InitialText event,
-    Emitter<SimpleTextState> emit,
-  ) async {
-    emit(
-      state.copyWith(
-        initialText: event.initialText,
-        text: event.initialText,
-        errorText: '',
-      ),
-    );
-  }
+  // Future<void> _onInitialText(
+  //   InitialText event,
+  //   Emitter<SimpleTextState> emit,
+  // ) async {
+  //   emit(
+  //     state.copyWith(
+  //       initialText: event.initialText,
+  //       text: event.initialText,
+  //       errorText: '',
+  //     ),
+  //   );
+  // }
 
   Future<void> _onValidateData(
     ValidateData event,

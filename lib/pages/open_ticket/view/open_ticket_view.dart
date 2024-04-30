@@ -36,6 +36,8 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
       withBottomBar: false,
       withDrawer: false,
       bodyPage: BlocListener<OpenTicketBloc, OpenTicketState>(
+        listenWhen: (previous, current) =>
+            previous.activeFieldBloc != current.activeFieldBloc,
         listener: (context, state) {
           if (state.activeFieldBloc != null) {
             activeBloc = state.activeFieldBloc!;
@@ -48,7 +50,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
               Expanded(
                 child: (ResponsiveWidget.isSmallScreen(context))
                     ? singleColumnLayout(context)
-                    : Center(child: twoColumnLayout(context)),
+                    : Center(child: twoColumnLayout(context, blocKeyboard)),
               ),
               CustomVirtualKeyboard(
                 bloc: blocKeyboard,
@@ -74,7 +76,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
     SimpleTextBloc bloc,
     VirtualKeyboardBloc keyboardBloc,
   ) {
-    var text = bloc.state.initialText ?? '';
+    var text = bloc.state.text ?? '';
     if (key.keyType == VirtualKeyboardKeyType.String) {
       text = text +
           (keyboardBloc.state.isShiftEnabled
@@ -96,46 +98,78 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
           break;
       }
     }
-    bloc.add(InitialText(text));
+    bloc.add(TextChanged(text));
   }
 
-  Widget twoColumnLayout(BuildContext context) => Row(
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width / 3,
+  Widget twoColumnLayout(
+    BuildContext context,
+    VirtualKeyboardBloc keyboardBloc,
+  ) {
+    return Row(
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width / 3,
+          child: ListView(
+            children: [
+              _AssetReference(
+                bloc: mapBlock['blocAssetReference']!,
+              ),
+              const Space.vertical(20),
+              _TicketNameInput(
+                keyboardBloc: blocKeyboard,
+                widgetFN: mapFocusNode['focusName']!,
+                widgetB: mapBlock['blocName']!,
+                nextWidgetFN: mapFocusNode['focusDesc'],
+              ),
+              const Space.vertical(20),
+              _TicketDescInput(
+                keyboardBloc: blocKeyboard,
+                widgetFN: mapFocusNode['focusDesc']!,
+                widgetB: mapBlock['blocDesc']!,
+                nextWidgetFN: mapFocusNode['focusPriority'],
+              ),
+              const Space.vertical(20),
+              _TicketPriorityInput(
+                widgetFN: mapFocusNode['focusPriority']!,
+              ),
+              const Space.vertical(20),
+              const _TicketSchemaInput(),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20),
             child: ListView(
               children: [
-                _AssetReference(
-                  bloc: mapBlock['blocAssetReference']!,
+                FieldBool(
+                  labelText: 'Test bool field',
+                  focusNode: FocusNode(),
+                  onChanged: (bool? b) {},
                 ),
                 const Space.vertical(20),
-                _TicketNameInput(
-                  keyboardBloc: blocKeyboard,
-                  widgetFN: mapFocusNode['focusName']!,
-                  widgetB: mapBlock['blocName']!,
-                  nextWidgetFN: mapFocusNode['focusDesc'],
+                FieldDouble(
+                  labelText: 'Test double field',
+                  keyboardBloc: keyboardBloc,
+                  pageBloc: context.read<OpenTicketBloc>(),
+                  focusNode: FocusNode(),
+                  onChanged: (double? d) {},
                 ),
                 const Space.vertical(20),
-                _TicketDescInput(
-                  keyboardBloc: blocKeyboard,
-                  widgetFN: mapFocusNode['focusDesc']!,
-                  widgetB: mapBlock['blocDesc']!,
-                  nextWidgetFN: mapFocusNode['focusPriority'],
+                FieldInt(
+                  labelText: 'Test int field',
+                  focusNode: FocusNode(),
+                  keyboardBloc: keyboardBloc,
+                  pageBloc: context.read<OpenTicketBloc>(),
+                  onChanged: (int? t) {},
                 ),
-                const Space.vertical(20),
-                _TicketPriorityInput(
-                  widgetFN: mapFocusNode['focusPriority']!,
-                ),
-                const Space.vertical(20),
-                const _TicketSchemaInput(),
               ],
             ),
           ),
-          Expanded(
-            child: ListView(),
-          ),
-        ],
-      );
+        ),
+      ],
+    );
+  }
 
   Widget singleColumnLayout(BuildContext context) => ListView(
         children: [
@@ -177,11 +211,11 @@ class _AssetReference extends StatelessWidget {
     return BlocListener<OpenTicketBloc, OpenTicketState>(
       listenWhen: (previous, current) {
         return current.loadingStatus == LoadingStatus.done &&
-            current.jMainNode != null;
+            previous.jMainNode != current.jMainNode;
       },
       listener: (context, state) {
         if (state.jMainNode?.name != null) {
-          bloc.add(InitialText(state.jMainNode!.name!));
+          bloc.add(TextChanged(state.jMainNode!.name!));
         }
       },
       child: SimpleTextField(
@@ -224,7 +258,9 @@ class _TicketNameInput extends StatelessWidget {
           nextFocusNode: nextWidgetFN,
           onTap: () {
             context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
-            keyboardBloc.add(ChangeVisibility(isVisibile: true));
+            keyboardBloc
+              ..add(ChangeType())
+              ..add(ChangeVisibility(isVisibile: true));
           },
         );
       },
@@ -260,7 +296,9 @@ class _TicketDescInput extends StatelessWidget {
           nextFocusNode: nextWidgetFN,
           onTap: () {
             context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
-            keyboardBloc.add(ChangeVisibility(isVisibile: true));
+            keyboardBloc
+              ..add(ChangeType())
+              ..add(ChangeVisibility(isVisibile: true));
           },
         );
       },
@@ -272,13 +310,9 @@ class _TicketPriorityInput extends StatelessWidget {
   /// Create [_TicketPriorityInput] instance
   const _TicketPriorityInput({
     required this.widgetFN,
-    this.cubit,
-    this.nextWidgetFN,
   });
 
-  final MrbCubit? cubit;
   final FocusNode widgetFN;
-  final FocusNode? nextWidgetFN;
 
   @override
   Widget build(BuildContext context) {
@@ -286,12 +320,10 @@ class _TicketPriorityInput extends StatelessWidget {
       builder: (context, state) {
         return MultiRadioButtons(
           key: const Key('ticketPriorityInput_textField'),
-          cubit: cubit,
           onSelectedPriority: (text) =>
               context.read<OpenTicketBloc>().add(TicketPriorityChanged(text)),
           labelText: 'Priority',
           focusNode: widgetFN,
-          nextFocusNode: nextWidgetFN,
         );
       },
     );
@@ -341,18 +373,22 @@ class _TicketSchemaInput extends StatelessWidget {
                         child: ListTile(
                           selected: index == state.selectedSchemaIndex,
                           selectedColor: Colors.white,
-                          onTap: () => context
-                              .read<OpenTicketBloc>()
-                              .add(SelectedSchemaChanged(index)),
+                          onTap: () => context.read<OpenTicketBloc>().add(
+                                SelectedSchemaChanged(
+                                  schemaIndex: index,
+                                  schemaGuid:
+                                      state.schemas[index].mapping.guid!,
+                                ),
+                              ),
                           title: Text(
                             '${state.schemas[index].name}',
                             style: (index == state.selectedSchemaIndex)
                                 ? const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            )
+                                    fontWeight: FontWeight.bold,
+                                  )
                                 : const TextStyle(
-                              fontWeight: FontWeight.normal,
-                            ),
+                                    fontWeight: FontWeight.normal,
+                                  ),
                           ),
                         ),
                       );

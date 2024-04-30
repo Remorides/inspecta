@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/elements.dart';
+import 'package:omdk_mapping/omdk_mapping.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_api_entity/opera_api_entity.dart';
@@ -16,6 +17,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   OpenTicketBloc({
     required this.assetRepo,
     required this.schemaRepo,
+    required this.mappingRepo,
   }) : super(const OpenTicketState()) {
     on<InitAssetReference>(_onInitAssetReference);
     on<InitSchemas>(_onInitSchemas);
@@ -26,9 +28,14 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     on<TicketEditing>(_onEditingMode);
   }
 
-  /// [OMDKRepo] instance
+  /// [EntityRepo] of [Asset] instance
   final EntityRepo<Asset> assetRepo;
+
+  /// [EntityRepo] of [SchemaListItem] instance
   final EntityRepo<SchemaListItem> schemaRepo;
+
+  /// [EntityRepo] of [MappingVersion] instance
+  final EntityRepo<MappingVersion> mappingRepo;
 
   Future<void> _onInitAssetReference(
     InitAssetReference event,
@@ -80,7 +87,18 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     SelectedSchemaChanged event,
     Emitter<OpenTicketState> emit,
   ) async {
-    emit(state.copyWith(selectedSchemaIndex: event.schemaIndex));
+    try {
+      final schemaMapping =
+          await mappingRepo.getAPIItem(guid: event.schemaGuid);
+      emit(
+        state.copyWith(
+          schemaMapping: schemaMapping,
+          selectedSchemaIndex: event.schemaIndex,
+        ),
+      );
+    } catch (_) {
+      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+    }
   }
 
   void _onEditingMode(
