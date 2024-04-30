@@ -1,0 +1,119 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:omdk/common/enums/enums.dart';
+import 'package:omdk/elements/jfields/pool_list/cubit/pool_list_cubit.dart';
+import 'package:omdk_repo/omdk_repo.dart';
+
+class FieldPoolList extends StatelessWidget {
+  /// Create [FieldPoolList] instance
+  const FieldPoolList({
+    required this.onChanged,
+    required this.listItem,
+    required this.labelText,
+    super.key,
+    this.cubit,
+    this.selectedItem,
+    this.isEnabled = true,
+    this.focusNode,
+  });
+
+  final List<String> listItem;
+  final String? selectedItem;
+  final String labelText;
+  final bool isEnabled;
+  final PoolListCubit? cubit;
+  final void Function(String?) onChanged;
+  final FocusNode? focusNode;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          cubit ??
+          PoolListCubit(
+            isEnabled: isEnabled,
+            listItem: listItem,
+            selectedItem: selectedItem,
+          ),
+      child: _FieldPoolList(
+        key: key,
+        focusNode: focusNode,
+        onChanged: onChanged,
+        labelText: labelText,
+      ),
+    );
+  }
+}
+
+class _FieldPoolList extends StatelessWidget {
+  const _FieldPoolList({
+    required this.onChanged,
+    required this.labelText,
+    super.key,
+    this.focusNode,
+  });
+
+  final void Function(String?) onChanged;
+  final FocusNode? focusNode;
+  final String labelText;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.select((PoolListCubit cubit) => cubit.state);
+    return SizedBox(
+      child: Stack(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  labelText.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.theme?.inputDecorationTheme.labelStyle,
+                ),
+              ),
+            ],
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 20),
+            child: Opacity(
+              opacity: !state.isEnabled ? 0.5 : 1,
+              child: AbsorbPointer(
+                absorbing: !state.isEnabled,
+                child: DropdownButtonFormField(
+                  decoration: InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    hintText: labelText,
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  items: state.listItem.map((map) {
+                    return DropdownMenuItem(
+                      value: map,
+                      child: Text(map),
+                    );
+                  }).toList(),
+                  onChanged: (value) {},
+                ),
+              ),
+            ),
+          ),
+          if (state.status == LoadingStatus.failure)
+            Positioned(
+              bottom: 5,
+              child: Text(
+                state.errorText,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.theme?.inputDecorationTheme.errorStyle,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

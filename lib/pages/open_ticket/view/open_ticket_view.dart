@@ -155,7 +155,6 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                   focusNode: FocusNode(),
                   onChanged: (double? d) {},
                 ),
-                const Space.vertical(20),
                 FieldInt(
                   labelText: 'Test int field',
                   focusNode: FocusNode(),
@@ -163,6 +162,17 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                   pageBloc: context.read<OpenTicketBloc>(),
                   onChanged: (int? t) {},
                 ),
+                FieldPoolList(
+                  onChanged: (String? s) {  },
+                  listItem: ['a', 'b', 'c', 'd', 'e',],
+                  labelText: 'Test pool list string field',
+                ),
+                FieldMultiPoolList(
+                  listItem: ['a', 'b', 'c', 'd', 'e',],
+                  labelText: 'Test multi pool list field',
+                  focusNode: FocusNode(),
+                  onSelected: (List<PoolItem?> selectedItems) {},
+                )
               ],
             ),
           ),
