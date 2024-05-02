@@ -10,6 +10,7 @@ import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
+import 'package:opera_repo/opera_repo.dart';
 import 'package:provider/provider.dart';
 
 /// Create base [App] to instance repo layer
@@ -21,14 +22,21 @@ class App extends StatefulWidget {
     required this.assetRepo,
     required this.schemaListRepo,
     required this.mappingRepo,
+    required this.schemaRepo,
+    required this.operaRepo,
     super.key,
   });
 
   /// [AuthRepo] instance
   final AuthRepo authRepo;
+  /// [OperaRepo] instance
+  final OperaRepo operaRepo;
 
   /// [EntityRepo] instance
   final EntityRepo<Asset> assetRepo;
+
+  /// [EntityRepo] instance
+  final EntityRepo<OSchema> schemaRepo;
 
   /// [EntityRepo] instance
   final EntityRepo<MappingVersion> mappingRepo;
@@ -59,8 +67,12 @@ class _AppState extends State<App> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<AuthRepo>(create: (context) => widget.authRepo),
+        RepositoryProvider<OperaRepo>(create: (context) => widget.operaRepo),
         RepositoryProvider<EntityRepo<Asset>>(
           create: (context) => widget.assetRepo,
+        ),
+        RepositoryProvider<EntityRepo<OSchema>>(
+          create: (context) => widget.schemaRepo,
         ),
         RepositoryProvider<EntityRepo<SchemaListItem>>(
           create: (context) => widget.schemaListRepo,

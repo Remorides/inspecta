@@ -140,41 +140,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: 20),
-            child: ListView(
-              children: [
-                FieldBool(
-                  labelText: 'Test bool field',
-                  focusNode: FocusNode(),
-                  onChanged: (bool? b) {},
-                ),
-                const Space.vertical(20),
-                FieldDouble(
-                  labelText: 'Test double field',
-                  keyboardBloc: keyboardBloc,
-                  pageBloc: context.read<OpenTicketBloc>(),
-                  focusNode: FocusNode(),
-                  onChanged: (double? d) {},
-                ),
-                FieldInt(
-                  labelText: 'Test int field',
-                  focusNode: FocusNode(),
-                  keyboardBloc: keyboardBloc,
-                  pageBloc: context.read<OpenTicketBloc>(),
-                  onChanged: (int? t) {},
-                ),
-                FieldPoolList(
-                  onChanged: (String? s) {  },
-                  listItem: ['a', 'b', 'c', 'd', 'e',],
-                  labelText: 'Test pool list string field',
-                ),
-                FieldMultiPoolList(
-                  listItem: ['a', 'b', 'c', 'd', 'e',],
-                  labelText: 'Test multi pool list field',
-                  focusNode: FocusNode(),
-                  onSelected: (List<PoolItem?> selectedItems) {},
-                )
-              ],
-            ),
+            child: _TicketStepList(keyboardBloc: blocKeyboard),
           ),
         ),
       ],
@@ -386,8 +352,9 @@ class _TicketSchemaInput extends StatelessWidget {
                           onTap: () => context.read<OpenTicketBloc>().add(
                                 SelectedSchemaChanged(
                                   schemaIndex: index,
-                                  schemaGuid:
+                                  schemaMappingGuid:
                                       state.schemas[index].mapping.guid!,
+                                  schemaGuid: state.schemas[index].guid,
                                 ),
                               ),
                           title: Text(
@@ -411,5 +378,147 @@ class _TicketSchemaInput extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _TicketStepList extends StatelessWidget {
+  /// Create [_TicketStepList] instance
+  const _TicketStepList({
+    this.keyboardBloc,
+  });
+
+  final VirtualKeyboardBloc? keyboardBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
+      buildWhen: (previous, current) =>
+          previous.ticketEntity != current.ticketEntity,
+      builder: (context, state) {
+        return (state.ticketEntity != null)
+            ? ListView.builder(
+                itemCount: state.ticketEntity?.stepsList.length,
+                itemBuilder: (context, index) {
+                  return ExpansionTile(
+                    iconColor: Colors.white,
+                    initiallyExpanded: index == 0,
+                    title: Text(
+                      state.ticketEntity!.stepsList[index].title![0].value!,
+                    ),
+                    children: buildFieldList(
+                      context: context,
+                      stepEntity: state.ticketEntity!.stepsList[index],
+                      schemaMapping: state.schemaMapping!,
+                      keyboardBloc: keyboardBloc,
+                    )..separateWith(const Space.vertical(20)),
+                  );
+                },
+              )
+            : const Center(
+                child: Text('Choose a type to generate step list'),
+              );
+      },
+    );
+  }
+
+  List<Widget> buildFieldList({
+    required BuildContext context,
+    required JStepEntity stepEntity,
+    required MappingVersion schemaMapping,
+    VirtualKeyboardBloc? keyboardBloc,
+  }) {
+    // Widget list to show
+    final fieldWidgets = <Widget>[];
+
+    final stepMapping = schemaMapping.data.defStepsList?.firstWhere(
+      (stepMapping) => stepMapping.hash == stepEntity.stepMappingHash,
+    );
+
+    for (final jFieldMapping in stepMapping!.fieldsList!) {
+      final jFieldEntity = stepEntity.fieldsList?.firstWhereOrNull(
+        (JFieldEntity jFieldEntity) =>
+            jFieldEntity.mappingHash == jFieldMapping.hash,
+      );
+      fieldWidgets.add(
+        buildField(
+          context: context,
+          jFieldMapping: jFieldMapping,
+          jFieldEntity: jFieldEntity,
+          stepGuid: stepEntity.guid!,
+          keyboardBloc: keyboardBloc,
+        ),
+      );
+    }
+    return fieldWidgets;
+  }
+
+  Widget buildField({
+    required BuildContext context,
+    required JFieldMapping jFieldMapping,
+    required String stepGuid,
+    JFieldEntity? jFieldEntity,
+    VirtualKeyboardBloc? keyboardBloc,
+  }) {
+    switch (jFieldMapping.type) {
+      case FieldType.String:
+        switch (jFieldMapping.collectionType) {
+          case CollectionType.List:
+            return FieldPoolList(
+              labelText: '${jFieldMapping.title?[0].value}',
+              listItem: jFieldMapping.poolListSettings!.value!,
+              onChanged: (String? s) {},
+            );
+          case CollectionType.Single:
+            if (jFieldMapping.poolListSettings?.multiSelect ?? false) {
+              return FieldMultiPoolList(
+                labelText: '${jFieldMapping.title?[0].value}',
+                listItem: jFieldMapping.poolListSettings!.value!,
+                focusNode: FocusNode(),
+                onSelected: (List<PoolItem?> selectedItems) {},
+              );
+            } else {
+              return FieldString(
+                labelText: '${jFieldMapping.title?[0].value}',
+                keyboardBloc: keyboardBloc,
+                pageBloc: context.read<OpenTicketBloc>(),
+                focusNode: FocusNode(),
+                onChanged: (String? s) {},
+              );
+            }
+          case CollectionType.unknown:
+            return Container();
+        }
+      case FieldType.Image:
+        return Container();
+      case FieldType.Double:
+        return FieldDouble(
+          labelText: '${jFieldMapping.title?[0].value}',
+          keyboardBloc: keyboardBloc,
+          pageBloc: context.read<OpenTicketBloc>(),
+          focusNode: FocusNode(),
+          onChanged: (double? d) {},
+        );
+      case FieldType.Int32:
+        return FieldInt(
+          labelText: '${jFieldMapping.title?[0].value}',
+          focusNode: FocusNode(),
+          keyboardBloc: keyboardBloc,
+          pageBloc: context.read<OpenTicketBloc>(),
+          onChanged: (int? t) {},
+        );
+      case FieldType.Datetime:
+        return Container();
+      case FieldType.Bool:
+        return FieldBool(
+          labelText: '${jFieldMapping.title?[0].value}',
+          focusNode: FocusNode(),
+          onChanged: (bool? b) {},
+        );
+      case FieldType.File:
+      case FieldType.StepResult:
+      case FieldType.InternalStep:
+      case FieldType.unknown:
+        return Container();
+    }
   }
 }

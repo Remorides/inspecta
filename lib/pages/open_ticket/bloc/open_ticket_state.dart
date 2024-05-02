@@ -8,44 +8,59 @@ final class OpenTicketState extends Equatable {
     this.schemas = const [],
     this.selectedSchemaIndex,
     this.schemaMapping,
+    this.ticketSchema,
     this.jMainNode,
     this.ticketName = '',
     this.ticketDescription = '',
     this.ticketPriority = '',
     this.activeFieldBloc,
+    this.ticketEntity,
+    this.stepListWidget,
   });
 
   final LoadingStatus loadingStatus;
   final JMainNode? jMainNode;
   final List<SchemaListItem> schemas;
+
   final MappingVersion? schemaMapping;
+  final OSchema? ticketSchema;
+
   final int? selectedSchemaIndex;
   final String ticketName;
   final String ticketDescription;
   final String ticketPriority;
   final SimpleTextBloc? activeFieldBloc;
+  final OperaEntity? ticketEntity;
+
+  final Widget? stepListWidget;
 
   OpenTicketState copyWith({
     LoadingStatus? loadingStatus,
     List<SchemaListItem>? schemas,
     int? selectedSchemaIndex,
     MappingVersion? schemaMapping,
+    OSchema? ticketSchema,
     JMainNode? jMainNode,
     String? ticketName,
     String? ticketDescription,
     String? ticketPriority,
     SimpleTextBloc? activeFieldBloc,
+    OperaEntity? ticketEntity,
+    Widget? stepListWidget,
   }) {
     return OpenTicketState(
       loadingStatus: loadingStatus ?? this.loadingStatus,
       schemas: schemas ?? this.schemas,
       selectedSchemaIndex: selectedSchemaIndex ?? this.selectedSchemaIndex,
       schemaMapping: schemaMapping ?? this.schemaMapping,
+      ticketSchema: ticketSchema ?? this.ticketSchema,
       jMainNode: jMainNode ?? this.jMainNode,
       ticketName: ticketName ?? this.ticketName,
       ticketDescription: ticketDescription ?? this.ticketDescription,
       ticketPriority: ticketPriority ?? this.ticketPriority,
       activeFieldBloc: activeFieldBloc ?? this.activeFieldBloc,
+      ticketEntity: ticketEntity ?? this.ticketEntity,
+      stepListWidget: stepListWidget ?? this.stepListWidget,
     );
   }
 
@@ -55,10 +70,13 @@ final class OpenTicketState extends Equatable {
         schemas,
         selectedSchemaIndex,
         schemaMapping,
+        ticketSchema,
         jMainNode,
         ticketName,
         ticketDescription,
         ticketPriority,
         activeFieldBloc,
+        ticketEntity,
+        stepListWidget,
       ];
 }
