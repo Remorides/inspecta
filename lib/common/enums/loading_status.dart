@@ -4,6 +4,8 @@ enum LoadingStatus {
   initial,
   /// loading data in progress
   inProgress,
+  /// loading updated successfully
+  updated,
   /// loading finished successfully
   done,
   /// there was a problem

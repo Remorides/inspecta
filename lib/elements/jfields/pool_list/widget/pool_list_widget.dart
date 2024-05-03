@@ -60,59 +60,67 @@ class _FieldPoolList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.select((PoolListCubit cubit) => cubit.state);
-    return SizedBox(
-      child: Stack(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: SizedBox(
+        child: Stack(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    labelText.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.theme?.inputDecorationTheme.labelStyle,
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 20),
+              child: Opacity(
+                opacity: !state.isEnabled ? 0.5 : 1,
+                child: AbsorbPointer(
+                  absorbing: !state.isEnabled,
+                  child: DropdownButtonFormField(
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      hintText: labelText,
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    items: state.listItem.map((map) {
+                      return DropdownMenuItem(
+                        value: map,
+                        child: Text(map),
+                      );
+                    }).toList(),
+                    value: state.selectedItem,
+                    isExpanded: true,
+                    onChanged: (String? s) {
+                      context.read<PoolListCubit>().changeSelected(s);
+                      onChanged(s);
+                    },
+                  ),
+                ),
+              ),
+            ),
+            if (state.status == LoadingStatus.failure)
+              Positioned(
+                bottom: 5,
                 child: Text(
-                  labelText.toUpperCase(),
+                  state.errorText,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.theme?.inputDecorationTheme.labelStyle,
+                  style: context.theme?.inputDecorationTheme.errorStyle,
                 ),
               ),
-            ],
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 20),
-            child: Opacity(
-              opacity: !state.isEnabled ? 0.5 : 1,
-              child: AbsorbPointer(
-                absorbing: !state.isEnabled,
-                child: DropdownButtonFormField(
-                  decoration: InputDecoration(
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.transparent),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    hintText: labelText,
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  items: state.listItem.map((map) {
-                    return DropdownMenuItem(
-                      value: map,
-                      child: Text(map),
-                    );
-                  }).toList(),
-                  onChanged: (value) {},
-                ),
-              ),
-            ),
-          ),
-          if (state.status == LoadingStatus.failure)
-            Positioned(
-              bottom: 5,
-              child: Text(
-                state.errorText,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.theme?.inputDecorationTheme.errorStyle,
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

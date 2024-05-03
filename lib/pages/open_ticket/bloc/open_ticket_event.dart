@@ -75,3 +75,25 @@ final class TicketPriorityChanged extends OpenTicketEvent {
   @override
   List<Object?> get props => [priority];
 }
+
+final class FieldChanged extends OpenTicketEvent {
+  FieldChanged({
+    required this.stepGuid,
+    required this.fieldGuid,
+    required this.fieldMapping,
+    required this.fieldValue,
+  });
+
+  final String stepGuid;
+  final String fieldGuid;
+  final JFieldMapping fieldMapping;
+  final dynamic fieldValue;
+
+  @override
+  List<Object?> get props => [
+        stepGuid,
+        fieldGuid,
+        fieldMapping,
+        fieldValue,
+      ];
+}

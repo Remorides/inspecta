@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/elements.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
@@ -13,7 +12,7 @@ import 'package:opera_repo/opera_repo.dart';
 part 'open_ticket_event.dart';
 part 'open_ticket_state.dart';
 
-
+///Page bloc
 class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   /// Create [OpenTicketBloc] instance
   OpenTicketBloc({
@@ -30,6 +29,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     on<TicketDescChanged>(_onTicketDescChanged);
     on<TicketPriorityChanged>(_onTicketPriorityChanged);
     on<TicketEditing>(_onEditingMode);
+    on<FieldChanged>(_onFieldChanged);
   }
 
   /// [EntityRepo] of [Asset] instance
@@ -107,6 +107,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       );
       emit(
         state.copyWith(
+          loadingStatus: LoadingStatus.done,
           schemaMapping: schemaMapping,
           selectedSchemaIndex: event.schemaIndex,
           ticketSchema: schema,
@@ -144,5 +145,75 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     Emitter<OpenTicketState> emit,
   ) {
     emit(state.copyWith(ticketPriority: event.priority));
+  }
+
+  void _onFieldChanged(
+    FieldChanged event,
+    Emitter<OpenTicketState> emit,
+  ) {
+    emit(state.copyWith(loadingStatus: LoadingStatus.inProgress));
+    try {
+      final indexStep = state.ticketEntity?.stepsList
+          .indexWhere((jStepEntity) => jStepEntity.guid == event.stepGuid);
+      final indexField = state.ticketEntity?.stepsList[indexStep!].fieldsList
+          ?.indexWhere((jFieldEntity) => jFieldEntity.guid == event.fieldGuid);
+
+      switch (event.fieldMapping.type) {
+        case FieldType.String:
+          state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
+              state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
+                  .copyWith(
+            value: JFieldValue(
+              stringValue: (event.fieldValue is String?)
+                  ? event.fieldValue as String?
+                  : null,
+              stringsList: (event.fieldValue is List)
+                  ? event.fieldValue as List<String>?
+                  : null,
+            ),
+          );
+        case FieldType.Double:
+          state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
+              state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
+                  .copyWith(
+            value: JFieldValue(
+              floatValue: event.fieldValue as double?,
+            ),
+          );
+        case FieldType.Int32:
+          state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
+              state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
+                  .copyWith(
+            value: JFieldValue(
+              intValue: event.fieldValue as int?,
+            ),
+          );
+        case FieldType.Datetime:
+          state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
+              state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
+                  .copyWith(
+            value: JFieldValue(
+              dateTimeValue: event.fieldValue as DateTime?,
+            ),
+          );
+        case FieldType.Bool:
+          state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
+              state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
+                  .copyWith(
+            value: JFieldValue(
+              boolValue: event.fieldValue as bool?,
+            ),
+          );
+        case FieldType.unknown:
+        case FieldType.Image:
+        case FieldType.InternalStep:
+        case FieldType.StepResult:
+        case FieldType.File:
+          break;
+      }
+      emit(state.copyWith(loadingStatus: LoadingStatus.updated));
+    } catch (_) {
+      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+    }
   }
 }

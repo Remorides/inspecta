@@ -19,9 +19,12 @@ class PoolListCubit extends Cubit<PoolListState> {
           ),
         );
 
-  /// Set current tab on home page
+  /// Enable widget
   void enable() => emit(state.copyWith(isEnabled: true));
 
-  /// Set current tab on home page
+  /// Disable widget
   void disable() => emit(state.copyWith(isEnabled: false));
+
+  /// Change selected item
+  void changeSelected(String? s) => emit(state.copyWith(selectedItem: s));
 }

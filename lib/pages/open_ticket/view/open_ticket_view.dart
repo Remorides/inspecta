@@ -29,6 +29,14 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
   };
 
   @override
+  void dispose() {
+    super.dispose();
+    mapFocusNode.forEach((key, value) {
+      value.dispose();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     late SimpleTextBloc activeBloc;
     return OMDKAnimatedPage(
@@ -393,14 +401,13 @@ class _TicketStepList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<OpenTicketBloc, OpenTicketState>(
       buildWhen: (previous, current) =>
-          previous.ticketEntity != current.ticketEntity,
+          previous.loadingStatus != current.loadingStatus,
       builder: (context, state) {
         return (state.ticketEntity != null)
             ? ListView.builder(
                 itemCount: state.ticketEntity?.stepsList.length,
                 itemBuilder: (context, index) {
                   return ExpansionTile(
-                    iconColor: Colors.white,
                     initiallyExpanded: index == 0,
                     title: Text(
                       state.ticketEntity!.stepsList[index].title![0].value!,
@@ -410,7 +417,7 @@ class _TicketStepList extends StatelessWidget {
                       stepEntity: state.ticketEntity!.stepsList[index],
                       schemaMapping: state.schemaMapping!,
                       keyboardBloc: keyboardBloc,
-                    )..separateWith(const Space.vertical(20)),
+                    ),
                   );
                 },
               )
@@ -469,7 +476,21 @@ class _TicketStepList extends StatelessWidget {
               onChanged: (String? s) {},
             );
           case CollectionType.Single:
-            if (jFieldMapping.poolListSettings?.multiSelect ?? false) {
+            if (jFieldMapping.poolListSettings?.value != null) {
+              return FieldPoolList(
+                selectedItem: jFieldEntity?.value?.stringsList?.first,
+                labelText: '${jFieldMapping.title?[0].value}',
+                listItem: jFieldMapping.poolListSettings!.value!,
+                onChanged: (String? s) => context.read<OpenTicketBloc>().add(
+                      FieldChanged(
+                        stepGuid: stepGuid,
+                        fieldMapping: jFieldMapping,
+                        fieldGuid: jFieldEntity!.guid!,
+                        fieldValue: <String>[s!],
+                      ),
+                    ),
+              );
+            } else if (jFieldMapping.poolListSettings?.multiSelect ?? false) {
               return FieldMultiPoolList(
                 labelText: '${jFieldMapping.title?[0].value}',
                 listItem: jFieldMapping.poolListSettings!.value!,
@@ -482,7 +503,14 @@ class _TicketStepList extends StatelessWidget {
                 keyboardBloc: keyboardBloc,
                 pageBloc: context.read<OpenTicketBloc>(),
                 focusNode: FocusNode(),
-                onChanged: (String? s) {},
+                onChanged: (String? s) => context.read<OpenTicketBloc>().add(
+                      FieldChanged(
+                        stepGuid: stepGuid,
+                        fieldMapping: jFieldMapping,
+                        fieldGuid: jFieldEntity!.guid!,
+                        fieldValue: s,
+                      ),
+                    ),
               );
             }
           case CollectionType.unknown:
@@ -496,7 +524,14 @@ class _TicketStepList extends StatelessWidget {
           keyboardBloc: keyboardBloc,
           pageBloc: context.read<OpenTicketBloc>(),
           focusNode: FocusNode(),
-          onChanged: (double? d) {},
+          onChanged: (double? d) => context.read<OpenTicketBloc>().add(
+                FieldChanged(
+                  stepGuid: stepGuid,
+                  fieldMapping: jFieldMapping,
+                  fieldGuid: jFieldEntity!.guid!,
+                  fieldValue: d,
+                ),
+              ),
         );
       case FieldType.Int32:
         return FieldInt(
@@ -504,7 +539,14 @@ class _TicketStepList extends StatelessWidget {
           focusNode: FocusNode(),
           keyboardBloc: keyboardBloc,
           pageBloc: context.read<OpenTicketBloc>(),
-          onChanged: (int? t) {},
+          onChanged: (int? i) => context.read<OpenTicketBloc>().add(
+                FieldChanged(
+                  stepGuid: stepGuid,
+                  fieldMapping: jFieldMapping,
+                  fieldGuid: jFieldEntity!.guid!,
+                  fieldValue: i,
+                ),
+              ),
         );
       case FieldType.Datetime:
         return Container();
@@ -512,7 +554,14 @@ class _TicketStepList extends StatelessWidget {
         return FieldBool(
           labelText: '${jFieldMapping.title?[0].value}',
           focusNode: FocusNode(),
-          onChanged: (bool? b) {},
+          onChanged: (bool? b) => context.read<OpenTicketBloc>().add(
+                FieldChanged(
+                  stepGuid: stepGuid,
+                  fieldMapping: jFieldMapping,
+                  fieldGuid: jFieldEntity!.guid!,
+                  fieldValue: b,
+                ),
+              ),
         );
       case FieldType.File:
       case FieldType.StepResult:
