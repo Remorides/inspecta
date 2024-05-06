@@ -24,6 +24,7 @@ class App extends StatefulWidget {
     required this.mappingRepo,
     required this.schemaRepo,
     required this.operaRepo,
+    required this.scheduledRepo,
     super.key,
   });
 
@@ -43,6 +44,9 @@ class App extends StatefulWidget {
 
   /// [EntityRepo] instance
   final EntityRepo<SchemaListItem> schemaListRepo;
+
+  /// [EntityRepo] instance
+  final EntityRepo<ScheduledActivity> scheduledRepo;
 
   /// [OMDKLocalData] instance
   final OMDKLocalData omdkLocalData;
@@ -79,6 +83,9 @@ class _AppState extends State<App> {
         ),
         RepositoryProvider<EntityRepo<MappingVersion>>(
           create: (context) => widget.mappingRepo,
+        ),
+        RepositoryProvider<EntityRepo<ScheduledActivity>>(
+          create: (context) => widget.scheduledRepo,
         ),
       ],
       child: MultiProvider(

@@ -194,8 +194,7 @@ class _AssetReference extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<OpenTicketBloc, OpenTicketState>(
       listenWhen: (previous, current) {
-        return current.loadingStatus == LoadingStatus.done &&
-            previous.jMainNode != current.jMainNode;
+        return previous.jMainNode != current.jMainNode;
       },
       listener: (context, state) {
         if (state.jMainNode?.name != null) {
@@ -304,8 +303,9 @@ class _TicketPriorityInput extends StatelessWidget {
       builder: (context, state) {
         return MultiRadioButtons(
           key: const Key('ticketPriorityInput_textField'),
-          onSelectedPriority: (text) =>
-              context.read<OpenTicketBloc>().add(TicketPriorityChanged(text)),
+          onSelectedPriority: (priorityCode) => context
+              .read<OpenTicketBloc>()
+              .add(TicketPriorityChanged(priorityCode)),
           labelText: 'Priority',
           focusNode: widgetFN,
         );
@@ -405,8 +405,11 @@ class _TicketStepList extends StatelessWidget {
       builder: (context, state) {
         return (state.ticketEntity != null)
             ? ListView.builder(
-                itemCount: state.ticketEntity?.stepsList.length,
+                itemCount: state.ticketEntity!.stepsList.length + 1,
                 itemBuilder: (context, index) {
+                  if (index >= state.ticketEntity!.stepsList.length) {
+                    return submitTicket(context: context);
+                  }
                   return ExpansionTile(
                     initiallyExpanded: index == 0,
                     title: Text(
@@ -473,7 +476,14 @@ class _TicketStepList extends StatelessWidget {
             return FieldPoolList(
               labelText: '${jFieldMapping.title?[0].value}',
               listItem: jFieldMapping.poolListSettings!.value!,
-              onChanged: (String? s) {},
+              onChanged: (String? s) => context.read<OpenTicketBloc>().add(
+                    FieldChanged(
+                      stepGuid: stepGuid,
+                      fieldMapping: jFieldMapping,
+                      fieldGuid: jFieldEntity!.guid!,
+                      fieldValue: <String>[s!],
+                    ),
+                  ),
             );
           case CollectionType.Single:
             if (jFieldMapping.poolListSettings?.value != null) {
@@ -500,6 +510,7 @@ class _TicketStepList extends StatelessWidget {
             } else {
               return FieldString(
                 labelText: '${jFieldMapping.title?[0].value}',
+                initialText: jFieldEntity?.value?.stringValue,
                 keyboardBloc: keyboardBloc,
                 pageBloc: context.read<OpenTicketBloc>(),
                 focusNode: FocusNode(),
@@ -570,4 +581,22 @@ class _TicketStepList extends StatelessWidget {
         return Container();
     }
   }
+
+  Widget submitTicket({
+    required BuildContext context,
+  }) =>
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: OMDKElevatedButton(
+              focusNode: FocusNode(),
+              onPressed: () =>
+                  context.read<OpenTicketBloc>().add(SubmitTicket()),
+              child: const Text('Submit'),
+            ),
+          ),
+        ],
+      );
 }

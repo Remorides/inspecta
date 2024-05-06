@@ -12,7 +12,7 @@ final class OpenTicketState extends Equatable {
     this.jMainNode,
     this.ticketName = '',
     this.ticketDescription = '',
-    this.ticketPriority = '',
+    this.ticketPriority = 1,
     this.activeFieldBloc,
     this.ticketEntity,
     this.stepListWidget,
@@ -28,9 +28,9 @@ final class OpenTicketState extends Equatable {
   final int? selectedSchemaIndex;
   final String ticketName;
   final String ticketDescription;
-  final String ticketPriority;
+  final int? ticketPriority;
   final SimpleTextBloc? activeFieldBloc;
-  final OperaEntity? ticketEntity;
+  final ScheduledActivity? ticketEntity;
 
   final Widget? stepListWidget;
 
@@ -43,9 +43,9 @@ final class OpenTicketState extends Equatable {
     JMainNode? jMainNode,
     String? ticketName,
     String? ticketDescription,
-    String? ticketPriority,
+    int? ticketPriority,
     SimpleTextBloc? activeFieldBloc,
-    OperaEntity? ticketEntity,
+    ScheduledActivity? ticketEntity,
     Widget? stepListWidget,
   }) {
     return OpenTicketState(

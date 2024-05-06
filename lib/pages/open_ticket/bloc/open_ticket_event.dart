@@ -1,7 +1,10 @@
 part of 'open_ticket_bloc.dart';
 
 @immutable
-sealed class OpenTicketEvent extends Equatable {}
+sealed class OpenTicketEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
 final class InitAssetReference extends OpenTicketEvent {
   InitAssetReference({required this.guid});
@@ -12,12 +15,9 @@ final class InitAssetReference extends OpenTicketEvent {
   List<Object?> get props => [guid];
 }
 
-final class InitSchemas extends OpenTicketEvent {
-  InitSchemas();
+final class InitSchemas extends OpenTicketEvent {}
 
-  @override
-  List<Object?> get props => [];
-}
+final class SubmitTicket extends OpenTicketEvent {}
 
 final class SelectedSchemaChanged extends OpenTicketEvent {
   SelectedSchemaChanged({
@@ -70,7 +70,7 @@ final class TicketDescChanged extends OpenTicketEvent {
 final class TicketPriorityChanged extends OpenTicketEvent {
   TicketPriorityChanged(this.priority);
 
-  final String? priority;
+  final int? priority;
 
   @override
   List<Object?> get props => [priority];

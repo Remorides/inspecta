@@ -160,6 +160,7 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
           previous.text != current.text,
       listener: (context, state) {
         if(state.text != null){
+          widget.onEditingComplete(state.text);
           _controller.value = TextEditingValue(
             text: state.text!,
             selection: TextSelection.fromPosition(
@@ -170,9 +171,9 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
       },
       child: BlocBuilder<SimpleTextBloc, SimpleTextState>(
         builder: (context, state) {
-          if (state.status == SimpleTextStatus.success) {
-            widget.onEditingComplete(state.text);
-          }
+          // if (state.status == SimpleTextStatus.success) {
+          //   widget.onEditingComplete(state.text);
+          // }
           return SizedBox(
             height: (100 + ((widget.maxLines - 1) * 16)).toDouble(),
             child: Stack(

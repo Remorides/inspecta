@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +23,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     required this.assetRepo,
     required this.schemaListRepo,
     required this.mappingRepo,
+    required this.scheduledRepo,
   }) : super(const OpenTicketState()) {
     on<InitAssetReference>(_onInitAssetReference);
     on<InitSchemas>(_onInitSchemas);
@@ -30,6 +33,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     on<TicketPriorityChanged>(_onTicketPriorityChanged);
     on<TicketEditing>(_onEditingMode);
     on<FieldChanged>(_onFieldChanged);
+    on<SubmitTicket>(_onSubmitTicket);
   }
 
   /// [EntityRepo] of [Asset] instance
@@ -43,6 +47,9 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
 
   /// [EntityRepo] of [OSchema] instance
   final EntityRepo<OSchema> schemaRepo;
+
+  /// [EntityRepo] of [ScheduledActivity] instance
+  final EntityRepo<ScheduledActivity> scheduledRepo;
 
   /// [EntityRepo] of [MappingVersion] instance
   final EntityRepo<MappingVersion> mappingRepo;
@@ -59,7 +66,6 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       final result = await assetRepo.getAPIItem(guid: event.guid!);
       emit(
         state.copyWith(
-          loadingStatus: LoadingStatus.done,
           jMainNode: JMainNode(
             id: result.entity?.id,
             guid: result.entity?.guid,
@@ -115,6 +121,33 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         ),
       );
     } catch (_) {
+      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+    }
+  }
+
+  Future<void> _onSubmitTicket(
+      SubmitTicket event,
+      Emitter<OpenTicketState> emit,
+      ) async {
+    final scheduledActivity = state.ticketEntity?.copyWith(
+      entity: state.ticketEntity?.entity?.copyWith(
+        name: state.ticketName,
+      ),
+      scheduled: state.ticketEntity?.scheduled?.copyWith(
+        name: state.ticketName,
+        description: state.ticketDescription,
+      ),
+      template: state.ticketEntity?.template?.copyWith(
+        name: state.ticketName,
+        description: state.ticketDescription,
+        urgencyCode: state.ticketPriority,
+      ),
+      mainNode: state.jMainNode,
+    );
+    try {
+      await scheduledRepo.postAPIItem(scheduledActivity!);
+      emit(state.copyWith(loadingStatus: LoadingStatus.done));
+    } on Exception {
       emit(state.copyWith(loadingStatus: LoadingStatus.failure));
     }
   }

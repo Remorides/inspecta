@@ -37,10 +37,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: "0763b45fa9294197a2885c8567927e2830ade852e5c896fd4ab7e0e348d0f373"
+      sha256: ecf4273855368121b1caed0d10d4513c7241dfc813f7d3c8933b36622ae9b265
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.0"
+    version: "3.5.1"
   args:
     dependency: transitive
     description:
@@ -937,7 +937,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: d11b809c05dd14099668f3c54ec521d9e0229829
+      resolved-ref: "63692c96497c014a95fda785f2d4ef1ddd04807c"
       url: "https://github.com/Remorides/opera-api-asset.git"
     source: git
     version: "0.1.0+1"
@@ -955,7 +955,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: ebf09a90b1229cc50e36b86cf41931461627eec7
+      resolved-ref: "6409174459653a3cf10298027df3e0d1890a74f1"
       url: "https://github.com/Remorides/opera-api-entity.git"
     source: git
     version: "0.1.0+1"
@@ -964,7 +964,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: ae27c61b2e730656aaf0768a17460a55856e0e16
+      resolved-ref: "6ac9a32d85665d23abb512a7c673aa7a4d2fb9b9"
       url: "https://github.com/Remorides/opera-repo.git"
     source: git
     version: "0.1.0+1"

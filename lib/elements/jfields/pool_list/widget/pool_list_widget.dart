@@ -84,6 +84,7 @@ class _FieldPoolList extends StatelessWidget {
                 child: AbsorbPointer(
                   absorbing: !state.isEnabled,
                   child: DropdownButtonFormField(
+                    focusNode: focusNode,
                     decoration: InputDecoration(
                       focusedBorder: UnderlineInputBorder(
                         borderSide: const BorderSide(color: Colors.transparent),

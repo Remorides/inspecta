@@ -20,7 +20,7 @@ class MultiRadioButtons extends StatelessWidget {
   final FocusNode? nextFocusNode;
   final bool isEnabled;
   final MrbCubit? cubit;
-  final void Function(String?)? onSelectedPriority;
+  final void Function(int?)? onSelectedPriority;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _MultiRadioButtons extends StatelessWidget {
   });
 
   final String labelText;
-  final void Function(String?)? onSelectedPriority;
+  final void Function(int?)? onSelectedPriority;
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
 
@@ -118,7 +118,7 @@ class _MultiRadioButtons extends StatelessWidget {
           groupValue: state.selectedRadio,
           onChanged: (value) {
             context.read<MrbCubit>().switchRadio(value!);
-            onSelectedPriority?.call(value);
+            onSelectedPriority?.call(3);
           },
         ),
       );
@@ -141,7 +141,7 @@ class _MultiRadioButtons extends StatelessWidget {
           groupValue: state.selectedRadio,
           onChanged: (value) {
             context.read<MrbCubit>().switchRadio(value!);
-            onSelectedPriority?.call(value);
+            onSelectedPriority?.call(2);
           },
         ),
       );
@@ -164,7 +164,7 @@ class _MultiRadioButtons extends StatelessWidget {
           groupValue: state.selectedRadio,
           onChanged: (value) {
             context.read<MrbCubit>().switchRadio(value!);
-            onSelectedPriority?.call(value);
+            onSelectedPriority?.call(1);
           },
         ),
       );

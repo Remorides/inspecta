@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/common/extensions/extensions.dart';
 import 'package:omdk/elements/elements.dart';
 import 'package:omdk/pages/open_ticket/bloc/open_ticket_bloc.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
@@ -33,6 +32,7 @@ class OpenTicketPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => OpenTicketBloc(
         assetRepo: context.read<EntityRepo<Asset>>(),
+        scheduledRepo: context.read<EntityRepo<ScheduledActivity>>(),
         schemaListRepo: context.read<EntityRepo<SchemaListItem>>(),
         mappingRepo: context.read<EntityRepo<MappingVersion>>(),
         operaRepo: context.read<OperaRepo>(),

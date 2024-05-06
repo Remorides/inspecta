@@ -53,6 +53,11 @@ Future<void> bootstrap({
     entityIsarSchema: (!kIsWeb) ? MappingVersionSchema : null,
   );
 
+  final scheduledRepo = EntityRepo(
+    OperaApiScheduled(omdkApi.apiClient.client),
+    entityIsarSchema: (!kIsWeb) ? ScheduledActivitySchema : null,
+  );
+
   runApp(
     App(
       operaRepo: operaRepo,
@@ -62,6 +67,7 @@ Future<void> bootstrap({
       omdkLocalData: omdkLocalData,
       schemaListRepo: schemaListRepo,
       mappingRepo: mappingRepo,
+      scheduledRepo: scheduledRepo,
     ),
   );
 }

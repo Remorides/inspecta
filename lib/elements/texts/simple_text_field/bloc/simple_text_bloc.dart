@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/texts/simple_text_field/simple_text_field.dart ';
 
 part 'simple_text_event.dart';
@@ -28,7 +29,13 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
     TextChanged event,
     Emitter<SimpleTextState> emit,
   ) async {
-    emit(state.copyWith(text: event.text, errorText: ''));
+    emit(
+      state.copyWith(
+        status: SimpleTextStatus.initial,
+        text: event.text,
+        errorText: '',
+      ),
+    );
   }
 
   // Future<void> _onInitialText(

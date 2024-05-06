@@ -10,6 +10,7 @@ class FieldString extends StatefulWidget {
     required this.focusNode,
     required this.onChanged,
     super.key,
+    this.initialText,
     this.bloc,
     this.nextFocusNode,
     this.fieldValue,
@@ -29,6 +30,7 @@ class FieldString extends StatefulWidget {
   final void Function()? onTap;
   final VirtualKeyboardBloc? keyboardBloc;
   final Bloc<dynamic, dynamic>? pageBloc;
+  final String? initialText;
 
   @override
   State<FieldString> createState() => _FieldStringState();
@@ -42,6 +44,9 @@ class _FieldStringState extends State<FieldString> {
   void initState(){
     super.initState();
     widgetBloc = widget.bloc ?? SimpleTextBloc();
+    if(widget.initialText != null){
+      widgetBloc.add(TextChanged(widget.initialText!));
+    }
   }
 
   @override
