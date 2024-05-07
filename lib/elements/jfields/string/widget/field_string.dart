@@ -37,14 +37,14 @@ class FieldString extends StatefulWidget {
 }
 
 class _FieldStringState extends State<FieldString> {
-
   late SimpleTextBloc widgetBloc;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    widgetBloc = widget.bloc ?? SimpleTextBloc();
-    if(widget.initialText != null){
+    widgetBloc =
+        widget.bloc ?? SimpleTextBloc(isNullable: true, isEmptyAllowed: true);
+    if (widget.initialText != null) {
       widgetBloc.add(TextChanged(widget.initialText!));
     }
   }
@@ -56,14 +56,14 @@ class _FieldStringState extends State<FieldString> {
       enabled: widget.isEnabled,
       simpleTextBloc: widgetBloc,
       onEditingComplete: (newValue) {
-        if(newValue == null) return widget.onChanged(null);
+        if (newValue == null) return widget.onChanged(null);
         widget.onChanged(newValue);
       },
       labelText: widget.labelText.toUpperCase(),
       textFocusNode: widget.focusNode,
       nextFocusNode: widget.nextFocusNode,
       onFocus: () {
-        if(!widget.keyboardBloc!.state.isVisible){
+        if (!widget.keyboardBloc!.state.isVisible) {
           widget.keyboardBloc?.add(ChangeType());
         } else {
           widget.keyboardBloc
@@ -71,9 +71,9 @@ class _FieldStringState extends State<FieldString> {
             ..add(ChangeVisibility(isVisibile: true));
         }
       },
-      onTap: (){
+      onTap: () {
         widget.pageBloc?.add(TicketEditing(bloc: widgetBloc));
-        if(widget.keyboardBloc != null){
+        if (widget.keyboardBloc != null) {
           widget.keyboardBloc
             ?..add(ChangeType())
             ..add(ChangeVisibility(isVisibile: true));

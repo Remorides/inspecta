@@ -12,10 +12,10 @@ final class OpenTicketState extends Equatable {
     this.jMainNode,
     this.ticketName = '',
     this.ticketDescription = '',
-    this.ticketPriority = 1,
+    this.ticketPriority = 0,
     this.activeFieldBloc,
     this.ticketEntity,
-    this.stepListWidget,
+    this.failureText,
   });
 
   final LoadingStatus loadingStatus;
@@ -32,7 +32,7 @@ final class OpenTicketState extends Equatable {
   final SimpleTextBloc? activeFieldBloc;
   final ScheduledActivity? ticketEntity;
 
-  final Widget? stepListWidget;
+  final String? failureText;
 
   OpenTicketState copyWith({
     LoadingStatus? loadingStatus,
@@ -47,6 +47,7 @@ final class OpenTicketState extends Equatable {
     SimpleTextBloc? activeFieldBloc,
     ScheduledActivity? ticketEntity,
     Widget? stepListWidget,
+    String? failureText,
   }) {
     return OpenTicketState(
       loadingStatus: loadingStatus ?? this.loadingStatus,
@@ -60,7 +61,7 @@ final class OpenTicketState extends Equatable {
       ticketPriority: ticketPriority ?? this.ticketPriority,
       activeFieldBloc: activeFieldBloc ?? this.activeFieldBloc,
       ticketEntity: ticketEntity ?? this.ticketEntity,
-      stepListWidget: stepListWidget ?? this.stepListWidget,
+      failureText: failureText ?? this.failureText,
     );
   }
 
@@ -77,6 +78,6 @@ final class OpenTicketState extends Equatable {
         ticketPriority,
         activeFieldBloc,
         ticketEntity,
-        stepListWidget,
+        failureText,
       ];
 }

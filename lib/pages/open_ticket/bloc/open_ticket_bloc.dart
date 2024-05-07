@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,6 +35,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     on<TicketEditing>(_onEditingMode);
     on<FieldChanged>(_onFieldChanged);
     on<SubmitTicket>(_onSubmitTicket);
+    on<ResetWarning>(_onResetWarning);
   }
 
   /// [EntityRepo] of [Asset] instance
@@ -57,9 +60,14 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     InitAssetReference event,
     Emitter<OpenTicketState> emit,
   ) async {
-    emit(state.copyWith(loadingStatus: LoadingStatus.inProgress));
+    emit(state.copyWith(loadingStatus: LoadingStatus.initial));
     if (event.guid == null) {
-      return emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+      return emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.fatal,
+          failureText: 'Asset guid is required',
+        ),
+      );
     }
     try {
       final result = await assetRepo.getAPIItem(guid: event.guid!);
@@ -76,7 +84,12 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         ),
       );
     } catch (_) {
-      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.fatal,
+          failureText: 'There was a problem retrieving asset data..',
+        ),
+      );
     }
   }
 
@@ -94,7 +107,12 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       );
       emit(state.copyWith(schemas: schemas));
     } catch (_) {
-      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.fatal,
+          failureText: 'There was a problem retrieving schemas data..',
+        ),
+      );
     }
   }
 
@@ -112,7 +130,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       );
       emit(
         state.copyWith(
-          loadingStatus: LoadingStatus.done,
+          loadingStatus: LoadingStatus.inProgress,
           schemaMapping: schemaMapping,
           selectedSchemaIndex: event.schemaIndex,
           ticketSchema: schema,
@@ -120,7 +138,13 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         ),
       );
     } catch (_) {
-      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.failure,
+          failureText: 'There was a problem with selected schema, '
+              'please choose another one to open ticket.',
+        ),
+      );
     }
   }
 
@@ -128,6 +152,23 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     SubmitTicket event,
     Emitter<OpenTicketState> emit,
   ) async {
+    if (state.ticketName.isEmpty) {
+      return emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.failure,
+          failureText: 'Name is required to open ticket,'
+              ' please fill it and try again.',
+        ),
+      );
+    }
+    if (state.ticketPriority == 0) {
+      return emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.failure,
+          failureText: 'Please select a priority and try again.',
+        ),
+      );
+    }
     final scheduledActivity = state.ticketEntity?.copyWith(
       entity: state.ticketEntity?.entity?.copyWith(
         name: state.ticketName,
@@ -143,11 +184,22 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       ),
       mainNode: state.jMainNode,
     );
+    debugPrint(jsonEncode(scheduledActivity));
     try {
       await scheduledRepo.postAPIItem(scheduledActivity!);
-      emit(state.copyWith(loadingStatus: LoadingStatus.done));
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.done,
+          failureText: 'Ticket opened successfully!',
+        ),
+      );
     } on Exception {
-      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.failure,
+          failureText: 'There was a problem, please try again later..',
+        ),
+      );
     }
   }
 
@@ -156,6 +208,13 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     Emitter<OpenTicketState> emit,
   ) {
     emit(state.copyWith(activeFieldBloc: event.bloc));
+  }
+
+  void _onResetWarning(
+      ResetWarning event,
+      Emitter<OpenTicketState> emit,
+      ) {
+    emit(state.copyWith(loadingStatus: LoadingStatus.inProgress));
   }
 
   void _onTicketNameChanged(

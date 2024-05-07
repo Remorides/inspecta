@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:omdk/elements/alerts/alerts.dart';
 import 'package:omdk/elements/alerts/simple_alert/simple_alert.dart';
 import 'package:omdk/elements/elements.dart';
 
@@ -31,13 +32,8 @@ class _OTPFailsPageState extends State<OTPFailsPage> {
                 title: 'Warning',
                 message: const Text('OTP is not valid'),
                 confirm: 'OK',
-                onConfirm: () async {
-                  // await Navigator.pushAndRemoveUntil(
-                  //   context,
-                  //   LoginPage.route(),
-                  //   (route) => false,
-                  // );
-                },
+                type: AlertType.warning,
+                onConfirm: () async {},
               ),
             )
           : Center(
@@ -47,6 +43,7 @@ class _OTPFailsPageState extends State<OTPFailsPage> {
                   title: 'Warning',
                   message: const Text('OTP is not valid'),
                   confirm: 'OK',
+                  type: AlertType.warning,
                   onConfirm: () async {
                     // await Navigator.pushAndRemoveUntil(
                     //   context,

@@ -58,6 +58,8 @@ final class TicketEditing extends OpenTicketEvent {
   List<Object?> get props => [bloc];
 }
 
+final class ResetWarning extends OpenTicketEvent {}
+
 final class TicketDescChanged extends OpenTicketEvent {
   TicketDescChanged(this.desc);
 

@@ -77,7 +77,7 @@ class _MultiRadioButtons extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 20),
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ResponsiveWidget.isSmallScreen(context)
+              child: (MediaQuery.of(context).size.width / 3) < 480
                   ? Column(
                       children: [
                         highButton(context, state),

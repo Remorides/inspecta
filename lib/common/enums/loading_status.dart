@@ -10,4 +10,6 @@ enum LoadingStatus {
   done,
   /// there was a problem
   failure,
+  /// there was a fatal problem
+  fatal;
 }

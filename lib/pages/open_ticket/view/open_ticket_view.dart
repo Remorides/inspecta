@@ -45,35 +45,80 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
       withDrawer: false,
       bodyPage: BlocListener<OpenTicketBloc, OpenTicketState>(
         listenWhen: (previous, current) =>
+            previous.loadingStatus != current.loadingStatus ||
             previous.activeFieldBloc != current.activeFieldBloc,
         listener: (context, state) {
+          if (state.loadingStatus == LoadingStatus.done) {
+            OMDKAlert.show(
+              context,
+              OMDKAlert(
+                title: 'Done',
+                type: AlertType.success,
+                message: Text(
+                  '${state.failureText}',
+                ),
+                confirm: 'OK',
+                onConfirm: () => context.read<AuthRepo>().logOut(),
+              ),
+            );
+          }
+          if (state.loadingStatus == LoadingStatus.failure) {
+            OMDKAlert.show(
+              context,
+              OMDKAlert(
+                title: 'Warning',
+                type: AlertType.warning,
+                message: Text(
+                  '${state.failureText}',
+                ),
+                confirm: 'OK',
+                onConfirm: () =>
+                    context.read<OpenTicketBloc>().add(ResetWarning()),
+              ),
+            );
+          }
           if (state.activeFieldBloc != null) {
             activeBloc = state.activeFieldBloc!;
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: Column(
-            children: [
-              Expanded(
-                child: (ResponsiveWidget.isSmallScreen(context))
-                    ? singleColumnLayout(context)
-                    : Center(child: twoColumnLayout(context, blocKeyboard)),
-              ),
-              CustomVirtualKeyboard(
-                bloc: blocKeyboard,
-                focusNode: mapFocusNode['focusKeyboard']!,
-                controller: _controllerKeyboard,
-                onKeyPress: (key) => _onKeyPress(
-                  context,
-                  key,
-                  activeBloc,
-                  blocKeyboard,
+        child: (context.read<OpenTicketBloc>().state.loadingStatus !=
+                LoadingStatus.fatal)
+            ? Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: (ResponsiveWidget.isSmallScreen(context))
+                          ? singleColumnLayout(context)
+                          : Center(
+                              child: twoColumnLayout(context, blocKeyboard),
+                            ),
+                    ),
+                    CustomVirtualKeyboard(
+                      bloc: blocKeyboard,
+                      focusNode: mapFocusNode['focusKeyboard']!,
+                      controller: _controllerKeyboard,
+                      onKeyPress: (key) => _onKeyPress(
+                        context,
+                        key,
+                        activeBloc,
+                        blocKeyboard,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Center(
+                child: OMDKAlert(
+                  title: 'Fatal error',
+                  message: Text(
+                    '${context.read<OpenTicketBloc>().state.failureText}',
+                  ),
+                  type: AlertType.fatalError,
+                  confirm: 'OK',
+                  onConfirm: () {},
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }

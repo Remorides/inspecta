@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:omdk/elements/alerts/alerts.dart';
 import 'package:omdk/elements/alerts/enums/action_button_alignment.dart';
 import 'package:omdk/elements/elements.dart';
 import 'package:omdk_repo/omdk_repo.dart';
@@ -13,6 +14,7 @@ class OMDKAlert extends StatelessWidget {
     required this.message,
     required this.confirm,
     required this.onConfirm,
+    required this.type,
     this.close,
     this.onClose,
     this.executePop = true,
@@ -49,7 +51,10 @@ class OMDKAlert extends StatelessWidget {
           debugPrint('Close button pressed');
         },
         buttonAlignment: ActionButtonAlignment.vertical,
+        type: AlertType.info,
       );
+
+  final AlertType type;
 
   /// Title text
   final String title;
@@ -168,17 +173,45 @@ class OMDKAlert extends StatelessWidget {
 
   Widget _iconCircle(BuildContext context) => Container(
         decoration: BoxDecoration(
-          color: context.theme?.primaryColor,
+          color: switch (type) {
+            AlertType.info => Colors.blue,
+            AlertType.warning => Colors.yellow,
+            AlertType.error => Colors.red,
+            AlertType.fatalError => Colors.red,
+            AlertType.success => Colors.green,
+          },
           borderRadius: BorderRadius.circular(_circleRadius),
         ),
         width: _circleRadius * 2,
         height: _circleRadius * 2,
         child: Center(
-          child: Icon(
-            Icons.warning_amber_rounded,
-            size: 40,
-            color: context.theme?.dialogTheme.iconColor,
-          ),
+          child: switch(type){
+            AlertType.info => Icon(
+              Icons.info_outline,
+              size: 40,
+              color: context.theme?.dialogTheme.iconColor,
+            ),
+            AlertType.warning => Icon(
+              Icons.warning_amber_rounded,
+              size: 40,
+              color: context.theme?.dialogTheme.iconColor,
+            ),
+            AlertType.error => Icon(
+              Icons.report_gmailerrorred_outlined,
+              size: 40,
+              color: context.theme?.dialogTheme.iconColor,
+            ),
+            AlertType.fatalError => Icon(
+              Icons.bug_report_outlined,
+              size: 40,
+              color: context.theme?.dialogTheme.iconColor,
+            ),
+            AlertType.success => Icon(
+              Icons.done,
+              size: 40,
+              color: context.theme?.dialogTheme.iconColor,
+            ),
+          },
         ),
       );
 
