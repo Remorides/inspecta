@@ -1,5 +1,7 @@
+import 'dart:html' as web;
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/common/enums/enums.dart';
@@ -27,6 +29,8 @@ class OpenTicketPage extends StatelessWidget {
 
   //Get params from url
   final _paramGUID = Uri.base.queryParameters['guid'];
+  final _paramClose = Uri.base.queryParameters['close'];
+  final _paramLocale = Uri.base.queryParameters['language'];
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,9 @@ class OpenTicketPage extends StatelessWidget {
       )
         ..add(InitAssetReference(guid: _paramGUID))
         ..add(InitSchemas()),
-      child: const _OpenTicketView(),
+      child: _OpenTicketView(
+        closePage: _paramClose != null,
+      ),
     );
   }
 }

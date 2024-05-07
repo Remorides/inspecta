@@ -3,7 +3,11 @@ part of 'open_ticket_page.dart';
 /// Login form class provide all required field to login
 class _OpenTicketView extends StatefulWidget {
   /// Build [_OpenTicketView] instance
-  const _OpenTicketView();
+  const _OpenTicketView({
+    required this.closePage,
+  });
+
+  final bool closePage;
 
   @override
   State<_OpenTicketView> createState() => _OpenTicketViewState();
@@ -49,6 +53,9 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
             previous.activeFieldBloc != current.activeFieldBloc,
         listener: (context, state) {
           if (state.loadingStatus == LoadingStatus.done) {
+            if(widget.closePage && kIsWeb){
+              return web.window.close();
+            }
             OMDKAlert.show(
               context,
               OMDKAlert(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:omdk/pages/auth/bloc/auth_bloc.dart';
 import 'package:omdk/pages/auth_login/view/login_page.dart';
 import 'package:omdk/pages/open_ticket/view/open_ticket_page.dart';
@@ -142,6 +143,18 @@ class _AppViewState extends State<AppView> {
     return MaterialApp(
       theme: context.theme,
       navigatorKey: _navigatorKey,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('en', 'GB'),
+        Locale('fr', 'FR'),
+        Locale('es', 'ES'),
+        Locale('it', 'IT'),
+      ],
       builder: (context, child) {
         return BlocListener<AuthBloc, AuthState>(
           listener: (context, state) async {
