@@ -24,6 +24,8 @@ class SimpleTextField extends StatelessWidget {
     this.isEmptyAllowed = false,
     this.isTextValueNullable = false,
     this.onTap,
+    this.onFocus,
+    this.onLostFocus,
     super.key,
   });
 
@@ -35,6 +37,12 @@ class SimpleTextField extends StatelessWidget {
 
   /// Manage on tap event
   final void Function()? onTap;
+
+  /// Manage on focus event
+  final void Function()? onFocus;
+
+  /// Manage on lost focus event
+  final void Function()? onLostFocus;
 
   /// Label text
   final String labelText;
@@ -89,6 +97,8 @@ class SimpleTextField extends StatelessWidget {
           ),
       child: _SimpleTextFieldView(
         onTap: onTap,
+        onFocus: onFocus,
+        onLostFocus: onLostFocus,
         labelText: labelText,
         textFocusNode: textFocusNode,
         initialText: initialText,
@@ -113,6 +123,8 @@ class _SimpleTextFieldView extends StatefulWidget {
     required this.textFocusNode,
     required this.onEditingComplete,
     this.onTap,
+    this.onFocus,
+    this.onLostFocus,
     this.initialText = '',
     this.nextFocusNode,
     this.keyboardType = TextInputType.text,
@@ -127,6 +139,8 @@ class _SimpleTextFieldView extends StatefulWidget {
 
   final void Function(String?) onEditingComplete;
   final void Function()? onTap;
+  final void Function()? onFocus;
+  final void Function()? onLostFocus;
   final String labelText;
   final FocusNode textFocusNode;
   final FocusNode? nextFocusNode;
@@ -213,8 +227,11 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                       ),
                       child: Focus(
                         onFocusChange: (bool focus) {
-                          if (!focus) {
+                          if(focus) {
+                            widget.onFocus?.call();
+                          } else {
                             context.read<SimpleTextBloc>().add(ValidateData());
+                            widget.onLostFocus?.call();
                           }
                         },
                         child: TextField(
@@ -239,7 +256,6 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                                   .requestFocus(widget.nextFocusNode);
                             } else {
                               FocusScope.of(context).unfocus();
-                              FocusScope.of(context).requestFocus(FocusNode());
                             }
                           },
                           decoration: InputDecoration(

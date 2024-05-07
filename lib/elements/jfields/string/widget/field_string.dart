@@ -62,6 +62,15 @@ class _FieldStringState extends State<FieldString> {
       labelText: widget.labelText.toUpperCase(),
       textFocusNode: widget.focusNode,
       nextFocusNode: widget.nextFocusNode,
+      onFocus: () {
+        if(!widget.keyboardBloc!.state.isVisible){
+          widget.keyboardBloc?.add(ChangeType());
+        } else {
+          widget.keyboardBloc
+            ?..add(ChangeType())
+            ..add(ChangeVisibility(isVisibile: true));
+        }
+      },
       onTap: (){
         widget.pageBloc?.add(TicketEditing(bloc: widgetBloc));
         if(widget.keyboardBloc != null){

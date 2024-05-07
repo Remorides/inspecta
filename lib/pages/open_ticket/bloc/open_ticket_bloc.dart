@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +10,7 @@ import 'package:opera_api_entity/opera_api_entity.dart';
 import 'package:opera_repo/opera_repo.dart';
 
 part 'open_ticket_event.dart';
+
 part 'open_ticket_state.dart';
 
 ///Page bloc
@@ -126,9 +125,9 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   }
 
   Future<void> _onSubmitTicket(
-      SubmitTicket event,
-      Emitter<OpenTicketState> emit,
-      ) async {
+    SubmitTicket event,
+    Emitter<OpenTicketState> emit,
+  ) async {
     final scheduledActivity = state.ticketEntity?.copyWith(
       entity: state.ticketEntity?.entity?.copyWith(
         name: state.ticketName,
@@ -180,10 +179,10 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     emit(state.copyWith(ticketPriority: event.priority));
   }
 
-  void _onFieldChanged(
+  Future<void> _onFieldChanged(
     FieldChanged event,
     Emitter<OpenTicketState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(loadingStatus: LoadingStatus.inProgress));
     try {
       final indexStep = state.ticketEntity?.stepsList
@@ -196,6 +195,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
+            modified: await operaRepo.getParticipationDate(),
             value: JFieldValue(
               stringValue: (event.fieldValue is String?)
                   ? event.fieldValue as String?
@@ -209,6 +209,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
+            modified: await operaRepo.getParticipationDate(),
             value: JFieldValue(
               floatValue: event.fieldValue as double?,
             ),
@@ -217,6 +218,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
+            modified: await operaRepo.getParticipationDate(),
             value: JFieldValue(
               intValue: event.fieldValue as int?,
             ),
@@ -225,6 +227,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
+            modified: await operaRepo.getParticipationDate(),
             value: JFieldValue(
               dateTimeValue: event.fieldValue as DateTime?,
             ),
@@ -233,6 +236,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
+            modified: await operaRepo.getParticipationDate(),
             value: JFieldValue(
               boolValue: event.fieldValue as bool?,
             ),

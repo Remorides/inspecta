@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:omdk/elements/elements.dart';
 import 'package:omdk/elements/keyboard/virtual_keyboard/bloc/virtual_keyboard_bloc.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
@@ -38,15 +41,42 @@ class _CustomVirtualKeyboardState extends State<CustomVirtualKeyboard> {
         bloc: widget.bloc,
         builder: (context, state) {
           return state.isVisible
-              ? VirtualKeyboard(
-                  textController: widget.controller,
-                  //customLayoutKeys: _customLayoutKeys,
-                  defaultLayouts: const <VirtualKeyboardDefaultLayouts>[
-                    VirtualKeyboardDefaultLayouts.English,
+              ? Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(child: Container()),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            border: Border.all(
+                              color: Colors.red,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: IconButton(
+                            onPressed: () => context
+                                .read<VirtualKeyboardBloc>()
+                                .add(ChangeVisibility()),
+                            icon: const Icon(
+                              Icons.close_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    VirtualKeyboard(
+                      textController: widget.controller,
+                      defaultLayouts: const <VirtualKeyboardDefaultLayouts>[
+                        VirtualKeyboardDefaultLayouts.English,
+                      ],
+                      //reverseLayout :true,
+                      type: state.keyboardType,
+                      onKeyPress: widget.onKeyPress,
+                    ),
                   ],
-                  //reverseLayout :true,
-                  type: state.keyboardType,
-                  onKeyPress: widget.onKeyPress,
                 )
               : Container();
         },
