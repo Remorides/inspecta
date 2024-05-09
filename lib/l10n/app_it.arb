@@ -1,4 +1,14 @@
 {
-  "alert_msg_fatal_error": "Errore critico!",
-  "alert_btn_ok": "Ok"
+  "alert_title_fatal_error": "Errore critico!",
+  "alert_title_done": "Fatto",
+  "alert_title_warning": "Attenzione",
+  "alert_btn_ok": "Ok",
+  "alert_btn_cancel": "Annulla",
+  "ticket_label_asset_reference": "Asset di riferimento",
+  "ticket_label_name": "Nome",
+  "ticket_label_description": "Descrizione",
+  "ticket_label_priority": "Priorità",
+  "ticket_label_typology": "Tipologia",
+  "ticket_hint_select_schema": "Seleziona una tipologia per generare la step list",
+  "ticket_btn_submit": "Invia"
 }

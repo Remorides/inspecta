@@ -167,6 +167,7 @@ class _AppViewState extends State<AppView> {
                 /// local session is validated
                 await _navigator.pushAndRemoveUntil(
                   OpenTicketPage.route(),
+                  //EditTicketPage.route(),
                   (route) => false,
                 );
               case AuthStatus.unauthenticated:

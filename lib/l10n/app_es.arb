@@ -1,4 +1,14 @@
 {
-  "alert_msg_fatal_error": "¡Error fatal!",
-  "alert_btn_ok": "Ok"
+  "alert_title_fatal_error": "¡Error fatal!",
+  "alert_title_done": "Realizado",
+  "alert_title_warning": "Advertencia",
+  "alert_btn_ok": "Ok",
+  "alert_btn_cancel": "Cancelar",
+  "ticket_label_asset_reference": "Referencia de activos",
+  "ticket_label_name": "Nombre",
+  "ticket_label_description": "Descripción",
+  "ticket_label_priority": "Prioridad",
+  "ticket_label_typology": "Tipología",
+  "ticket_hint_select_schema": "Elija un tipo para generar la lista de pasos",
+  "ticket_btn_submit": "enviar"
 }

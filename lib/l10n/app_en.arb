@@ -1,10 +1,14 @@
 {
-  "alert_msg_fatal_error": "Fatal Error!",
-  "@alert_msg_fatal_error": {
-    "description": "Alert body message"
-  },
+  "alert_title_fatal_error": "Fatal Error!",
+  "alert_title_done": "Done",
+  "alert_title_warning": "Warning",
   "alert_btn_ok": "Ok",
-  "@alert_btn_ok": {
-    "description": "Alert generic button"
-  }
+  "alert_btn_cancel": "Cancel",
+  "ticket_label_asset_reference": "Asset reference",
+  "ticket_label_name": "Name",
+  "ticket_label_description": "Description",
+  "ticket_label_priority": "Priority",
+  "ticket_label_typology": "Typology",
+  "ticket_hint_select_schema": "Choose a type to generate step list",
+  "ticket_btn_submit": "Submit"
 }

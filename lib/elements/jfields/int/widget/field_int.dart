@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk/elements/elements.dart';
-import 'package:omdk/pages/open_ticket/bloc/open_ticket_bloc.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 class FieldInt extends StatefulWidget {
@@ -17,7 +15,7 @@ class FieldInt extends StatefulWidget {
     this.isEnabled = true,
     this.onTap,
     this.keyboardBloc,
-    this.pageBloc,
+    this.onTapBloc,
   });
 
   final String labelText;
@@ -29,7 +27,7 @@ class FieldInt extends StatefulWidget {
   final void Function(int?) onChanged;
   final void Function()? onTap;
   final VirtualKeyboardBloc? keyboardBloc;
-  final Bloc<dynamic, dynamic>? pageBloc;
+  final void Function(SimpleTextBloc)? onTapBloc;
 
   @override
   State<FieldInt> createState() => _FieldIntState();
@@ -60,7 +58,7 @@ class _FieldIntState extends State<FieldInt> {
       textFocusNode: widget.focusNode,
       nextFocusNode: widget.nextFocusNode,
       onTap: (){
-        widget.pageBloc?.add(TicketEditing(bloc: widgetBloc));
+        widget.onTapBloc?.call(widgetBloc);
         if(widget.keyboardBloc != null){
           widget.keyboardBloc
             ?..add(

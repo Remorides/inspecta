@@ -1,19 +1,19 @@
-part of 'open_ticket_page.dart';
+part of 'edit_ticket_page.dart';
 
 /// Login form class provide all required field to login
-class _OpenTicketView extends StatefulWidget {
-  /// Build [_OpenTicketView] instance
-  const _OpenTicketView({
+class _EditTicketView extends StatefulWidget {
+  /// Build [_EditTicketView] instance
+  const _EditTicketView({
     required this.closePage,
   });
 
   final bool closePage;
 
   @override
-  State<_OpenTicketView> createState() => _OpenTicketViewState();
+  State<_EditTicketView> createState() => _OpenTicketViewState();
 }
 
-class _OpenTicketViewState extends State<_OpenTicketView> {
+class _OpenTicketViewState extends State<_EditTicketView> {
   final _controllerKeyboard = TextEditingController();
 
   final blocKeyboard = VirtualKeyboardBloc();
@@ -56,7 +56,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
         },
         child: Text(AppLocalizations.of(context)!.alert_btn_cancel),
       ),
-      bodyPage: BlocListener<OpenTicketBloc, OpenTicketState>(
+      bodyPage: BlocListener<EditTicketBloc, EditTicketState>(
         listenWhen: (previous, current) =>
             previous.loadingStatus != current.loadingStatus ||
             previous.activeFieldBloc != current.activeFieldBloc,
@@ -89,7 +89,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                 ),
                 confirm: AppLocalizations.of(context)!.alert_btn_ok,
                 onConfirm: () =>
-                    context.read<OpenTicketBloc>().add(ResetWarning()),
+                    context.read<EditTicketBloc>().add(ResetWarning()),
               ),
             );
           }
@@ -97,7 +97,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
             activeBloc = state.activeFieldBloc!;
           }
         },
-        child: (context.read<OpenTicketBloc>().state.loadingStatus !=
+        child: (context.read<EditTicketBloc>().state.loadingStatus !=
                 LoadingStatus.fatal)
             ? Padding(
                 padding: const EdgeInsets.only(top: 20),
@@ -128,7 +128,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                 child: OMDKAlert(
                   title: AppLocalizations.of(context)!.alert_title_fatal_error,
                   message: Text(
-                    '${context.read<OpenTicketBloc>().state.failureText}',
+                    '${context.read<EditTicketBloc>().state.failureText}',
                   ),
                   type: AlertType.fatalError,
                   confirm: AppLocalizations.of(context)!.alert_btn_ok,
@@ -180,27 +180,13 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
           width: MediaQuery.of(context).size.width / 3,
           child: ListView(
             children: [
-              _AssetReference(bloc: blocAssetReference),
+              _TicketNameInput(keyboardBloc: blocKeyboard),
               const Space.vertical(20),
-              _TicketNameInput(
-                keyboardBloc: blocKeyboard,
-                widgetFN: focusName,
-                widgetB: blocName,
-                nextWidgetFN: focusDesc,
-              ),
-              const Space.vertical(20),
-              _TicketDescInput(
-                keyboardBloc: blocKeyboard,
-                widgetFN: focusDesc,
-                widgetB: blocDesc,
-                nextWidgetFN: focusPriority,
-              ),
+              _TicketDescInput(keyboardBloc: blocKeyboard),
               const Space.vertical(20),
               _TicketPriorityInput(
                 widgetFN: focusPriority,
               ),
-              const Space.vertical(20),
-              const _TicketSchemaInput(),
             ],
           ),
         ),
@@ -216,98 +202,55 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
 
   Widget singleColumnLayout(BuildContext context) => ListView(
         children: [
-          _AssetReference(bloc: blocAssetReference),
-          const Space.vertical(20),
-          _TicketNameInput(
-            keyboardBloc: blocKeyboard,
-            widgetFN: focusName,
-            widgetB: blocName,
-            nextWidgetFN: focusDesc,
-          ),
+          _TicketNameInput(keyboardBloc: blocKeyboard),
           const Space.vertical(20),
           _TicketDescInput(
             keyboardBloc: blocKeyboard,
-            widgetFN: focusDesc,
-            widgetB: blocDesc,
-            nextWidgetFN: focusPriority,
           ),
           const Space.vertical(20),
           _TicketPriorityInput(
             widgetFN: focusPriority,
           ),
           const Space.vertical(20),
-          const _TicketSchemaInput(),
-          const Space.vertical(20),
           _TicketStepList(keyboardBloc: blocKeyboard),
         ],
       );
 }
 
-class _AssetReference extends StatelessWidget {
-  /// Create [_AssetReference] instance
-  const _AssetReference({
-    required this.bloc,
-  });
-
-  final SimpleTextBloc bloc;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocListener<OpenTicketBloc, OpenTicketState>(
-      listenWhen: (previous, current) {
-        return previous.jMainNode != current.jMainNode;
-      },
-      listener: (context, state) {
-        if (state.jMainNode?.name != null) {
-          bloc.add(TextChanged(state.jMainNode!.name!));
-        }
-      },
-      child: SimpleTextField(
-        key: const Key('assetReference_textField'),
-        simpleTextBloc: bloc,
-        enabled: false,
-        onEditingComplete: (text) {},
-        labelText: AppLocalizations.of(context)!.ticket_label_asset_reference,
-        textFocusNode: FocusNode(),
-      ),
-    );
-  }
-}
-
 class _TicketNameInput extends StatelessWidget {
   /// Create [_TicketNameInput] instance
   const _TicketNameInput({
-    required this.widgetFN,
-    required this.widgetB,
     required this.keyboardBloc,
-    this.nextWidgetFN,
   });
 
-  final FocusNode widgetFN;
-  final SimpleTextBloc widgetB;
-  final FocusNode? nextWidgetFN;
   final VirtualKeyboardBloc keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
-      builder: (context, state) {
-        return SimpleTextField(
-          key: const Key('ticketNameInput_textField'),
-          simpleTextBloc: widgetB,
-          onEditingComplete: (text) =>
-              context.read<OpenTicketBloc>().add(TicketNameChanged(text)),
-          labelText: AppLocalizations.of(context)!.ticket_label_name,
-          textFocusNode: widgetFN,
-          nextFocusNode: nextWidgetFN,
-          onTap: () {
-            context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
-            keyboardBloc
-              ..add(ChangeType())
-              ..add(ChangeVisibility(isVisibile: true));
-          },
-        );
+    final bloc = SimpleTextBloc();
+    return BlocListener<EditTicketBloc, EditTicketState>(
+      listenWhen: (previous, current) =>
+          previous.loadingStatus != current.loadingStatus,
+      listener: (context, state) {
+        if (state.ticketEntity?.entity?.name != null) {
+          bloc.add(TextChanged(state.ticketEntity!.entity!.name!));
+        }
       },
+      child: BlocBuilder<EditTicketBloc, EditTicketState>(
+        builder: (context, state) {
+          return FieldString(
+            key: const Key('ticketNameInput_textField'),
+            keyboardBloc: keyboardBloc,
+            onChanged: (text) =>
+                context.read<EditTicketBloc>().add(TicketNameChanged(text)),
+            labelText: AppLocalizations.of(context)!.ticket_label_name,
+            focusNode: FocusNode(),
+            bloc: bloc,
+            onTapBloc: (bloc) =>
+                context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
+          );
+        },
+      ),
     );
   }
 }
@@ -315,37 +258,39 @@ class _TicketNameInput extends StatelessWidget {
 class _TicketDescInput extends StatelessWidget {
   /// Create [_TicketDescInput] instance
   const _TicketDescInput({
-    required this.widgetFN,
-    required this.widgetB,
     required this.keyboardBloc,
-    this.nextWidgetFN,
   });
 
-  final FocusNode widgetFN;
-  final SimpleTextBloc widgetB;
-  final FocusNode? nextWidgetFN;
   final VirtualKeyboardBloc keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
-      builder: (context, state) {
-        return SimpleTextField(
-          key: const Key('ticketDescInput_textField'),
-          simpleTextBloc: widgetB,
-          onEditingComplete: (text) =>
-              context.read<OpenTicketBloc>().add(TicketDescChanged(text)),
-          labelText: AppLocalizations.of(context)!.ticket_label_description,
-          textFocusNode: widgetFN,
-          nextFocusNode: nextWidgetFN,
-          onTap: () {
-            context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
-            keyboardBloc
-              ..add(ChangeType())
-              ..add(ChangeVisibility(isVisibile: true));
-          },
-        );
+    final bloc = SimpleTextBloc(isEmptyAllowed: true);
+    return BlocListener<EditTicketBloc, EditTicketState>(
+      listenWhen: (previous, current) =>
+          previous.loadingStatus != current.loadingStatus,
+      listener: (context, state) {
+        if (state.ticketEntity?.scheduled?.description != null) {
+          bloc.add(
+            TextChanged(state.ticketEntity?.scheduled?.description ?? ''),
+          );
+        }
       },
+      child: BlocBuilder<EditTicketBloc, EditTicketState>(
+        builder: (context, state) {
+          return FieldString(
+            key: const Key('ticketDescInput_textField'),
+            keyboardBloc: keyboardBloc,
+            bloc: bloc,
+            onChanged: (text) =>
+                context.read<EditTicketBloc>().add(TicketDescChanged(text)),
+            labelText: AppLocalizations.of(context)!.ticket_label_description,
+            onTapBloc: (bloc) =>
+                context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
+            focusNode: FocusNode(),
+          );
+        },
+      ),
     );
   }
 }
@@ -360,90 +305,17 @@ class _TicketPriorityInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
+    return BlocBuilder<EditTicketBloc, EditTicketState>(
+      buildWhen: (previous, current) =>
+          current.loadingStatus != LoadingStatus.initial,
       builder: (context, state) {
         return MultiRadioButtons(
           key: const Key('ticketPriorityInput_textField'),
           onSelectedPriority: (priorityCode) => context
-              .read<OpenTicketBloc>()
+              .read<EditTicketBloc>()
               .add(TicketPriorityChanged(priorityCode)),
           labelText: AppLocalizations.of(context)!.ticket_label_priority,
           focusNode: widgetFN,
-        );
-      },
-    );
-  }
-}
-
-class _TicketSchemaInput extends StatelessWidget {
-  /// Create [_TicketSchemaInput] instance
-  const _TicketSchemaInput();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
-      buildWhen: (previous, current) =>
-          previous.selectedSchemaIndex != current.selectedSchemaIndex ||
-          previous.schemas != current.schemas,
-      builder: (context, state) {
-        return SizedBox(
-          height: 213,
-          child: Stack(
-            children: [
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.ticket_label_typology,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.theme?.inputDecorationTheme.labelStyle,
-                    ),
-                  ),
-                ],
-              ),
-              Opacity(
-                opacity: 1,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 22),
-                  child: ListView.builder(
-                    itemCount: state.schemas.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: (index == state.selectedSchemaIndex)
-                              ? context.theme?.primaryColor
-                              : Colors.transparent,
-                        ),
-                        child: ListTile(
-                          selected: index == state.selectedSchemaIndex,
-                          selectedColor: Colors.white,
-                          onTap: () => context.read<OpenTicketBloc>().add(
-                                SelectedSchemaChanged(
-                                  schemaIndex: index,
-                                  schemaMappingGuid:
-                                      state.schemas[index].mapping.guid!,
-                                  schemaGuid: state.schemas[index].guid,
-                                ),
-                              ),
-                          title: Text(
-                            '${state.schemas[index].name}',
-                            style: (index == state.selectedSchemaIndex)
-                                ? const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  )
-                                : const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
         );
       },
     );
@@ -460,44 +332,37 @@ class _TicketStepList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
+    return BlocBuilder<EditTicketBloc, EditTicketState>(
       buildWhen: (previous, current) =>
-          previous.loadingStatus != current.loadingStatus,
+          current.ticketEntity != null && current.ticketMapping != null,
       builder: (context, state) {
-        return (state.ticketEntity != null)
-            ? ListView.builder(
-                itemCount: state.ticketEntity!.stepsList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index >= state.ticketEntity!.stepsList.length) {
-                    return submitTicket(context: context);
-                  }
-                  return ExpansionTile(
-                    initiallyExpanded: index == 0,
-                    title: Text(
-                      '${(state.ticketEntity!.stepsList[index].title
-                          ?.singleWhere(
-                            (element) =>
-                                element.culture?.contains(
-                                  Localizations.localeOf(context).languageCode,
-                                ) ??
-                                false,
-                          ) ?? state.ticketEntity!.stepsList[index]
-                          .title?[0])?.value}',
-                    ),
-                    children: buildFieldList(
-                      context: context,
-                      stepEntity: state.ticketEntity!.stepsList[index],
-                      schemaMapping: state.schemaMapping!,
-                      keyboardBloc: keyboardBloc,
-                    ),
-                  );
-                },
-              )
-            : Center(
-                child: Text(
-                  AppLocalizations.of(context)!.ticket_hint_select_schema,
-                ),
-              );
+        return ListView.builder(
+          itemCount: state.ticketEntity!.stepsList.length + 1,
+          itemBuilder: (context, index) {
+            if (index >= state.ticketEntity!.stepsList.length) {
+              return submitTicket(context: context);
+            }
+            return ExpansionTile(
+              initiallyExpanded: index == 0,
+              title: Text(
+                '${(state.ticketEntity!.stepsList[index].title?.singleWhere(
+                      (element) =>
+                          element.culture?.contains(
+                            Localizations.localeOf(context).languageCode,
+                          ) ??
+                          false,
+                    ) ?? state.ticketEntity!.stepsList[index]
+                    .title?[0])?.value}',
+              ),
+              children: buildFieldList(
+                context: context,
+                stepEntity: state.ticketEntity!.stepsList[index],
+                schemaMapping: state.ticketMapping!,
+                keyboardBloc: keyboardBloc,
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -553,7 +418,7 @@ class _TicketStepList extends StatelessWidget {
                         false,
                   ) ?? jFieldMapping.title?[0])?.value}',
               listItem: jFieldMapping.poolListSettings!.value!,
-              onChanged: (String? s) => context.read<OpenTicketBloc>().add(
+              onChanged: (String? s) => context.read<EditTicketBloc>().add(
                     FieldChanged(
                       stepGuid: stepGuid,
                       fieldMapping: jFieldMapping,
@@ -574,7 +439,7 @@ class _TicketStepList extends StatelessWidget {
                           false,
                     ) ?? jFieldMapping.title?[0])?.value}',
                 listItem: jFieldMapping.poolListSettings!.value!,
-                onChanged: (String? s) => context.read<OpenTicketBloc>().add(
+                onChanged: (String? s) => context.read<EditTicketBloc>().add(
                       FieldChanged(
                         stepGuid: stepGuid,
                         fieldMapping: jFieldMapping,
@@ -608,10 +473,10 @@ class _TicketStepList extends StatelessWidget {
                 initialText: jFieldEntity?.value?.stringValue,
                 keyboardBloc: keyboardBloc,
                 onTapBloc: (bloc) => context
-                    .read<OpenTicketBloc>()
+                    .read<EditTicketBloc>()
                     .add(TicketEditing(bloc: bloc)),
                 focusNode: FocusNode(),
-                onChanged: (String? s) => context.read<OpenTicketBloc>().add(
+                onChanged: (String? s) => context.read<EditTicketBloc>().add(
                       FieldChanged(
                         stepGuid: stepGuid,
                         fieldMapping: jFieldMapping,
@@ -637,9 +502,9 @@ class _TicketStepList extends StatelessWidget {
               ) ?? jFieldMapping.title?[0])?.value}',
           keyboardBloc: keyboardBloc,
           onTapBloc: (bloc) =>
-              context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
+              context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
           focusNode: FocusNode(),
-          onChanged: (double? d) => context.read<OpenTicketBloc>().add(
+          onChanged: (double? d) => context.read<EditTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
@@ -660,8 +525,8 @@ class _TicketStepList extends StatelessWidget {
           focusNode: FocusNode(),
           keyboardBloc: keyboardBloc,
           onTapBloc: (bloc) =>
-              context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
-          onChanged: (int? i) => context.read<OpenTicketBloc>().add(
+              context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
+          onChanged: (int? i) => context.read<EditTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
@@ -682,7 +547,7 @@ class _TicketStepList extends StatelessWidget {
                     false,
               ) ?? jFieldMapping.title?[0])?.value}',
           focusNode: FocusNode(),
-          onChanged: (bool? b) => context.read<OpenTicketBloc>().add(
+          onChanged: (bool? b) => context.read<EditTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
@@ -710,7 +575,7 @@ class _TicketStepList extends StatelessWidget {
             child: OMDKElevatedButton(
               focusNode: FocusNode(),
               onPressed: () =>
-                  context.read<OpenTicketBloc>().add(SubmitTicket()),
+                  context.read<EditTicketBloc>().add(SubmitTicket()),
               child: Text(AppLocalizations.of(context)!.ticket_btn_submit),
             ),
           ),

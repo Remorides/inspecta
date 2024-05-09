@@ -1,7 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:omdk/elements/elements.dart';
-import 'package:omdk/pages/open_ticket/bloc/open_ticket_bloc.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 class FieldDouble extends StatefulWidget {
@@ -17,7 +15,7 @@ class FieldDouble extends StatefulWidget {
     this.isEnabled = true,
     this.onTap,
     this.keyboardBloc,
-    this.pageBloc,
+    this.onTapBloc,
   });
 
   final String labelText;
@@ -29,7 +27,7 @@ class FieldDouble extends StatefulWidget {
   final void Function(double?) onChanged;
   final void Function()? onTap;
   final VirtualKeyboardBloc? keyboardBloc;
-  final Bloc<dynamic, dynamic>? pageBloc;
+  final void Function(SimpleTextBloc)? onTapBloc;
 
   @override
   State<FieldDouble> createState() => _FieldDoubleState();
@@ -60,7 +58,7 @@ class _FieldDoubleState extends State<FieldDouble> {
       textFocusNode: widget.focusNode,
       nextFocusNode: widget.nextFocusNode,
       onTap: (){
-        widget.pageBloc?.add(TicketEditing(bloc: widgetBloc));
+        widget.onTapBloc?.call(widgetBloc);
         if(widget.keyboardBloc != null){
           widget.keyboardBloc
             ?..add(

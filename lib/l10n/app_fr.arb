@@ -1,4 +1,14 @@
 {
-  "alert_msg_fatal_error": "Erreur fatale",
-  "alert_btn_ok": "Ok"
+  "alert_title_fatal_error": "Erreur fatale",
+  "alert_title_done": "Alerte",
+  "alert_title_warning": "Attenzione",
+  "alert_btn_ok": "Ok",
+  "alert_btn_cancel": "Annuler",
+  "ticket_label_asset_reference": "Référence de actif",
+  "ticket_label_name": "Nom",
+  "ticket_label_description": "Description",
+  "ticket_label_priority": "Priorité",
+  "ticket_label_typology": "Typologie",
+  "ticket_hint_select_schema": "Choisir un type pour générer une liste d’étapes",
+  "ticket_btn_submit": "Soumettre"
 }

@@ -1,7 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:omdk/elements/elements.dart';
-import 'package:omdk/pages/open_ticket/bloc/open_ticket_bloc.dart';
 
 class FieldString extends StatefulWidget {
   /// Create [FieldString] instance
@@ -15,21 +13,23 @@ class FieldString extends StatefulWidget {
     this.nextFocusNode,
     this.fieldValue,
     this.isEnabled = true,
-    this.onTap,
+    this.isNullable = true,
+    this.isEmptyAllowed = true,
+    this.onTapBloc,
     this.keyboardBloc,
-    this.pageBloc,
   });
 
   final String labelText;
   final SimpleTextBloc? bloc;
   final double? fieldValue;
   final bool isEnabled;
+  final bool isNullable;
+  final bool isEmptyAllowed;
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
   final void Function(String?) onChanged;
-  final void Function()? onTap;
   final VirtualKeyboardBloc? keyboardBloc;
-  final Bloc<dynamic, dynamic>? pageBloc;
+  final void Function(SimpleTextBloc)? onTapBloc;
   final String? initialText;
 
   @override
@@ -42,8 +42,11 @@ class _FieldStringState extends State<FieldString> {
   @override
   void initState() {
     super.initState();
-    widgetBloc =
-        widget.bloc ?? SimpleTextBloc(isNullable: true, isEmptyAllowed: true);
+    widgetBloc = widget.bloc ??
+        SimpleTextBloc(
+          isNullable: widget.isNullable,
+          isEmptyAllowed: widget.isEmptyAllowed,
+        );
     if (widget.initialText != null) {
       widgetBloc.add(TextChanged(widget.initialText!));
     }
@@ -72,13 +75,12 @@ class _FieldStringState extends State<FieldString> {
         }
       },
       onTap: () {
-        widget.pageBloc?.add(TicketEditing(bloc: widgetBloc));
+        widget.onTapBloc?.call(widgetBloc);
         if (widget.keyboardBloc != null) {
           widget.keyboardBloc
             ?..add(ChangeType())
             ..add(ChangeVisibility(isVisibile: true));
         }
-        widget.onTap?.call();
       },
     );
   }
