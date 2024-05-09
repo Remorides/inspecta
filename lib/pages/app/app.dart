@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:omdk/pages/auth/bloc/auth_bloc.dart';
 import 'package:omdk/pages/auth_login/view/login_page.dart';
@@ -144,16 +145,17 @@ class _AppViewState extends State<AppView> {
       theme: context.theme,
       navigatorKey: _navigatorKey,
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      locale: getLocaleFromCode(Uri.base.queryParameters['language']),
       supportedLocales: const [
-        Locale('en', 'US'),
-        Locale('en', 'GB'),
-        Locale('fr', 'FR'),
-        Locale('es', 'ES'),
-        Locale('it', 'IT'),
+        Locale('en'),
+        Locale('fr'),
+        Locale('es'),
+        Locale('it'),
       ],
       builder: (context, child) {
         return BlocListener<AuthBloc, AuthState>(
@@ -193,5 +195,18 @@ class _AppViewState extends State<AppView> {
       },
       onGenerateRoute: (_) => SplashPage.route(),
     );
+  }
+
+  Locale getLocaleFromCode(String? inputLanguage){
+    if(inputLanguage == null){
+      return const Locale('en');
+    }
+    if(inputLanguage.length == 5){
+      return Locale(inputLanguage.substring(0,2).toLowerCase());
+    } else if(inputLanguage.length == 2){
+      return Locale(inputLanguage.toLowerCase());
+    } else {
+      return const Locale('en');
+    }
   }
 }

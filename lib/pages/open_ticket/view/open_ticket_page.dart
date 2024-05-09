@@ -1,9 +1,11 @@
 import 'dart:html' as web;
+
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/alerts/alerts.dart';
 import 'package:omdk/elements/elements.dart';
@@ -30,7 +32,6 @@ class OpenTicketPage extends StatelessWidget {
   //Get params from url
   final _paramGUID = Uri.base.queryParameters['guid'];
   final _paramClose = Uri.base.queryParameters['close'];
-  final _paramLocale = Uri.base.queryParameters['language'];
 
   @override
   Widget build(BuildContext context) {

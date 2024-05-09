@@ -117,12 +117,12 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
               )
             : Center(
                 child: OMDKAlert(
-                  title: 'Fatal error',
+                  title: AppLocalizations.of(context)!.alert_msg_fatal_error,
                   message: Text(
                     '${context.read<OpenTicketBloc>().state.failureText}',
                   ),
                   type: AlertType.fatalError,
-                  confirm: 'OK',
+                  confirm: AppLocalizations.of(context)!.alert_btn_ok,
                   onConfirm: () {},
                 ),
               ),

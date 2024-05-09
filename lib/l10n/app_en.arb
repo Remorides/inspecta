@@ -1,0 +1,10 @@
+{
+  "alert_msg_fatal_error": "Fatal Error!",
+  "@alert_msg_fatal_error": {
+    "description": "Alert body message"
+  },
+  "alert_btn_ok": "Ok",
+  "@alert_btn_ok": {
+    "description": "Alert generic button"
+  }
+}
