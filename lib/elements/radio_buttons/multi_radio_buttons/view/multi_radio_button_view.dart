@@ -112,12 +112,12 @@ class _MultiRadioButtons extends StatelessWidget {
             ),
           ),
           activeColor: context.theme?.primaryColor,
-          value: 'high',
+          value: '3',
           shape: const RoundedRectangleBorder(),
           controlAffinity: ListTileControlAffinity.trailing,
-          groupValue: state.selectedRadio,
+          groupValue: state.selectedRadio.toString(),
           onChanged: (value) {
-            context.read<MrbCubit>().switchRadio(value!);
+            context.read<MrbCubit>().switchRadio(int.parse(value!));
             onSelectedPriority?.call(3);
           },
         ),
@@ -135,12 +135,12 @@ class _MultiRadioButtons extends StatelessWidget {
             ),
           ),
           activeColor: context.theme?.primaryColor,
-          value: 'medium',
+          value: '2',
           shape: const RoundedRectangleBorder(),
           controlAffinity: ListTileControlAffinity.trailing,
-          groupValue: state.selectedRadio,
+          groupValue: state.selectedRadio.toString(),
           onChanged: (value) {
-            context.read<MrbCubit>().switchRadio(value!);
+            context.read<MrbCubit>().switchRadio(int.parse(value!));
             onSelectedPriority?.call(2);
           },
         ),
@@ -158,12 +158,12 @@ class _MultiRadioButtons extends StatelessWidget {
             ),
           ),
           activeColor: context.theme?.primaryColor,
-          value: 'low',
+          value: '1',
           shape: const RoundedRectangleBorder(),
           controlAffinity: ListTileControlAffinity.trailing,
-          groupValue: state.selectedRadio,
+          groupValue: state.selectedRadio.toString(),
           onChanged: (value) {
-            context.read<MrbCubit>().switchRadio(value!);
+            context.read<MrbCubit>().switchRadio(int.parse(value!));
             onSelectedPriority?.call(1);
           },
         ),

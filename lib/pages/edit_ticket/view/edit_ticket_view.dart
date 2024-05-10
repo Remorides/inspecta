@@ -17,11 +17,9 @@ class _OpenTicketViewState extends State<_EditTicketView> {
   final _controllerKeyboard = TextEditingController();
 
   final blocKeyboard = VirtualKeyboardBloc();
-
-  final blocAssetReference = SimpleTextBloc();
   final blocName = SimpleTextBloc();
   final blocDesc = SimpleTextBloc();
-  final blocPriority = SimpleTextBloc();
+  final cubitPriority = MrbCubit();
 
   final focusKeyboard = FocusNode();
   final focusName = FocusNode();
@@ -61,6 +59,21 @@ class _OpenTicketViewState extends State<_EditTicketView> {
             previous.loadingStatus != current.loadingStatus ||
             previous.activeFieldBloc != current.activeFieldBloc,
         listener: (context, state) {
+          if (state.loadingStatus == LoadingStatus.failure) {
+            OMDKAlert.show(
+              context,
+              OMDKAlert(
+                title: AppLocalizations.of(context)!.alert_title_warning,
+                type: AlertType.warning,
+                message: Text(
+                  '${state.failureText}',
+                ),
+                confirm: AppLocalizations.of(context)!.alert_btn_ok,
+                onConfirm: () =>
+                    context.read<EditTicketBloc>().add(ResetWarning()),
+              ),
+            );
+          }
           if (state.loadingStatus == LoadingStatus.done) {
             if (widget.closePage && kIsWeb) {
               return web.window.close();
@@ -75,21 +88,6 @@ class _OpenTicketViewState extends State<_EditTicketView> {
                 ),
                 confirm: AppLocalizations.of(context)!.alert_btn_ok,
                 onConfirm: () => context.read<AuthRepo>().logOut(),
-              ),
-            );
-          }
-          if (state.loadingStatus == LoadingStatus.failure) {
-            OMDKAlert.show(
-              context,
-              OMDKAlert(
-                title: AppLocalizations.of(context)!.alert_title_warning,
-                type: AlertType.warning,
-                message: Text(
-                  '${state.failureText}',
-                ),
-                confirm: AppLocalizations.of(context)!.alert_btn_ok,
-                onConfirm: () =>
-                    context.read<EditTicketBloc>().add(ResetWarning()),
               ),
             );
           }
@@ -180,12 +178,19 @@ class _OpenTicketViewState extends State<_EditTicketView> {
           width: MediaQuery.of(context).size.width / 3,
           child: ListView(
             children: [
-              _TicketNameInput(keyboardBloc: blocKeyboard),
+              _TicketNameInput(
+                keyboardBloc: blocKeyboard,
+                bloc: blocName,
+              ),
               const Space.vertical(20),
-              _TicketDescInput(keyboardBloc: blocKeyboard),
+              _TicketDescInput(
+                keyboardBloc: blocKeyboard,
+                bloc: blocDesc,
+              ),
               const Space.vertical(20),
               _TicketPriorityInput(
                 widgetFN: focusPriority,
+                cubit: cubitPriority,
               ),
             ],
           ),
@@ -202,14 +207,19 @@ class _OpenTicketViewState extends State<_EditTicketView> {
 
   Widget singleColumnLayout(BuildContext context) => ListView(
         children: [
-          _TicketNameInput(keyboardBloc: blocKeyboard),
+          _TicketNameInput(
+            keyboardBloc: blocKeyboard,
+            bloc: blocName,
+          ),
           const Space.vertical(20),
           _TicketDescInput(
             keyboardBloc: blocKeyboard,
+            bloc: blocName,
           ),
           const Space.vertical(20),
           _TicketPriorityInput(
             widgetFN: focusPriority,
+            cubit: cubitPriority,
           ),
           const Space.vertical(20),
           _TicketStepList(keyboardBloc: blocKeyboard),
@@ -221,13 +231,14 @@ class _TicketNameInput extends StatelessWidget {
   /// Create [_TicketNameInput] instance
   const _TicketNameInput({
     required this.keyboardBloc,
+    required this.bloc,
   });
 
   final VirtualKeyboardBloc keyboardBloc;
+  final SimpleTextBloc bloc;
 
   @override
   Widget build(BuildContext context) {
-    final bloc = SimpleTextBloc();
     return BlocListener<EditTicketBloc, EditTicketState>(
       listenWhen: (previous, current) =>
           previous.loadingStatus != current.loadingStatus,
@@ -259,13 +270,14 @@ class _TicketDescInput extends StatelessWidget {
   /// Create [_TicketDescInput] instance
   const _TicketDescInput({
     required this.keyboardBloc,
+    required this.bloc,
   });
 
   final VirtualKeyboardBloc keyboardBloc;
+  final SimpleTextBloc bloc;
 
   @override
   Widget build(BuildContext context) {
-    final bloc = SimpleTextBloc(isEmptyAllowed: true);
     return BlocListener<EditTicketBloc, EditTicketState>(
       listenWhen: (previous, current) =>
           previous.loadingStatus != current.loadingStatus,
@@ -299,25 +311,37 @@ class _TicketPriorityInput extends StatelessWidget {
   /// Create [_TicketPriorityInput] instance
   const _TicketPriorityInput({
     required this.widgetFN,
+    required this.cubit,
   });
 
   final FocusNode widgetFN;
+  final MrbCubit cubit;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<EditTicketBloc, EditTicketState>(
-      buildWhen: (previous, current) =>
-          current.loadingStatus != LoadingStatus.initial,
-      builder: (context, state) {
-        return MultiRadioButtons(
-          key: const Key('ticketPriorityInput_textField'),
-          onSelectedPriority: (priorityCode) => context
-              .read<EditTicketBloc>()
-              .add(TicketPriorityChanged(priorityCode)),
-          labelText: AppLocalizations.of(context)!.ticket_label_priority,
-          focusNode: widgetFN,
-        );
+    return BlocListener<EditTicketBloc, EditTicketState>(
+      listenWhen: (previous, current) =>
+      previous.loadingStatus != current.loadingStatus,
+      listener: (context, state) {
+        if (state.ticketEntity?.template?.urgencyCode != null) {
+          cubit.switchRadio(state.ticketEntity!.template!.urgencyCode!);
+        }
       },
+      child: BlocBuilder<EditTicketBloc, EditTicketState>(
+        buildWhen: (previous, current) =>
+        current.loadingStatus != LoadingStatus.initial,
+        builder: (context, state) {
+          return MultiRadioButtons(
+            key: const Key('ticketPriorityInput_textField'),
+            cubit: cubit,
+            onSelectedPriority: (priorityCode) => context
+                .read<EditTicketBloc>()
+                .add(TicketPriorityChanged(priorityCode)),
+            labelText: AppLocalizations.of(context)!.ticket_label_priority,
+            focusNode: widgetFN,
+          );
+        },
+      ),
     );
   }
 }
@@ -336,33 +360,34 @@ class _TicketStepList extends StatelessWidget {
       buildWhen: (previous, current) =>
           current.ticketEntity != null && current.ticketMapping != null,
       builder: (context, state) {
-        return ListView.builder(
-          itemCount: state.ticketEntity!.stepsList.length + 1,
-          itemBuilder: (context, index) {
-            if (index >= state.ticketEntity!.stepsList.length) {
-              return submitTicket(context: context);
-            }
-            return ExpansionTile(
-              initiallyExpanded: index == 0,
-              title: Text(
-                '${(state.ticketEntity!.stepsList[index].title?.singleWhere(
-                      (element) =>
-                          element.culture?.contains(
-                            Localizations.localeOf(context).languageCode,
-                          ) ??
-                          false,
-                    ) ?? state.ticketEntity!.stepsList[index]
-                    .title?[0])?.value}',
-              ),
-              children: buildFieldList(
-                context: context,
-                stepEntity: state.ticketEntity!.stepsList[index],
-                schemaMapping: state.ticketMapping!,
-                keyboardBloc: keyboardBloc,
-              ),
-            );
-          },
-        );
+        return (state.loadingStatus != LoadingStatus.initial)
+            ? ListView.builder(
+                itemCount: state.ticketEntity!.stepsList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index >= state.ticketEntity!.stepsList.length) {
+                    return submitTicket(context: context);
+                  }
+                  return ExpansionTile(
+                    initiallyExpanded: index == 0,
+                    title: Text(
+                      '${(state.ticketEntity!.stepsList[index].title?.singleWhereOrNull(
+                            (element) =>
+                                element.culture?.contains(
+                                  Localizations.localeOf(context).languageCode,
+                                ) ??
+                                false,
+                          ) ?? state.ticketEntity!.stepsList[index].title?[0])?.value}',
+                    ),
+                    children: buildFieldList(
+                      context: context,
+                      stepEntity: state.ticketEntity!.stepsList[index],
+                      schemaMapping: state.ticketMapping!,
+                      keyboardBloc: keyboardBloc,
+                    ),
+                  );
+                },
+              )
+            : Container();
       },
     );
   }
@@ -392,6 +417,7 @@ class _TicketStepList extends StatelessWidget {
           jFieldEntity: jFieldEntity,
           stepGuid: stepEntity.guid!,
           keyboardBloc: keyboardBloc,
+          finalStateList: schemaMapping.data.finalStateList,
         ),
       );
     }
@@ -404,13 +430,14 @@ class _TicketStepList extends StatelessWidget {
     required String stepGuid,
     JFieldEntity? jFieldEntity,
     VirtualKeyboardBloc? keyboardBloc,
+    List<JResultState>? finalStateList,
   }) {
     switch (jFieldMapping.type) {
       case FieldType.String:
         switch (jFieldMapping.collectionType) {
           case CollectionType.List:
             return FieldPoolList(
-              labelText: '${(jFieldMapping.title?.singleWhere(
+              labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                     (element) =>
                         element.culture?.contains(
                           Localizations.localeOf(context).languageCode,
@@ -431,7 +458,7 @@ class _TicketStepList extends StatelessWidget {
             if (jFieldMapping.poolListSettings?.value != null) {
               return FieldPoolList(
                 selectedItem: jFieldEntity?.value?.stringsList?.first,
-                labelText: '${(jFieldMapping.title?.singleWhere(
+                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                       (element) =>
                           element.culture?.contains(
                             Localizations.localeOf(context).languageCode,
@@ -450,7 +477,7 @@ class _TicketStepList extends StatelessWidget {
               );
             } else if (jFieldMapping.poolListSettings?.multiSelect ?? false) {
               return FieldMultiPoolList(
-                labelText: '${(jFieldMapping.title?.singleWhere(
+                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                       (element) =>
                           element.culture?.contains(
                             Localizations.localeOf(context).languageCode,
@@ -463,7 +490,7 @@ class _TicketStepList extends StatelessWidget {
               );
             } else {
               return FieldString(
-                labelText: '${(jFieldMapping.title?.singleWhere(
+                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                       (element) =>
                           element.culture?.contains(
                             Localizations.localeOf(context).languageCode,
@@ -493,7 +520,7 @@ class _TicketStepList extends StatelessWidget {
         return Container();
       case FieldType.Double:
         return FieldDouble(
-          labelText: '${(jFieldMapping.title?.singleWhere(
+          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                 (element) =>
                     element.culture?.contains(
                       Localizations.localeOf(context).languageCode,
@@ -515,7 +542,7 @@ class _TicketStepList extends StatelessWidget {
         );
       case FieldType.Int32:
         return FieldInt(
-          labelText: '${(jFieldMapping.title?.singleWhere(
+          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                 (element) =>
                     element.culture?.contains(
                       Localizations.localeOf(context).languageCode,
@@ -539,7 +566,7 @@ class _TicketStepList extends StatelessWidget {
         return Container();
       case FieldType.Bool:
         return FieldBool(
-          labelText: '${(jFieldMapping.title?.singleWhere(
+          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                 (element) =>
                     element.culture?.contains(
                       Localizations.localeOf(context).languageCode,
@@ -556,8 +583,29 @@ class _TicketStepList extends StatelessWidget {
                 ),
               ),
         );
-      case FieldType.File:
       case FieldType.StepResult:
+        return FieldFinalState(
+          selectedItem: finalStateList?.singleWhereOrNull(
+            (f) => f.value == jFieldEntity?.value?.intValue,
+          ),
+          onChanged: (JResultState? j) => context.read<EditTicketBloc>().add(
+                FieldChanged(
+                  stepGuid: stepGuid,
+                  fieldMapping: jFieldMapping,
+                  fieldGuid: jFieldEntity!.guid!,
+                  fieldValue: j!.value,
+                ),
+              ),
+          listItem: finalStateList ?? [],
+          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
+                (element) =>
+                    element.culture?.contains(
+                      Localizations.localeOf(context).languageCode,
+                    ) ??
+                    false,
+              ) ?? jFieldMapping.title?[0])?.value}',
+        );
+      case FieldType.File:
       case FieldType.InternalStep:
       case FieldType.unknown:
         return Container();

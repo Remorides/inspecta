@@ -26,6 +26,8 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     on<TicketDescChanged>(_onTicketDescChanged);
     on<TicketEditing>(_onEditingMode);
     on<FieldChanged>(_onFieldChanged);
+    on<TicketPriorityChanged>(_onTicketPriorityChanged);
+    on<SubmitTicket>(_onTicketSubmitted);
   }
 
   /// [OperaRepo] instance
@@ -69,6 +71,44 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     }
   }
 
+  Future<void> _onTicketSubmitted(
+    SubmitTicket event,
+    Emitter<EditTicketState> emit,
+  ) async {
+    if (state.ticketEntity!.entity!.name!.isEmpty) {
+      return emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.failure,
+          failureText: 'Name is required to send ticket changes,'
+              ' please fill it and try again.',
+        ),
+      );
+    }
+
+    try {
+      await scheduledRepo.putAPIItem(
+        state.ticketEntity!.copyWith(
+          dates: state.ticketEntity?.dates?.copyWith(
+            modified: await operaRepo.getParticipationDate(),
+          ),
+        ),
+      );
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.done,
+          failureText: 'Ticket updated successfully!',
+        ),
+      );
+    } on Exception catch (_) {
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.failure,
+          failureText: 'There was a problem, please try again later..',
+        ),
+      );
+    }
+  }
+
   Future<void> _onTicketNameChanged(
     TicketNameChanged event,
     Emitter<EditTicketState> emit,
@@ -88,9 +128,9 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
   }
 
   Future<void> _onTicketDescChanged(
-      TicketDescChanged event,
-      Emitter<EditTicketState> emit,
-      ) async {
+    TicketDescChanged event,
+    Emitter<EditTicketState> emit,
+  ) async {
     emit(
       state.copyWith(
         ticketEntity: state.ticketEntity?.copyWith(
@@ -102,17 +142,32 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     );
   }
 
+  Future<void> _onTicketPriorityChanged(
+    TicketPriorityChanged event,
+    Emitter<EditTicketState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        ticketEntity: state.ticketEntity?.copyWith(
+          template: state.ticketEntity?.template?.copyWith(
+            urgencyCode: event.priority,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _onEditingMode(
-      TicketEditing event,
-      Emitter<EditTicketState> emit,
-      ) {
+    TicketEditing event,
+    Emitter<EditTicketState> emit,
+  ) {
     emit(state.copyWith(activeFieldBloc: event.bloc));
   }
 
   Future<void> _onFieldChanged(
-      FieldChanged event,
-      Emitter<EditTicketState> emit,
-      ) async {
+    FieldChanged event,
+    Emitter<EditTicketState> emit,
+  ) async {
     emit(state.copyWith(loadingStatus: LoadingStatus.inProgress));
     try {
       final indexStep = state.ticketEntity?.stepsList
@@ -125,56 +180,64 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-                modified: await operaRepo.getParticipationDate(),
-                value: JFieldValue(
-                  stringValue: (event.fieldValue is String?)
-                      ? event.fieldValue as String?
-                      : null,
-                  stringsList: (event.fieldValue is List)
-                      ? event.fieldValue as List<String>?
-                      : null,
-                ),
-              );
+            modified: await operaRepo.getParticipationDate(),
+            value: JFieldValue(
+              stringValue: (event.fieldValue is String?)
+                  ? event.fieldValue as String?
+                  : null,
+              stringsList: (event.fieldValue is List)
+                  ? event.fieldValue as List<String>?
+                  : null,
+            ),
+          );
         case FieldType.Double:
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-                modified: await operaRepo.getParticipationDate(),
-                value: JFieldValue(
-                  floatValue: event.fieldValue as double?,
-                ),
-              );
+            modified: await operaRepo.getParticipationDate(),
+            value: JFieldValue(
+              floatValue: event.fieldValue as double?,
+            ),
+          );
         case FieldType.Int32:
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-                modified: await operaRepo.getParticipationDate(),
-                value: JFieldValue(
-                  intValue: event.fieldValue as int?,
-                ),
-              );
+            modified: await operaRepo.getParticipationDate(),
+            value: JFieldValue(
+              intValue: event.fieldValue as int?,
+            ),
+          );
         case FieldType.Datetime:
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-                modified: await operaRepo.getParticipationDate(),
-                value: JFieldValue(
-                  dateTimeValue: event.fieldValue as DateTime?,
-                ),
-              );
+            modified: await operaRepo.getParticipationDate(),
+            value: JFieldValue(
+              dateTimeValue: event.fieldValue as DateTime?,
+            ),
+          );
         case FieldType.Bool:
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-                modified: await operaRepo.getParticipationDate(),
-                value: JFieldValue(
-                  boolValue: event.fieldValue as bool?,
-                ),
-              );
+            modified: await operaRepo.getParticipationDate(),
+            value: JFieldValue(
+              boolValue: event.fieldValue as bool?,
+            ),
+          );
+        case FieldType.StepResult:
+          state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
+              state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
+                  .copyWith(
+            modified: await operaRepo.getParticipationDate(),
+            value: JFieldValue(
+              intValue: event.fieldValue as int?,
+            ),
+          );
         case FieldType.unknown:
         case FieldType.Image:
         case FieldType.InternalStep:
-        case FieldType.StepResult:
         case FieldType.File:
           break;
       }

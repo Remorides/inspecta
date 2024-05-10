@@ -262,13 +262,18 @@ class _AssetReference extends StatelessWidget {
           bloc.add(TextChanged(state.jMainNode!.name!));
         }
       },
-      child: SimpleTextField(
-        key: const Key('assetReference_textField'),
-        simpleTextBloc: bloc,
-        enabled: false,
-        onEditingComplete: (text) {},
-        labelText: AppLocalizations.of(context)!.ticket_label_asset_reference,
-        textFocusNode: FocusNode(),
+      child: BlocBuilder<OpenTicketBloc, OpenTicketState>(
+        builder: (context, state) {
+          return SimpleTextField(
+            key: const Key('assetReference_textField'),
+            simpleTextBloc: bloc,
+            enabled: false,
+            onEditingComplete: (text) {},
+            labelText:
+                AppLocalizations.of(context)!.ticket_label_asset_reference,
+            textFocusNode: FocusNode(),
+          );
+        },
       ),
     );
   }
@@ -304,7 +309,9 @@ class _TicketNameInput extends StatelessWidget {
             context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
             keyboardBloc
               ..add(ChangeType())
-              ..add(ChangeVisibility(isVisibile: true));
+              ..add(
+                ChangeVisibility(isVisibile: true),
+              );
           },
         );
       },
@@ -342,7 +349,9 @@ class _TicketDescInput extends StatelessWidget {
             context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
             keyboardBloc
               ..add(ChangeType())
-              ..add(ChangeVisibility(isVisibile: true));
+              ..add(
+                ChangeVisibility(isVisibile: true),
+              );
           },
         );
       },
@@ -475,14 +484,14 @@ class _TicketStepList extends StatelessWidget {
                     initiallyExpanded: index == 0,
                     title: Text(
                       '${(state.ticketEntity!.stepsList[index].title
-                          ?.singleWhere(
+                          ?.singleWhereOrNull(
                             (element) =>
                                 element.culture?.contains(
                                   Localizations.localeOf(context).languageCode,
                                 ) ??
                                 false,
-                          ) ?? state.ticketEntity!.stepsList[index]
-                          .title?[0])?.value}',
+                          ) ?? state.ticketEntity!.stepsList[index].title?[0])
+                          ?.value}',
                     ),
                     children: buildFieldList(
                       context: context,
@@ -545,7 +554,7 @@ class _TicketStepList extends StatelessWidget {
         switch (jFieldMapping.collectionType) {
           case CollectionType.List:
             return FieldPoolList(
-              labelText: '${(jFieldMapping.title?.singleWhere(
+              labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                     (element) =>
                         element.culture?.contains(
                           Localizations.localeOf(context).languageCode,
@@ -566,7 +575,7 @@ class _TicketStepList extends StatelessWidget {
             if (jFieldMapping.poolListSettings?.value != null) {
               return FieldPoolList(
                 selectedItem: jFieldEntity?.value?.stringsList?.first,
-                labelText: '${(jFieldMapping.title?.singleWhere(
+                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                       (element) =>
                           element.culture?.contains(
                             Localizations.localeOf(context).languageCode,
@@ -585,7 +594,7 @@ class _TicketStepList extends StatelessWidget {
               );
             } else if (jFieldMapping.poolListSettings?.multiSelect ?? false) {
               return FieldMultiPoolList(
-                labelText: '${(jFieldMapping.title?.singleWhere(
+                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                       (element) =>
                           element.culture?.contains(
                             Localizations.localeOf(context).languageCode,
@@ -598,7 +607,7 @@ class _TicketStepList extends StatelessWidget {
               );
             } else {
               return FieldString(
-                labelText: '${(jFieldMapping.title?.singleWhere(
+                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                       (element) =>
                           element.culture?.contains(
                             Localizations.localeOf(context).languageCode,
@@ -628,7 +637,7 @@ class _TicketStepList extends StatelessWidget {
         return Container();
       case FieldType.Double:
         return FieldDouble(
-          labelText: '${(jFieldMapping.title?.singleWhere(
+          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                 (element) =>
                     element.culture?.contains(
                       Localizations.localeOf(context).languageCode,
@@ -650,7 +659,7 @@ class _TicketStepList extends StatelessWidget {
         );
       case FieldType.Int32:
         return FieldInt(
-          labelText: '${(jFieldMapping.title?.singleWhere(
+          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                 (element) =>
                     element.culture?.contains(
                       Localizations.localeOf(context).languageCode,
@@ -674,7 +683,7 @@ class _TicketStepList extends StatelessWidget {
         return Container();
       case FieldType.Bool:
         return FieldBool(
-          labelText: '${(jFieldMapping.title?.singleWhere(
+          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                 (element) =>
                     element.culture?.contains(
                       Localizations.localeOf(context).languageCode,

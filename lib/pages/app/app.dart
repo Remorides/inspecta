@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/pages/auth/bloc/auth_bloc.dart';
 import 'package:omdk/pages/auth_login/view/login_page.dart';
+import 'package:omdk/pages/edit_ticket/edit_scheduled.dart';
 import 'package:omdk/pages/open_ticket/view/open_ticket_page.dart';
 import 'package:omdk/pages/otp_fails/otp_fails.dart';
 import 'package:omdk/pages/splash/view/splash_page.dart';
@@ -32,6 +34,7 @@ class App extends StatefulWidget {
 
   /// [AuthRepo] instance
   final AuthRepo authRepo;
+
   /// [OperaRepo] instance
   final OperaRepo operaRepo;
 
@@ -100,9 +103,7 @@ class _AppState extends State<App> {
         child: BlocProvider(
           create: (_) => AuthBloc(authRepo: widget.authRepo)
             ..add(
-              paramOTP != null
-                  ? ValidateOTP(otp: paramOTP!)
-                  : RestoreSession(),
+              paramOTP != null ? ValidateOTP(otp: paramOTP!) : RestoreSession(),
             ),
           child: const AppView(),
         ),
@@ -141,6 +142,8 @@ class _AppViewState extends State<AppView> {
       overlays: [SystemUiOverlay.top],
     );
 
+    final paramMode = Uri.base.queryParameters['mode'];
+
     return MaterialApp(
       theme: context.theme,
       navigatorKey: _navigatorKey,
@@ -165,11 +168,21 @@ class _AppViewState extends State<AppView> {
 
                 /// Redirect user to home page only if
                 /// local session is validated
-                await _navigator.pushAndRemoveUntil(
-                  OpenTicketPage.route(),
-                  //EditTicketPage.route(),
-                  (route) => false,
-                );
+                switch (Mode.fromJson(paramMode ?? 'none')) {
+                  case Mode.editTicket:
+                    await _navigator.pushAndRemoveUntil(
+                      EditTicketPage.route(),
+                      (route) => false,
+                    );
+                  case Mode.openTicket:
+                    await _navigator.pushAndRemoveUntil(
+                      OpenTicketPage.route(),
+                      (route) => false,
+                    );
+                  case Mode.none:
+                    return;
+                }
+
               case AuthStatus.unauthenticated:
 
                 /// Session doesn't exist
@@ -187,7 +200,7 @@ class _AppViewState extends State<AppView> {
               case AuthStatus.otpFailed:
                 await _navigator.pushAndRemoveUntil(
                   OTPFailsPage.route(),
-                      (route) => false,
+                  (route) => false,
                 );
             }
           },
@@ -198,13 +211,13 @@ class _AppViewState extends State<AppView> {
     );
   }
 
-  Locale getLocaleFromCode(String? inputLanguage){
-    if(inputLanguage == null){
+  Locale getLocaleFromCode(String? inputLanguage) {
+    if (inputLanguage == null) {
       return const Locale('en');
     }
-    if(inputLanguage.length == 5){
-      return Locale(inputLanguage.substring(0,2).toLowerCase());
-    } else if(inputLanguage.length == 2){
+    if (inputLanguage.length == 5) {
+      return Locale(inputLanguage.substring(0, 2).toLowerCase());
+    } else if (inputLanguage.length == 2) {
       return Locale(inputLanguage.toLowerCase());
     } else {
       return const Locale('en');

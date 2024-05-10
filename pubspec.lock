@@ -681,10 +681,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_ios
-      sha256: f74064bc548b5164a033ec05638e23c91be1a249c255e0f56319dddffd759794
+      sha256: cb0db0ec0d3e2cd49674f2e6053be25ccdb959832607c1cbd215dd6cf10fb0dd
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.10+1"
+    version: "0.8.11"
   image_picker_linux:
     dependency: transitive
     description:
@@ -906,7 +906,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "067d8448e6973ab0039c636f378ed21d9fa5c555"
+      resolved-ref: "09def9626b823f3023273f19d40d0ab33929c07d"
       url: "https://github.com/Remorides/omdk-api.git"
     source: git
     version: "0.1.0+1"
@@ -933,7 +933,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: e3b44f260b9c42be224fb467e3f729e277d0e8e1
+      resolved-ref: a47fe4fce8dd8391161a24deb91b3de04c60e687
       url: "https://github.com/Remorides/omdk-repo.git"
     source: git
     version: "0.1.0+1"
@@ -942,7 +942,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "63692c96497c014a95fda785f2d4ef1ddd04807c"
+      resolved-ref: a7a2b69808c59d1f2743dda8b42cfcca96866df3
       url: "https://github.com/Remorides/opera-api-asset.git"
     source: git
     version: "0.1.0+1"
@@ -960,7 +960,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "6409174459653a3cf10298027df3e0d1890a74f1"
+      resolved-ref: "140bb6a9d66e82f9bdb541c525aa70abf8b2d65a"
       url: "https://github.com/Remorides/opera-api-entity.git"
     source: git
     version: "0.1.0+1"

@@ -9,6 +9,6 @@ class MrbCubit extends Cubit<MrbState> {
       : super(MrbState(isEnabled: isEnabled));
 
   /// Set current tab on home page
-  void switchRadio(String selectedRadio) =>
+  void switchRadio(int selectedRadio) =>
       emit(state.copyWith(selectedRadio: selectedRadio));
 }

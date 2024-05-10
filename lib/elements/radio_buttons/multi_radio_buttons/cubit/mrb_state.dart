@@ -7,11 +7,11 @@ final class MrbState extends Equatable {
     this.selectedRadio,
   });
 
-  final String? selectedRadio;
+  final int? selectedRadio;
   final bool isEnabled;
 
   MrbState copyWith({
-    String? selectedRadio,
+    int? selectedRadio,
   }) =>
       MrbState(
         isEnabled: isEnabled,
