@@ -28,6 +28,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     on<FieldChanged>(_onFieldChanged);
     on<TicketPriorityChanged>(_onTicketPriorityChanged);
     on<SubmitTicket>(_onTicketSubmitted);
+    on<ResetWarning>(_onResetWarning);
   }
 
   /// [OperaRepo] instance
@@ -156,6 +157,14 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
       ),
     );
   }
+
+  void _onResetWarning(
+      ResetWarning event,
+      Emitter<EditTicketState> emit,
+      ) {
+    emit(state.copyWith(loadingStatus: LoadingStatus.inProgress));
+  }
+
 
   void _onEditingMode(
     TicketEditing event,

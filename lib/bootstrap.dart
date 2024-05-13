@@ -18,6 +18,7 @@ import 'package:opera_repo/opera_repo.dart';
 Future<void> bootstrap({
   required OMDKApi omdkApi,
   required OMDKLocalData omdkLocalData,
+  required String companyCode,
 }) async {
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
@@ -68,6 +69,7 @@ Future<void> bootstrap({
       schemaListRepo: schemaListRepo,
       mappingRepo: mappingRepo,
       scheduledRepo: scheduledRepo,
+      companyCode: companyCode,
     ),
   );
 }

@@ -100,46 +100,73 @@ class _OMDKAnimatedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.select((OMDKAnimatedPageCubit cubit) => cubit.state);
     return Material(
-      child: Stack(
-        children: [
-          const OMDKAnimatedDrawer(),
-          AnimatedContainer(
-            transform: Matrix4.translationValues(cubit.xOffsetDrawer, 0, 0),
-            duration: const Duration(milliseconds: 150),
-            child: GestureDetector(
-              onTap: () =>
-                  context.read<OMDKAnimatedPageCubit>().collapseDrawer(),
-              child: AbsorbPointer(
-                absorbing: cubit.isDrawerExpanded,
-                child: CupertinoPageScaffold(
-                  navigationBar: withAppBar
-                      ? CupertinoNavigationBar(
-                          backgroundColor:
-                              context.theme?.appBarTheme.backgroundColor,
-                          brightness: Brightness.light,
-                          leading: withDrawer && !Navigator.of(context).canPop()
-                              ? GestureDetector(
-                                  child: const Icon(
-                                    Icons.menu_outlined,
-                                    size: 20,
-                                  ),
-                                  onTap: () => context
-                                      .read<OMDKAnimatedPageCubit>()
-                                      .expandDrawer(),
-                                )
-                              : leading,
-                          middle: Text(appBarTitle!),
-                          trailing: trailing,
-                          previousPageTitle: previousRoute,
-                        )
-                      : null,
-                  child: _buildPage(context),
+      child: withDrawer
+          ? Stack(
+              children: [
+                const OMDKAnimatedDrawer(),
+                AnimatedContainer(
+                  transform:
+                      Matrix4.translationValues(cubit.xOffsetDrawer, 0, 0),
+                  duration: const Duration(milliseconds: 150),
+                  child: GestureDetector(
+                    onTap: () =>
+                        context.read<OMDKAnimatedPageCubit>().collapseDrawer(),
+                    child: AbsorbPointer(
+                      absorbing: cubit.isDrawerExpanded,
+                      child: CupertinoPageScaffold(
+                        navigationBar: withAppBar
+                            ? CupertinoNavigationBar(
+                                backgroundColor:
+                                    context.theme?.appBarTheme.backgroundColor,
+                                brightness: Brightness.light,
+                                leading: withDrawer &&
+                                        !Navigator.of(context).canPop()
+                                    ? GestureDetector(
+                                        child: const Icon(
+                                          Icons.menu_outlined,
+                                          size: 20,
+                                        ),
+                                        onTap: () => context
+                                            .read<OMDKAnimatedPageCubit>()
+                                            .expandDrawer(),
+                                      )
+                                    : leading,
+                                middle: Text(appBarTitle!),
+                                trailing: trailing,
+                                previousPageTitle: previousRoute,
+                              )
+                            : null,
+                        child: _buildPage(context),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
+            )
+          : CupertinoPageScaffold(
+              navigationBar: withAppBar
+                  ? CupertinoNavigationBar(
+                      backgroundColor:
+                          context.theme?.appBarTheme.backgroundColor,
+                      brightness: Brightness.light,
+                      leading: withDrawer && !Navigator.of(context).canPop()
+                          ? GestureDetector(
+                              child: const Icon(
+                                Icons.menu_outlined,
+                                size: 20,
+                              ),
+                              onTap: () => context
+                                  .read<OMDKAnimatedPageCubit>()
+                                  .expandDrawer(),
+                            )
+                          : leading,
+                      middle: Text(appBarTitle!),
+                      trailing: trailing,
+                      previousPageTitle: previousRoute,
+                    )
+                  : null,
+              child: _buildPage(context),
             ),
-          ),
-        ],
-      ),
     );
   }
 

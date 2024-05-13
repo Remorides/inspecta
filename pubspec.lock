@@ -53,10 +53,10 @@ packages:
     dependency: transitive
     description:
       name: asn1lib
-      sha256: c9c85fedbe2188b95133cbe960e16f5f448860f7133330e272edbbca5893ddc6
+      sha256: "58082b3f0dca697204dbab0ef9ff208bfaea7767ea771076af9a343488428dda"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.2"
+    version: "1.5.3"
   async:
     dependency: transitive
     description:
@@ -665,10 +665,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: "40e24f467b75cd6f4a92ee93dd13d1a7bcb4523a84fd95f00c755f01f42398c8"
+      sha256: "79455f6cff4cbef583b2b524bbf0d4ec424e5959f4d464e36ef5323715b98370"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.11"
+    version: "0.8.12"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -765,6 +765,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.9.0"
+  json_class:
+    dependency: transitive
+    description:
+      name: json_class
+      sha256: "65f5a57595beade1fdda6458c2eb89738b2651b3a476e52c8fcdefd37c646043"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0+13"
+  json_schema:
+    dependency: transitive
+    description:
+      name: json_schema
+      sha256: f1bcf81647c347f53281dca9c8ea3e2b7b4d0eee5b4d1e4cee3173a5c162f358
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.7"
+  json_theme:
+    dependency: transitive
+    description:
+      name: json_theme
+      sha256: "06e2514ad2acab0c1d2ae72d27d086353278869674788672bb839ef356376939"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.4.1+5"
+  json_theme_annotation:
+    dependency: transitive
+    description:
+      name: json_theme_annotation
+      sha256: "3816f6e6eb44d802919cfbaa3f8a9f19a29e12de1663a2f29a5618f77263a7d1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3+7"
   jwt_decoder:
     dependency: transitive
     description:
@@ -813,14 +845,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  logger:
-    dependency: transitive
-    description:
-      name: logger
-      sha256: "8c94b8c219e7e50194efc8771cd0e9f10807d8d3e219af473d89b06cc2ee4e04"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   logging:
     dependency: transitive
     description:
@@ -906,7 +930,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "09def9626b823f3023273f19d40d0ab33929c07d"
+      resolved-ref: "7efdb7056f90a695d4d9a5bc8c5e05876910aab4"
       url: "https://github.com/Remorides/omdk-api.git"
     source: git
     version: "0.1.0+1"
@@ -915,7 +939,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "96d1bdc1a09419235f79192bab45316c5dc9c109"
+      resolved-ref: "0f9ddfd68c62d0c38e1efd7ca1337d74b391b970"
       url: "https://github.com/Remorides/omdk-local-data.git"
     source: git
     version: "0.1.0+1"
@@ -933,8 +957,17 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: a47fe4fce8dd8391161a24deb91b3de04c60e687
+      resolved-ref: "58f5f0b1bf0d170cec837643d607cba079f233be"
       url: "https://github.com/Remorides/omdk-repo.git"
+    source: git
+    version: "0.1.0+1"
+  omdk_theme:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "08842224a3ae0f64b81b4575f8d9272d6a7914b0"
+      url: "https://github.com/Remorides/omdk-theme.git"
     source: git
     version: "0.1.0+1"
   opera_api_asset:
@@ -942,7 +975,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: a7a2b69808c59d1f2743dda8b42cfcca96866df3
+      resolved-ref: fb995a3007dd6862ce02eaf573200352ecef40e5
       url: "https://github.com/Remorides/opera-api-asset.git"
     source: git
     version: "0.1.0+1"
@@ -1165,6 +1198,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      sha256: b1c1ac5ce6688d77f65f3375a9abb9319b3cb32486bdc7a1e0fdf004d7ba4e47
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.1"
+  rfc_6901:
+    dependency: transitive
+    description:
+      name: rfc_6901
+      sha256: df1bbfa3d023009598f19636d6114c6ac1e0b7bb7bf6a260f0e6e6ce91416820
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   rxdart:
     dependency: transitive
     description:
@@ -1290,6 +1339,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.2"
+  uri:
+    dependency: transitive
+    description:
+      name: uri
+      sha256: "889eea21e953187c6099802b7b4cf5219ba8f3518f604a1033064d45b1b8268a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   uuid:
     dependency: transitive
     description:

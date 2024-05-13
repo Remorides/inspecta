@@ -13,6 +13,7 @@ import 'package:omdk/pages/splash/view/splash_page.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
 import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_theme/omdk_theme.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_repo/opera_repo.dart';
 import 'package:provider/provider.dart';
@@ -29,8 +30,12 @@ class App extends StatefulWidget {
     required this.schemaRepo,
     required this.operaRepo,
     required this.scheduledRepo,
+    required this.companyCode,
     super.key,
   });
+
+  /// Default company code
+  final String companyCode;
 
   /// [AuthRepo] instance
   final AuthRepo authRepo;
@@ -96,7 +101,10 @@ class _AppState extends State<App> {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(
-            create: (_) => ThemeRepo(widget.omdkLocalData),
+            create: (_) => ThemeRepo(
+              widget.omdkLocalData,
+              themeRepo: OmdkApiTheme(widget.authRepo.omdkApi.apiClient.client),
+            )..downloadCustomTheme(widget.companyCode),
             lazy: true,
           ),
         ],
@@ -105,7 +113,7 @@ class _AppState extends State<App> {
             ..add(
               paramOTP != null ? ValidateOTP(otp: paramOTP!) : RestoreSession(),
             ),
-          child: const AppView(),
+          child: AppView(companyCode: widget.companyCode),
         ),
       ),
     );
@@ -115,7 +123,12 @@ class _AppState extends State<App> {
 ///
 class AppView extends StatefulWidget {
   /// create [AppView] instance
-  const AppView({super.key});
+  const AppView({
+    required this.companyCode,
+    super.key,
+  });
+
+  final String companyCode;
 
   @override
   State<AppView> createState() => _AppViewState();
@@ -165,6 +178,10 @@ class _AppViewState extends State<AppView> {
           listener: (context, state) async {
             switch (state.status) {
               case AuthStatus.authenticated:
+                await context.read<ThemeRepo>().changeTheme(
+                      ThemeEnum.customLight,
+                      widget.companyCode,
+                    );
 
                 /// Redirect user to home page only if
                 /// local session is validated

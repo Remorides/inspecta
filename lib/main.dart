@@ -10,6 +10,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final omdkApi = OMDKApi(apiEndpoint: dotenv.env['API_ENDPOINT']);
+  final companyCode = dotenv.env['COMPANY_CODE'];
   final omdkLocalData = OMDKLocalData();
 
   SystemChrome.setSystemUIOverlayStyle(
@@ -26,5 +27,9 @@ Future<void> main() async {
     overlays: [SystemUiOverlay.top],
   );
 
-  await bootstrap(omdkApi: omdkApi, omdkLocalData: omdkLocalData);
+  await bootstrap(
+    omdkApi: omdkApi,
+    omdkLocalData: omdkLocalData,
+    companyCode: companyCode!,
+  );
 }
