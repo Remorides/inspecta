@@ -72,7 +72,9 @@ class _FieldPoolList extends StatelessWidget {
                     labelText.toUpperCase(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.theme?.inputDecorationTheme.labelStyle,
+                    style: TextStyle(
+                      color: context.theme?.colorScheme.onSurface,
+                    ),
                   ),
                 ),
               ],
@@ -92,12 +94,19 @@ class _FieldPoolList extends StatelessWidget {
                       ),
                       hintText: labelText,
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: context.theme?.colorScheme.background,
+                      labelStyle: TextStyle(
+                        color: context.theme?.colorScheme.onBackground,
+                      ),
                     ),
                     items: state.listItem.map((map) {
                       return DropdownMenuItem(
                         value: map,
-                        child: Text(map),
+                        child: Text(
+                          map,
+                          style: TextStyle(
+                              color: context.theme?.colorScheme.onBackground),
+                        ),
                       );
                     }).toList(),
                     value: state.selectedItem,
@@ -117,7 +126,9 @@ class _FieldPoolList extends StatelessWidget {
                   state.errorText,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.theme?.inputDecorationTheme.errorStyle,
+                  style: TextStyle(
+                    color: context.theme?.colorScheme.onError,
+                  ),
                 ),
               ),
           ],

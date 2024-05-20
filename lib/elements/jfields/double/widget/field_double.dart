@@ -6,7 +6,7 @@ class FieldDouble extends StatefulWidget {
   /// Create [FieldDouble] instance
   const FieldDouble({
     required this.labelText,
-    required this.focusNode,
+    this.focusNode,
     required this.onChanged,
     super.key,
     this.bloc,
@@ -22,7 +22,7 @@ class FieldDouble extends StatefulWidget {
   final SimpleTextBloc? bloc;
   final double? fieldValue;
   final bool isEnabled;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
   final void Function(double?) onChanged;
   final void Function()? onTap;

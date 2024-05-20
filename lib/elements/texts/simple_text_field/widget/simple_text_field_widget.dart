@@ -9,7 +9,7 @@ class SimpleTextField extends StatelessWidget {
   const SimpleTextField({
     required this.onEditingComplete,
     required this.labelText,
-    required this.textFocusNode,
+    this.textFocusNode,
     this.simpleTextBloc,
     this.initialText = '',
     this.nextFocusNode,
@@ -48,7 +48,7 @@ class SimpleTextField extends StatelessWidget {
   final String labelText;
 
   /// Focus node of current widget
-  final FocusNode textFocusNode;
+  final FocusNode? textFocusNode;
 
   /// If exist, pass next focus node to autofocus if on editing complete
   final FocusNode? nextFocusNode;
@@ -120,8 +120,8 @@ class SimpleTextField extends StatelessWidget {
 class _SimpleTextFieldView extends StatefulWidget {
   const _SimpleTextFieldView({
     required this.labelText,
-    required this.textFocusNode,
     required this.onEditingComplete,
+    this.textFocusNode,
     this.onTap,
     this.onFocus,
     this.onLostFocus,
@@ -142,7 +142,7 @@ class _SimpleTextFieldView extends StatefulWidget {
   final void Function()? onFocus;
   final void Function()? onLostFocus;
   final String labelText;
-  final FocusNode textFocusNode;
+  final FocusNode? textFocusNode;
   final FocusNode? nextFocusNode;
   final String initialText;
   final TextInputType keyboardType;
@@ -160,6 +160,7 @@ class _SimpleTextFieldView extends StatefulWidget {
 
 class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
   bool _passwordVisible = false;
+  bool _textShowCursor = false;
   final _controller = TextEditingController();
 
   @override
@@ -170,10 +171,9 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SimpleTextBloc, SimpleTextState>(
-      listenWhen: (previous, current) =>
-          previous.text != current.text,
+      listenWhen: (previous, current) => previous.text != current.text,
       listener: (context, state) {
-        if(state.text != null){
+        if (state.text != null) {
           widget.onEditingComplete(state.text);
           _controller.value = TextEditingValue(
             text: state.text!,
@@ -199,7 +199,9 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                         widget.labelText.toUpperCase(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: context.theme?.inputDecorationTheme.labelStyle,
+                        style: TextStyle(
+                          color: context.theme?.colorScheme.onSurface,
+                        ),
                       ),
                     ),
                   ],
@@ -209,7 +211,7 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                   child: Container(
                     margin: const EdgeInsets.only(top: 22),
                     decoration: BoxDecoration(
-                      color: const Color(0xffffffff),
+                      color: context.theme?.colorScheme.background,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     height: (52 + ((widget.maxLines - 1) * 16)).toDouble(),
@@ -227,16 +229,21 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                       ),
                       child: Focus(
                         onFocusChange: (bool focus) {
-                          if(focus) {
+                          setState(() => _textShowCursor = focus);
+                          if (focus) {
                             widget.onFocus?.call();
                           } else {
-                            context.read<SimpleTextBloc>().add(ValidateData());
+                            FocusScope.of(context).unfocus();
                             widget.onLostFocus?.call();
+                            context.read<SimpleTextBloc>().add(ValidateData());
                           }
                         },
                         child: TextField(
                           controller: _controller,
-                          onTap: widget.onTap,
+                          showCursor: _textShowCursor,
+                          onTap: () {
+                            widget.onTap?.call();
+                          },
                           readOnly: !widget.enabled,
                           focusNode: widget.textFocusNode,
                           keyboardType: widget.keyboardType,
@@ -247,17 +254,19 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                               widget.textInputAction == TextInputAction.newline
                                   ? null
                                   : widget.maxLines,
-                          onChanged: (text) => context.read<SimpleTextBloc>()
+                          onChanged: (text) => context
+                              .read<SimpleTextBloc>()
                               .add(TextChanged(text)),
                           onEditingComplete: () {
                             context.read<SimpleTextBloc>().add(ValidateData());
                             if (widget.nextFocusNode != null) {
                               FocusScope.of(context)
                                   .requestFocus(widget.nextFocusNode);
-                            } else {
-                              FocusScope.of(context).unfocus();
                             }
                           },
+                          style: TextStyle(
+                            color: context.theme?.colorScheme.onBackground,
+                          ),
                           decoration: InputDecoration(
                             filled: false,
                             enabledBorder: InputBorder.none,
@@ -295,7 +304,10 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                       state.errorText,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: context.theme?.inputDecorationTheme.errorStyle,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: context.theme?.colorScheme.error,
+                      ),
                     ),
                   ),
               ],

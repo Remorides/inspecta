@@ -5,8 +5,8 @@ class FieldString extends StatefulWidget {
   /// Create [FieldString] instance
   const FieldString({
     required this.labelText,
-    required this.focusNode,
     required this.onChanged,
+    this.focusNode,
     super.key,
     this.initialText,
     this.bloc,
@@ -25,7 +25,7 @@ class FieldString extends StatefulWidget {
   final bool isEnabled;
   final bool isNullable;
   final bool isEmptyAllowed;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
   final void Function(String?) onChanged;
   final VirtualKeyboardBloc? keyboardBloc;

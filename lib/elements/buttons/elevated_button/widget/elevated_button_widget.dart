@@ -15,7 +15,7 @@ class OMDKElevatedButton extends StatelessWidget {
     this.onFocusChange,
     this.style,
     this.enabled = true,
-    this.autofocus = true,
+    this.autofocus = false,
     this.focusNode,
   });
 
@@ -82,7 +82,7 @@ class _OMDKElevatedButton extends StatelessWidget {
       onFocusChange: onFocusChange,
       style: state.enabled
           ? style
-          : context.theme?.elevatedButtonTheme.style?.copyWith(
+          : style?.copyWith(
               backgroundColor: MaterialStateProperty.all<Color>(
                 context.theme!.disabledColor.withOpacity(0.8),
               ),

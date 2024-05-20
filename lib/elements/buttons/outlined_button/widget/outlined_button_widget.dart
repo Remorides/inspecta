@@ -82,7 +82,7 @@ class _OMDKOutlinedButton extends StatelessWidget {
       onFocusChange: onFocusChange,
       style: state.enabled
           ? style
-          : context.theme?.outlinedButtonTheme.style?.copyWith(
+          : style?.copyWith(
               overlayColor: MaterialStateProperty.all<Color>(
                 context.theme!.disabledColor.withOpacity(0.8),
               ),

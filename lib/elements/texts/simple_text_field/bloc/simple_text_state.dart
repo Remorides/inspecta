@@ -30,7 +30,6 @@ final class SimpleTextState extends Equatable {
   SimpleTextState copyWith({
     SimpleTextStatus? status,
     String? text,
-    String? initialText,
     String? errorText,
   }) =>
       SimpleTextState(

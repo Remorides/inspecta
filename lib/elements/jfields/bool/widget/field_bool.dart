@@ -7,9 +7,9 @@ class FieldBool extends StatelessWidget {
   /// Create [FieldBool] instance
   const FieldBool({
     required this.labelText,
-    this.cubit,
-    required this.focusNode,
     required this.onChanged,
+    this.cubit,
+    this.focusNode,
     super.key,
     this.fieldValue = true,
     this.isEnabled = true,
@@ -19,7 +19,7 @@ class FieldBool extends StatelessWidget {
   final FieldBoolCubit? cubit;
   final bool fieldValue;
   final bool isEnabled;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final void Function(bool?) onChanged;
 
   @override
@@ -45,13 +45,13 @@ class _FieldBool extends StatelessWidget {
 
   const _FieldBool({
     required this.labelText,
-    required this.focusNode,
     required this.onChanged,
+    this.focusNode,
     super.key,
   });
 
   final String labelText;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final void Function(bool?) onChanged;
 
   @override
@@ -68,7 +68,9 @@ class _FieldBool extends StatelessWidget {
                   labelText.toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.theme?.inputDecorationTheme.labelStyle,
+                  style: TextStyle(
+                    color: context.theme?.colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),
@@ -86,7 +88,7 @@ class _FieldBool extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.only(top: 22),
                 decoration: BoxDecoration(
-                  color: const Color(0xffffffff),
+                  color: context.theme?.colorScheme.background,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 height: 52,
@@ -104,8 +106,9 @@ class _FieldBool extends StatelessWidget {
                         .leading,
                     title: Text(
                       labelText,
-                      style: context.theme?.inputDecorationTheme
-                          .labelStyle,
+                      style: TextStyle(
+                        color: context.theme?.colorScheme.onBackground,
+                      ),
                     ),
                     checkboxShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),

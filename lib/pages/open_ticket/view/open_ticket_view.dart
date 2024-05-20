@@ -24,17 +24,11 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
   final blocPriority = SimpleTextBloc();
 
   final focusKeyboard = FocusNode();
-  final focusName = FocusNode();
-  final focusDesc = FocusNode();
-  final focusPriority = FocusNode();
 
   @override
   void dispose() {
     super.dispose();
     focusKeyboard.dispose();
-    focusName.dispose();
-    focusDesc.dispose();
-    focusPriority.dispose();
   }
 
   @override
@@ -45,8 +39,8 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
       withBottomBar: false,
       withDrawer: false,
       leading: OMDKElevatedButton(
-        style: context.theme?.elevatedButtonTheme.style?.copyWith(
-          backgroundColor: const MaterialStatePropertyAll(Colors.red),
+        style: const ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll(Colors.red),
         ),
         focusNode: FocusNode(),
         onPressed: () {
@@ -54,7 +48,12 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
             return web.window.close();
           }
         },
-        child: Text(AppLocalizations.of(context)!.alert_btn_cancel),
+        child: Text(
+          AppLocalizations.of(context)!.alert_btn_cancel,
+          style: TextStyle(
+            color: context.theme?.buttonTheme.colorScheme?.onSurface,
+          ),
+        ),
       ),
       bodyPage: BlocListener<OpenTicketBloc, OpenTicketState>(
         listenWhen: (previous, current) =>
@@ -72,6 +71,9 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                 type: AlertType.success,
                 message: Text(
                   '${state.failureText}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
                 ),
                 confirm: AppLocalizations.of(context)!.alert_btn_ok,
                 onConfirm: () => context.read<AuthRepo>().logOut(),
@@ -86,6 +88,9 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                 type: AlertType.warning,
                 message: Text(
                   '${state.failureText}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
                 ),
                 confirm: AppLocalizations.of(context)!.alert_btn_ok,
                 onConfirm: () =>
@@ -129,6 +134,9 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                   title: AppLocalizations.of(context)!.alert_title_fatal_error,
                   message: Text(
                     '${context.read<OpenTicketBloc>().state.failureText}',
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
                   ),
                   type: AlertType.fatalError,
                   confirm: AppLocalizations.of(context)!.alert_btn_ok,
@@ -184,21 +192,15 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
               const Space.vertical(20),
               _TicketNameInput(
                 keyboardBloc: blocKeyboard,
-                widgetFN: focusName,
                 widgetB: blocName,
-                nextWidgetFN: focusDesc,
               ),
               const Space.vertical(20),
               _TicketDescInput(
                 keyboardBloc: blocKeyboard,
-                widgetFN: focusDesc,
                 widgetB: blocDesc,
-                nextWidgetFN: focusPriority,
               ),
               const Space.vertical(20),
-              _TicketPriorityInput(
-                widgetFN: focusPriority,
-              ),
+              _TicketPriorityInput(),
               const Space.vertical(20),
               const _TicketSchemaInput(),
             ],
@@ -220,21 +222,15 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
           const Space.vertical(20),
           _TicketNameInput(
             keyboardBloc: blocKeyboard,
-            widgetFN: focusName,
             widgetB: blocName,
-            nextWidgetFN: focusDesc,
           ),
           const Space.vertical(20),
           _TicketDescInput(
             keyboardBloc: blocKeyboard,
-            widgetFN: focusDesc,
             widgetB: blocDesc,
-            nextWidgetFN: focusPriority,
           ),
           const Space.vertical(20),
-          _TicketPriorityInput(
-            widgetFN: focusPriority,
-          ),
+          const _TicketPriorityInput(),
           const Space.vertical(20),
           const _TicketSchemaInput(),
           const Space.vertical(20),
@@ -271,7 +267,6 @@ class _AssetReference extends StatelessWidget {
             onEditingComplete: (text) {},
             labelText:
                 AppLocalizations.of(context)!.ticket_label_asset_reference,
-            textFocusNode: FocusNode(),
           );
         },
       ),
@@ -282,15 +277,11 @@ class _AssetReference extends StatelessWidget {
 class _TicketNameInput extends StatelessWidget {
   /// Create [_TicketNameInput] instance
   const _TicketNameInput({
-    required this.widgetFN,
     required this.widgetB,
     required this.keyboardBloc,
-    this.nextWidgetFN,
   });
 
-  final FocusNode widgetFN;
   final SimpleTextBloc widgetB;
-  final FocusNode? nextWidgetFN;
   final VirtualKeyboardBloc keyboardBloc;
 
   @override
@@ -303,8 +294,6 @@ class _TicketNameInput extends StatelessWidget {
           onEditingComplete: (text) =>
               context.read<OpenTicketBloc>().add(TicketNameChanged(text)),
           labelText: AppLocalizations.of(context)!.ticket_label_name,
-          textFocusNode: widgetFN,
-          nextFocusNode: nextWidgetFN,
           onTap: () {
             context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
             keyboardBloc
@@ -322,15 +311,11 @@ class _TicketNameInput extends StatelessWidget {
 class _TicketDescInput extends StatelessWidget {
   /// Create [_TicketDescInput] instance
   const _TicketDescInput({
-    required this.widgetFN,
     required this.widgetB,
     required this.keyboardBloc,
-    this.nextWidgetFN,
   });
 
-  final FocusNode widgetFN;
   final SimpleTextBloc widgetB;
-  final FocusNode? nextWidgetFN;
   final VirtualKeyboardBloc keyboardBloc;
 
   @override
@@ -343,8 +328,6 @@ class _TicketDescInput extends StatelessWidget {
           onEditingComplete: (text) =>
               context.read<OpenTicketBloc>().add(TicketDescChanged(text)),
           labelText: AppLocalizations.of(context)!.ticket_label_description,
-          textFocusNode: widgetFN,
-          nextFocusNode: nextWidgetFN,
           onTap: () {
             context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
             keyboardBloc
@@ -361,11 +344,7 @@ class _TicketDescInput extends StatelessWidget {
 
 class _TicketPriorityInput extends StatelessWidget {
   /// Create [_TicketPriorityInput] instance
-  const _TicketPriorityInput({
-    required this.widgetFN,
-  });
-
-  final FocusNode widgetFN;
+  const _TicketPriorityInput();
 
   @override
   Widget build(BuildContext context) {
@@ -377,7 +356,6 @@ class _TicketPriorityInput extends StatelessWidget {
               .read<OpenTicketBloc>()
               .add(TicketPriorityChanged(priorityCode)),
           labelText: AppLocalizations.of(context)!.ticket_label_priority,
-          focusNode: widgetFN,
         );
       },
     );
@@ -481,17 +459,17 @@ class _TicketStepList extends StatelessWidget {
                     return submitTicket(context: context);
                   }
                   return ExpansionTile(
+                    iconColor: context.theme?.colorScheme.onSurface,
+                    collapsedIconColor: context.theme?.colorScheme.onSurface,
                     initiallyExpanded: index == 0,
                     title: Text(
-                      '${(state.ticketEntity!.stepsList[index].title
-                          ?.singleWhereOrNull(
+                      '${(state.ticketEntity!.stepsList[index].title?.singleWhereOrNull(
                             (element) =>
                                 element.culture?.contains(
                                   Localizations.localeOf(context).languageCode,
                                 ) ??
                                 false,
-                          ) ?? state.ticketEntity!.stepsList[index].title?[0])
-                          ?.value}',
+                          ) ?? state.ticketEntity!.stepsList[index].title?[0])?.value}',
                     ),
                     children: buildFieldList(
                       context: context,
@@ -720,7 +698,10 @@ class _TicketStepList extends StatelessWidget {
               focusNode: FocusNode(),
               onPressed: () =>
                   context.read<OpenTicketBloc>().add(SubmitTicket()),
-              child: Text(AppLocalizations.of(context)!.ticket_btn_submit),
+              child: Text(
+                AppLocalizations.of(context)!.ticket_btn_submit,
+                style: TextStyle(color: context.theme?.colorScheme.onSurface),
+              ),
             ),
           ),
         ],

@@ -6,8 +6,8 @@ class FieldInt extends StatefulWidget {
   /// Create [FieldInt] instance
   const FieldInt({
     required this.labelText,
-    required this.focusNode,
     required this.onChanged,
+    this.focusNode,
     super.key,
     this.bloc,
     this.nextFocusNode,
@@ -22,7 +22,7 @@ class FieldInt extends StatefulWidget {
   final SimpleTextBloc? bloc;
   final double? fieldValue;
   final bool isEnabled;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
   final void Function(int?) onChanged;
   final void Function()? onTap;

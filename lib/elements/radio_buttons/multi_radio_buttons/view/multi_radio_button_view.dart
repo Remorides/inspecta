@@ -7,7 +7,7 @@ import 'package:omdk_repo/omdk_repo.dart';
 class MultiRadioButtons extends StatelessWidget {
   const MultiRadioButtons({
     required this.labelText,
-    required this.focusNode,
+    this.focusNode,
     super.key,
     this.cubit,
     this.nextFocusNode,
@@ -16,7 +16,7 @@ class MultiRadioButtons extends StatelessWidget {
   });
 
   final String labelText;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
   final bool isEnabled;
   final MrbCubit? cubit;
@@ -50,7 +50,7 @@ class _MultiRadioButtons extends StatelessWidget {
 
   final String labelText;
   final void Function(int?)? onSelectedPriority;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
 
   @override

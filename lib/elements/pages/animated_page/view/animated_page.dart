@@ -100,6 +100,7 @@ class _OMDKAnimatedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.select((OMDKAnimatedPageCubit cubit) => cubit.state);
     return Material(
+      color: context.theme?.colorScheme.surface,
       child: withDrawer
           ? Stack(
               children: [
@@ -117,8 +118,8 @@ class _OMDKAnimatedPage extends StatelessWidget {
                         navigationBar: withAppBar
                             ? CupertinoNavigationBar(
                                 backgroundColor:
-                                    context.theme?.appBarTheme.backgroundColor,
-                                brightness: Brightness.light,
+                                    context.theme?.colorScheme.surface,
+                                brightness: context.theme?.brightness,
                                 leading: withDrawer &&
                                         !Navigator.of(context).canPop()
                                     ? GestureDetector(
@@ -146,9 +147,8 @@ class _OMDKAnimatedPage extends StatelessWidget {
           : CupertinoPageScaffold(
               navigationBar: withAppBar
                   ? CupertinoNavigationBar(
-                      backgroundColor:
-                          context.theme?.appBarTheme.backgroundColor,
-                      brightness: Brightness.light,
+                      backgroundColor: context.theme?.colorScheme.surface,
+                      brightness: context.theme?.brightness,
                       leading: withDrawer && !Navigator.of(context).canPop()
                           ? GestureDetector(
                               child: const Icon(
@@ -171,6 +171,7 @@ class _OMDKAnimatedPage extends StatelessWidget {
   }
 
   Widget _buildPage(BuildContext context) => Scaffold(
+        backgroundColor: context.theme?.colorScheme.surface,
         body: withBottomBar
             ? FloatingBottom(
                 bottom: const OMDKBottomBar(),

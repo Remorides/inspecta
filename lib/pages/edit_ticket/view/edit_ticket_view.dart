@@ -22,17 +22,11 @@ class _OpenTicketViewState extends State<_EditTicketView> {
   final cubitPriority = MrbCubit();
 
   final focusKeyboard = FocusNode();
-  final focusName = FocusNode();
-  final focusDesc = FocusNode();
-  final focusPriority = FocusNode();
 
   @override
   void dispose() {
     super.dispose();
     focusKeyboard.dispose();
-    focusName.dispose();
-    focusDesc.dispose();
-    focusPriority.dispose();
   }
 
   @override
@@ -43,16 +37,22 @@ class _OpenTicketViewState extends State<_EditTicketView> {
       withBottomBar: false,
       withDrawer: false,
       leading: OMDKElevatedButton(
-        style: context.theme?.elevatedButtonTheme.style?.copyWith(
-          backgroundColor: const MaterialStatePropertyAll(Colors.red),
+        style: const ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll(Colors.red),
         ),
         focusNode: FocusNode(),
         onPressed: () {
+          context.read<AuthRepo>().logOut();
           if (widget.closePage && kIsWeb) {
             return web.window.close();
           }
         },
-        child: Text(AppLocalizations.of(context)!.alert_btn_cancel),
+        child: Text(
+          AppLocalizations.of(context)!.alert_btn_cancel,
+          style: TextStyle(
+            color: context.theme?.buttonTheme.colorScheme?.onSurface,
+          ),
+        ),
       ),
       bodyPage: BlocListener<EditTicketBloc, EditTicketState>(
         listenWhen: (previous, current) =>
@@ -67,6 +67,9 @@ class _OpenTicketViewState extends State<_EditTicketView> {
                 type: AlertType.warning,
                 message: Text(
                   '${state.failureText}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
                 ),
                 confirm: AppLocalizations.of(context)!.alert_btn_ok,
                 onConfirm: () =>
@@ -85,6 +88,9 @@ class _OpenTicketViewState extends State<_EditTicketView> {
                 type: AlertType.success,
                 message: Text(
                   '${state.failureText}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
                 ),
                 confirm: AppLocalizations.of(context)!.alert_btn_ok,
                 onConfirm: () => context.read<AuthRepo>().logOut(),
@@ -189,7 +195,6 @@ class _OpenTicketViewState extends State<_EditTicketView> {
               ),
               const Space.vertical(20),
               _TicketPriorityInput(
-                widgetFN: focusPriority,
                 cubit: cubitPriority,
               ),
             ],
@@ -218,7 +223,6 @@ class _OpenTicketViewState extends State<_EditTicketView> {
           ),
           const Space.vertical(20),
           _TicketPriorityInput(
-            widgetFN: focusPriority,
             cubit: cubitPriority,
           ),
           const Space.vertical(20),
@@ -255,7 +259,6 @@ class _TicketNameInput extends StatelessWidget {
             onChanged: (text) =>
                 context.read<EditTicketBloc>().add(TicketNameChanged(text)),
             labelText: AppLocalizations.of(context)!.ticket_label_name,
-            focusNode: FocusNode(),
             bloc: bloc,
             onTapBloc: (bloc) =>
                 context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
@@ -280,7 +283,8 @@ class _TicketDescInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<EditTicketBloc, EditTicketState>(
       listenWhen: (previous, current) =>
-          previous.loadingStatus != current.loadingStatus,
+          previous.ticketEntity?.scheduled?.description !=
+          current.ticketEntity?.scheduled?.description,
       listener: (context, state) {
         if (state.ticketEntity?.scheduled?.description != null) {
           bloc.add(
@@ -299,7 +303,6 @@ class _TicketDescInput extends StatelessWidget {
             labelText: AppLocalizations.of(context)!.ticket_label_description,
             onTapBloc: (bloc) =>
                 context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
-            focusNode: FocusNode(),
           );
         },
       ),
@@ -310,37 +313,31 @@ class _TicketDescInput extends StatelessWidget {
 class _TicketPriorityInput extends StatelessWidget {
   /// Create [_TicketPriorityInput] instance
   const _TicketPriorityInput({
-    required this.widgetFN,
     required this.cubit,
   });
 
-  final FocusNode widgetFN;
   final MrbCubit cubit;
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<EditTicketBloc, EditTicketState>(
       listenWhen: (previous, current) =>
-      previous.loadingStatus != current.loadingStatus,
+          previous.ticketEntity?.template?.urgencyCode !=
+          current.ticketEntity?.template?.urgencyCode,
       listener: (context, state) {
         if (state.ticketEntity?.template?.urgencyCode != null) {
           cubit.switchRadio(state.ticketEntity!.template!.urgencyCode!);
         }
       },
-      child: BlocBuilder<EditTicketBloc, EditTicketState>(
-        buildWhen: (previous, current) =>
-        current.loadingStatus != LoadingStatus.initial,
-        builder: (context, state) {
-          return MultiRadioButtons(
-            key: const Key('ticketPriorityInput_textField'),
-            cubit: cubit,
-            onSelectedPriority: (priorityCode) => context
-                .read<EditTicketBloc>()
-                .add(TicketPriorityChanged(priorityCode)),
-            labelText: AppLocalizations.of(context)!.ticket_label_priority,
-            focusNode: widgetFN,
-          );
+      child: MultiRadioButtons(
+        key: const Key('ticketPriorityInput_textField'),
+        cubit: cubit,
+        onSelectedPriority: (priorityCode) {
+          context
+              .read<EditTicketBloc>()
+              .add(TicketPriorityChanged(priorityCode));
         },
+        labelText: AppLocalizations.of(context)!.ticket_label_priority,
       ),
     );
   }
@@ -485,7 +482,6 @@ class _TicketStepList extends StatelessWidget {
                           false,
                     ) ?? jFieldMapping.title?[0])?.value}',
                 listItem: jFieldMapping.poolListSettings!.value!,
-                focusNode: FocusNode(),
                 onSelected: (List<PoolItem?> selectedItems) {},
               );
             } else {
@@ -502,7 +498,6 @@ class _TicketStepList extends StatelessWidget {
                 onTapBloc: (bloc) => context
                     .read<EditTicketBloc>()
                     .add(TicketEditing(bloc: bloc)),
-                focusNode: FocusNode(),
                 onChanged: (String? s) => context.read<EditTicketBloc>().add(
                       FieldChanged(
                         stepGuid: stepGuid,
@@ -530,7 +525,6 @@ class _TicketStepList extends StatelessWidget {
           keyboardBloc: keyboardBloc,
           onTapBloc: (bloc) =>
               context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
-          focusNode: FocusNode(),
           onChanged: (double? d) => context.read<EditTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
@@ -549,7 +543,6 @@ class _TicketStepList extends StatelessWidget {
                     ) ??
                     false,
               ) ?? jFieldMapping.title?[0])?.value}',
-          focusNode: FocusNode(),
           keyboardBloc: keyboardBloc,
           onTapBloc: (bloc) =>
               context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
@@ -573,7 +566,6 @@ class _TicketStepList extends StatelessWidget {
                     ) ??
                     false,
               ) ?? jFieldMapping.title?[0])?.value}',
-          focusNode: FocusNode(),
           onChanged: (bool? b) => context.read<EditTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
@@ -620,11 +612,14 @@ class _TicketStepList extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: OMDKElevatedButton(
+            child: OMDKOutlinedButton(
               focusNode: FocusNode(),
               onPressed: () =>
                   context.read<EditTicketBloc>().add(SubmitTicket()),
-              child: Text(AppLocalizations.of(context)!.ticket_btn_submit),
+              child: Text(
+                AppLocalizations.of(context)!.ticket_btn_submit,
+                style: TextStyle(color: context.theme?.colorScheme.onSurface),
+              ),
             ),
           ),
         ],

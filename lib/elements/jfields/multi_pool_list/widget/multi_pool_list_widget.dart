@@ -12,8 +12,8 @@ class FieldMultiPoolList extends StatelessWidget {
   const FieldMultiPoolList({
     required this.listItem,
     required this.labelText,
-    required this.focusNode,
     required this.onSelected,
+    this.focusNode,
     super.key,
     this.cubit,
     this.isEnabled = true,
@@ -25,7 +25,7 @@ class FieldMultiPoolList extends StatelessWidget {
   final List<String>? selectedItems;
   final bool isEnabled;
   final MultiPoolListCubit? cubit;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final void Function(List<PoolItem?> selectedItems) onSelected;
 
   @override
@@ -50,12 +50,12 @@ class FieldMultiPoolList extends StatelessWidget {
 class _FieldMultiPoolList extends StatelessWidget {
   const _FieldMultiPoolList({
     required this.labelText,
-    required this.focusNode,
     required this.onSelected,
+    this.focusNode,
   });
 
   final String labelText;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final void Function(List<PoolItem?> selectedItems) onSelected;
 
   @override
@@ -72,7 +72,9 @@ class _FieldMultiPoolList extends StatelessWidget {
                   labelText.toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.theme?.inputDecorationTheme.labelStyle,
+                  style: TextStyle(
+                    color: context.theme?.colorScheme.onSurface,
+                  ),
                 ),
               ),
             ],
@@ -82,18 +84,26 @@ class _FieldMultiPoolList extends StatelessWidget {
             child: AbsorbPointer(
               absorbing: !state.isEnabled,
               child: Container(
+                decoration: BoxDecoration(
+                  color: context.theme?.colorScheme.background,
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 margin: const EdgeInsets.only(top: 20),
                 child: MultiSelectDialogField<PoolItem?>(
                   title: Text(
                     labelText,
-                    style: context.theme?.inputDecorationTheme.labelStyle,
+                    style: TextStyle(
+                      color: context.theme?.colorScheme.onBackground,
+                    ),
                   ),
                   buttonIcon: const Icon(
                     Icons.expand_more_outlined,
                   ),
                   buttonText: Text(
                     'Selected fields:',
-                    style: context.theme?.inputDecorationTheme.labelStyle,
+                    style:  TextStyle(
+                      color: context.theme?.colorScheme.onBackground,
+                    ),
                   ),
                   selectedColor: context.theme?.primaryColor,
                   decoration: BoxDecoration(
@@ -114,9 +124,8 @@ class _FieldMultiPoolList extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     chipColor: context.theme?.primaryColor,
-                    textStyle: context.theme?.inputDecorationTheme.labelStyle
-                        ?.copyWith(
-                      color: Colors.white,
+                    textStyle: TextStyle(
+                      color: context.theme?.colorScheme.onBackground,
                     ),
                   ),
                   onConfirm: onSelected,
@@ -131,7 +140,9 @@ class _FieldMultiPoolList extends StatelessWidget {
                 state.errorText,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.theme?.inputDecorationTheme.errorStyle,
+                style: TextStyle(
+                  color: context.theme?.colorScheme.onError,
+                ),
               ),
             ),
         ],

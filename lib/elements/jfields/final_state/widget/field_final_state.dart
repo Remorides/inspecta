@@ -97,7 +97,7 @@ class _FieldFinalState extends StatelessWidget {
                       ),
                       hintText: labelText,
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: context.theme?.colorScheme.background,
                     ),
                     items: state.listItem.map((jResultState) {
                       return DropdownMenuItem(
@@ -127,8 +127,7 @@ class _FieldFinalState extends StatelessWidget {
                                 style: TextStyle(
                                   color: (jResultState.textColor != null)
                                       ? HexColor(jResultState.textColor!)
-                                      : context.theme?.inputDecorationTheme
-                                          .labelStyle?.color,
+                                      : context.theme?.colorScheme.onBackground,
                                 ),
                               ),
                             ],

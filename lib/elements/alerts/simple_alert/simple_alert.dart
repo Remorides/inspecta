@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:omdk/elements/alerts/alerts.dart';
-import 'package:omdk/elements/alerts/enums/action_button_alignment.dart';
 import 'package:omdk/elements/elements.dart';
+import 'package:omdk_local_data/constants/default_colors.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 /// OMDK default alert example
@@ -41,7 +41,10 @@ class OMDKAlert extends StatelessWidget {
   /// Example widget
   static OMDKAlert get example => OMDKAlert(
         title: 'Example',
-        message: const Text('Example body widget'),
+        message: const Text(
+          'Example body widget',
+          style: TextStyle(color: Colors.white),
+        ),
         confirm: 'Confirm',
         close: 'Close',
         onConfirm: () {
@@ -124,7 +127,7 @@ class OMDKAlert extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           const Space.vertical(_circleRadius + 18),
-          _titleWidget,
+          _titleWidget(context),
           const Space.vertical(14),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -185,32 +188,32 @@ class OMDKAlert extends StatelessWidget {
         width: _circleRadius * 2,
         height: _circleRadius * 2,
         child: Center(
-          child: switch(type){
+          child: switch (type) {
             AlertType.info => Icon(
-              Icons.info_outline,
-              size: 40,
-              color: context.theme?.dialogTheme.iconColor,
-            ),
+                Icons.info_outline,
+                size: 40,
+                color: context.theme?.dialogTheme.iconColor,
+              ),
             AlertType.warning => Icon(
-              Icons.warning_amber_rounded,
-              size: 40,
-              color: context.theme?.dialogTheme.iconColor,
-            ),
+                Icons.warning_amber_rounded,
+                size: 40,
+                color: context.theme?.dialogTheme.iconColor,
+              ),
             AlertType.error => Icon(
-              Icons.report_gmailerrorred_outlined,
-              size: 40,
-              color: context.theme?.dialogTheme.iconColor,
-            ),
+                Icons.report_gmailerrorred_outlined,
+                size: 40,
+                color: context.theme?.dialogTheme.iconColor,
+              ),
             AlertType.fatalError => Icon(
-              Icons.bug_report_outlined,
-              size: 40,
-              color: context.theme?.dialogTheme.iconColor,
-            ),
+                Icons.bug_report_outlined,
+                size: 40,
+                color: context.theme?.dialogTheme.iconColor,
+              ),
             AlertType.success => Icon(
-              Icons.done,
-              size: 40,
-              color: context.theme?.dialogTheme.iconColor,
-            ),
+                Icons.done,
+                size: 40,
+                color: context.theme?.dialogTheme.iconColor,
+              ),
           },
         ),
       );
@@ -219,7 +222,10 @@ class OMDKAlert extends StatelessWidget {
 
   Widget _actionButton(BuildContext context, VoidCallback onWillPop) {
     return OMDKElevatedButton(
-      child: Text(confirm),
+      child: Text(
+        confirm,
+        style: TextStyle(color: context.theme?.colorScheme.onSurface),
+      ),
       onPressed: () {
         onWillPop();
         if (executePop) {
@@ -237,18 +243,27 @@ class OMDKAlert extends StatelessWidget {
         Navigator.of(context).pop();
         onClose?.call();
       },
-      child: Text(close!),
+      style: ButtonStyle(
+        overlayColor: MaterialStateProperty.all<Color>(
+          Colors.white,
+        ),
+      ),
+      child: Text(
+        close!,
+        style: TextStyle(color: context.theme?.colorScheme.onSurface),
+      ),
     );
   }
 
-  Widget get _titleWidget => Text(
+  Widget _titleWidget(BuildContext context) => Text(
         title,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.center,
-        style: const TextStyle(
+        style: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
+          color: context.theme?.colorScheme.onBackground,
         ),
       );
 }
