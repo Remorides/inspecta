@@ -13,6 +13,7 @@ class MultiRadioButtons extends StatelessWidget {
     this.nextFocusNode,
     this.isEnabled = true,
     this.onSelectedPriority,
+    this.indexSelectedRadio,
   });
 
   final String labelText;
@@ -20,6 +21,7 @@ class MultiRadioButtons extends StatelessWidget {
   final FocusNode? nextFocusNode;
   final bool isEnabled;
   final MrbCubit? cubit;
+  final int? indexSelectedRadio;
   final void Function(int?)? onSelectedPriority;
 
   @override
@@ -29,6 +31,7 @@ class MultiRadioButtons extends StatelessWidget {
           cubit ??
           MrbCubit(
             isEnabled: isEnabled,
+            selected: indexSelectedRadio,
           ),
       child: _MultiRadioButtons(
         labelText: labelText,

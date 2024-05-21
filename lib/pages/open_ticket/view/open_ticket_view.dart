@@ -148,14 +148,14 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
   }
 
   void _onKeyPress(
-      BuildContext context,
-      VirtualKeyboardKey key,
-      SimpleTextBloc bloc,
-      VirtualKeyboardBloc keyboardBloc,
-      ) {
+    BuildContext context,
+    VirtualKeyboardKey key,
+    SimpleTextBloc bloc,
+    VirtualKeyboardBloc keyboardBloc,
+  ) {
     final text = bloc.state.text ?? '';
     final arrayText =
-    List<String>.generate(text.length, (index) => text[index]);
+        List<String>.generate(text.length, (index) => text[index]);
 
     if (key.keyType == VirtualKeyboardKeyType.String) {
       arrayText.insert(
@@ -168,7 +168,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
       switch (key.action) {
         case VirtualKeyboardKeyAction.Backspace:
           if (text.isEmpty) return;
-          arrayText.removeAt(bloc.state.cursorPosition -1);
+          arrayText.removeAt(bloc.state.cursorPosition - 1);
           return bloc.add(
             TextChanged(arrayText.join(), bloc.state.cursorPosition - 1),
           );
@@ -183,7 +183,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
             key.text.toString(),
           );
         case VirtualKeyboardKeyAction.Shift:
-          keyboardBloc.add(ChangeShift());
+          return keyboardBloc.add(ChangeShift());
         case VirtualKeyboardKeyAction.SwithLanguage:
         case null:
           break;
@@ -202,20 +202,10 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
           width: MediaQuery.of(context).size.width / 3,
           child: ListView(
             children: [
-              _AssetReference(bloc: blocAssetReference),
-              const Space.vertical(20),
-              _TicketNameInput(
-                keyboardBloc: blocKeyboard,
-                widgetB: blocName,
-              ),
-              const Space.vertical(20),
-              _TicketDescInput(
-                keyboardBloc: blocKeyboard,
-                widgetB: blocDesc,
-              ),
-              const Space.vertical(20),
+              const _AssetReference(),
+              _TicketNameInput(keyboardBloc: blocKeyboard),
+              _TicketDescInput(keyboardBloc: blocKeyboard),
               const _TicketPriorityInput(),
-              const Space.vertical(20),
               const _TicketSchemaInput(),
             ],
           ),
@@ -232,22 +222,11 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
 
   Widget singleColumnLayout(BuildContext context) => ListView(
         children: [
-          _AssetReference(bloc: blocAssetReference),
-          const Space.vertical(20),
-          _TicketNameInput(
-            keyboardBloc: blocKeyboard,
-            widgetB: blocName,
-          ),
-          const Space.vertical(20),
-          _TicketDescInput(
-            keyboardBloc: blocKeyboard,
-            widgetB: blocDesc,
-          ),
-          const Space.vertical(20),
+          const _AssetReference(),
+          _TicketNameInput(keyboardBloc: blocKeyboard),
+          _TicketDescInput(keyboardBloc: blocKeyboard),
           const _TicketPriorityInput(),
-          const Space.vertical(20),
           const _TicketSchemaInput(),
-          const Space.vertical(20),
           _TicketStepList(keyboardBloc: blocKeyboard),
         ],
       );
@@ -255,108 +234,68 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
 
 class _AssetReference extends StatelessWidget {
   /// Create [_AssetReference] instance
-  const _AssetReference({
-    required this.bloc,
-  });
-
-  final SimpleTextBloc bloc;
+  const _AssetReference();
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<OpenTicketBloc, OpenTicketState>(
-      listenWhen: (previous, current) {
-        return previous.jMainNode != current.jMainNode;
-      },
-      listener: (context, state) {
-        if (state.jMainNode?.name != null) {
-          bloc.add(
-            TextChanged(
-              state.jMainNode!.name!,
-              bloc.state.cursorPosition,
-            ),
-          );
-        }
-      },
-      child: BlocBuilder<OpenTicketBloc, OpenTicketState>(
-        builder: (context, state) {
-          return SimpleTextField(
-            key: const Key('assetReference_textField'),
-            simpleTextBloc: bloc,
-            enabled: false,
-            onEditingComplete: (text) {},
-            labelText:
-                AppLocalizations.of(context)!.ticket_label_asset_reference,
-          );
-        },
-      ),
+    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
+      buildWhen: (previous, current) => previous.jMainNode != current.jMainNode,
+      builder: (context, state) => (state.jMainNode != null)
+          ? FieldString(
+              key: const Key('assetReference_textField'),
+              isEnabled: false,
+              onChanged: (text) {},
+              labelText:
+                  AppLocalizations.of(context)!.ticket_label_asset_reference,
+              initialText: state.jMainNode?.name,
+            )
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 }
 
 class _TicketNameInput extends StatelessWidget {
   /// Create [_TicketNameInput] instance
-  const _TicketNameInput({
-    required this.widgetB,
-    required this.keyboardBloc,
-  });
+  const _TicketNameInput({required this.keyboardBloc});
 
-  final SimpleTextBloc widgetB;
   final VirtualKeyboardBloc keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OpenTicketBloc, OpenTicketState>(
-      builder: (context, state) {
-        return SimpleTextField(
-          key: const Key('ticketNameInput_textField'),
-          simpleTextBloc: widgetB,
-          onEditingComplete: (text) =>
-              context.read<OpenTicketBloc>().add(TicketNameChanged(text)),
-          labelText: AppLocalizations.of(context)!.ticket_label_name,
-          onTap: () {
-            context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
-            keyboardBloc
-              ..add(ChangeType())
-              ..add(
-                ChangeVisibility(isVisibile: true),
-              );
-          },
-        );
-      },
+      builder: (context, state) => FieldString(
+        key: const Key('ticketNameInput_textField'),
+        initialText: state.ticketName,
+        onChanged: (text) =>
+            context.read<OpenTicketBloc>().add(TicketNameChanged(text)),
+        labelText: AppLocalizations.of(context)!.ticket_label_name,
+        keyboardBloc: keyboardBloc,
+        onTapBloc: (bloc) =>
+            context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
+      ),
     );
   }
 }
 
 class _TicketDescInput extends StatelessWidget {
   /// Create [_TicketDescInput] instance
-  const _TicketDescInput({
-    required this.widgetB,
-    required this.keyboardBloc,
-  });
+  const _TicketDescInput({required this.keyboardBloc});
 
-  final SimpleTextBloc widgetB;
   final VirtualKeyboardBloc keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OpenTicketBloc, OpenTicketState>(
-      builder: (context, state) {
-        return SimpleTextField(
-          key: const Key('ticketDescInput_textField'),
-          simpleTextBloc: widgetB,
-          onEditingComplete: (text) =>
-              context.read<OpenTicketBloc>().add(TicketDescChanged(text)),
-          labelText: AppLocalizations.of(context)!.ticket_label_description,
-          onTap: () {
-            context.read<OpenTicketBloc>().add(TicketEditing(bloc: widgetB));
-            keyboardBloc
-              ..add(ChangeType())
-              ..add(
-                ChangeVisibility(isVisibile: true),
-              );
-          },
-        );
-      },
+      builder: (context, state) => FieldString(
+        key: const Key('ticketDescInput_textField'),
+        initialText: state.ticketDescription,
+        onChanged: (text) =>
+            context.read<OpenTicketBloc>().add(TicketDescChanged(text)),
+        labelText: AppLocalizations.of(context)!.ticket_label_description,
+        keyboardBloc: keyboardBloc,
+        onTapBloc: (bloc) =>
+            context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
+      ),
     );
   }
 }
@@ -368,15 +307,16 @@ class _TicketPriorityInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OpenTicketBloc, OpenTicketState>(
-      builder: (context, state) {
-        return MultiRadioButtons(
-          key: const Key('ticketPriorityInput_textField'),
-          onSelectedPriority: (priorityCode) => context
-              .read<OpenTicketBloc>()
-              .add(TicketPriorityChanged(priorityCode)),
-          labelText: AppLocalizations.of(context)!.ticket_label_priority,
-        );
-      },
+      buildWhen: (previous, current) =>
+          previous.ticketPriority != current.ticketPriority,
+      builder: (context, state) => MultiRadioButtons(
+        key: const Key('ticketPriorityInput_textField'),
+        onSelectedPriority: (priorityCode) => context
+            .read<OpenTicketBloc>()
+            .add(TicketPriorityChanged(priorityCode)),
+        labelText: AppLocalizations.of(context)!.ticket_label_priority,
+        indexSelectedRadio: state.ticketPriority,
+      ),
     );
   }
 }
@@ -472,6 +412,8 @@ class _TicketStepList extends StatelessWidget {
       builder: (context, state) {
         return (state.ticketEntity != null)
             ? ListView.builder(
+                shrinkWrap: true,
+                physics: const ClampingScrollPhysics(),
                 itemCount: state.ticketEntity!.stepsList.length + 1,
                 itemBuilder: (context, index) {
                   if (index >= state.ticketEntity!.stepsList.length) {

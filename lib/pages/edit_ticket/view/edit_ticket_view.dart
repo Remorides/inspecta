@@ -167,7 +167,7 @@ class _OpenTicketViewState extends State<_EditTicketView> {
       switch (key.action) {
         case VirtualKeyboardKeyAction.Backspace:
           if (text.isEmpty) return;
-          arrayText.removeAt(bloc.state.cursorPosition -1);
+          arrayText.removeAt(bloc.state.cursorPosition - 1);
           return bloc.add(
             TextChanged(arrayText.join(), bloc.state.cursorPosition - 1),
           );
@@ -182,7 +182,7 @@ class _OpenTicketViewState extends State<_EditTicketView> {
             key.text.toString(),
           );
         case VirtualKeyboardKeyAction.Shift:
-          keyboardBloc.add(ChangeShift());
+          return keyboardBloc.add(ChangeShift());
         case VirtualKeyboardKeyAction.SwithLanguage:
         case null:
           break;
@@ -201,19 +201,9 @@ class _OpenTicketViewState extends State<_EditTicketView> {
           width: MediaQuery.of(context).size.width / 3,
           child: ListView(
             children: [
-              _TicketNameInput(
-                keyboardBloc: blocKeyboard,
-                bloc: blocName,
-              ),
-              const Space.vertical(20),
-              _TicketDescInput(
-                keyboardBloc: blocKeyboard,
-                bloc: blocDesc,
-              ),
-              const Space.vertical(20),
-              _TicketPriorityInput(
-                cubit: cubitPriority,
-              ),
+              _TicketNameInput(keyboardBloc: blocKeyboard),
+              _TicketDescInput(keyboardBloc: blocKeyboard),
+              const _TicketPriorityInput(),
             ],
           ),
         ),
@@ -229,20 +219,9 @@ class _OpenTicketViewState extends State<_EditTicketView> {
 
   Widget singleColumnLayout(BuildContext context) => ListView(
         children: [
-          _TicketNameInput(
-            keyboardBloc: blocKeyboard,
-            bloc: blocName,
-          ),
-          const Space.vertical(20),
-          _TicketDescInput(
-            keyboardBloc: blocKeyboard,
-            bloc: blocName,
-          ),
-          const Space.vertical(20),
-          _TicketPriorityInput(
-            cubit: cubitPriority,
-          ),
-          const Space.vertical(20),
+          _TicketNameInput(keyboardBloc: blocKeyboard),
+          _TicketDescInput(keyboardBloc: blocKeyboard),
+          const _TicketPriorityInput(),
           _TicketStepList(keyboardBloc: blocKeyboard),
         ],
       );
@@ -250,113 +229,83 @@ class _OpenTicketViewState extends State<_EditTicketView> {
 
 class _TicketNameInput extends StatelessWidget {
   /// Create [_TicketNameInput] instance
-  const _TicketNameInput({
-    required this.keyboardBloc,
-    required this.bloc,
-  });
+  const _TicketNameInput({required this.keyboardBloc});
 
   final VirtualKeyboardBloc keyboardBloc;
-  final SimpleTextBloc bloc;
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<EditTicketBloc, EditTicketState>(
-      listenWhen: (previous, current) =>
+    return BlocBuilder<EditTicketBloc, EditTicketState>(
+      buildWhen: (previous, current) =>
           previous.ticketEntity?.entity?.name !=
           current.ticketEntity?.entity?.name,
-      listener: (context, state) {
-        if (state.ticketEntity?.entity?.name != null) {
-          bloc.add(
-            TextChanged(
-              state.ticketEntity!.entity!.name!,
-              bloc.state.cursorPosition,
-            ),
-          );
-        }
-      },
-      child: FieldString(
-        key: const Key('ticketNameInput_textField'),
-        keyboardBloc: keyboardBloc,
-        onChanged: (text) =>
-            context.read<EditTicketBloc>().add(TicketNameChanged(text)),
-        labelText: AppLocalizations.of(context)!.ticket_label_name,
-        bloc: bloc,
-        onTapBloc: (bloc) =>
-            context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
-      ),
+      builder: (context, state) => (state.ticketEntity != null)
+          ? FieldString(
+              key: const Key('ticketNameInput_textField'),
+              keyboardBloc: keyboardBloc,
+              onChanged: (text) =>
+                  context.read<EditTicketBloc>().add(TicketNameChanged(text)),
+              labelText: AppLocalizations.of(context)!.ticket_label_name,
+              onTapBloc: (bloc) =>
+                  context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
+              initialText: state.ticketEntity?.scheduled?.name,
+            )
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 }
 
 class _TicketDescInput extends StatelessWidget {
   /// Create [_TicketDescInput] instance
-  const _TicketDescInput({
-    required this.keyboardBloc,
-    required this.bloc,
-  });
+  const _TicketDescInput({required this.keyboardBloc});
 
   final VirtualKeyboardBloc keyboardBloc;
-  final SimpleTextBloc bloc;
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<EditTicketBloc, EditTicketState>(
-      listenWhen: (previous, current) =>
+    return BlocBuilder<EditTicketBloc, EditTicketState>(
+      buildWhen: (previous, current) =>
           previous.ticketEntity?.scheduled?.description !=
           current.ticketEntity?.scheduled?.description,
-      listener: (context, state) {
-        if (state.ticketEntity?.scheduled?.description != null) {
-          bloc.add(
-            TextChanged(
-              state.ticketEntity?.scheduled?.description ?? '',
-              bloc.state.cursorPosition,
-            ),
-          );
-        }
-      },
-      child: FieldString(
-        key: const Key('ticketDescInput_textField'),
-        keyboardBloc: keyboardBloc,
-        bloc: bloc,
-        onChanged: (text) =>
-            context.read<EditTicketBloc>().add(TicketDescChanged(text)),
-        labelText: AppLocalizations.of(context)!.ticket_label_description,
-        onTapBloc: (bloc) =>
-            context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
-      ),
+      builder: (context, state) => (state.ticketEntity != null)
+          ? FieldString(
+              key: const Key('ticketDescInput_textField'),
+              keyboardBloc: keyboardBloc,
+              onChanged: (text) =>
+                  context.read<EditTicketBloc>().add(TicketDescChanged(text)),
+              labelText: AppLocalizations.of(context)!.ticket_label_description,
+              onTapBloc: (bloc) =>
+                  context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
+              initialText: state.ticketEntity?.scheduled?.description,
+            )
+          : Container(),
     );
   }
 }
 
 class _TicketPriorityInput extends StatelessWidget {
   /// Create [_TicketPriorityInput] instance
-  const _TicketPriorityInput({
-    required this.cubit,
-  });
-
-  final MrbCubit cubit;
+  const _TicketPriorityInput();
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<EditTicketBloc, EditTicketState>(
-      listenWhen: (previous, current) =>
+    return BlocBuilder<EditTicketBloc, EditTicketState>(
+      buildWhen: (previous, current) =>
           previous.ticketEntity?.template?.urgencyCode !=
           current.ticketEntity?.template?.urgencyCode,
-      listener: (context, state) {
-        if (state.ticketEntity?.template?.urgencyCode != null) {
-          cubit.switchRadio(state.ticketEntity!.template!.urgencyCode!);
-        }
-      },
-      child: MultiRadioButtons(
-        key: const Key('ticketPriorityInput_textField'),
-        cubit: cubit,
-        onSelectedPriority: (priorityCode) {
-          context
-              .read<EditTicketBloc>()
-              .add(TicketPriorityChanged(priorityCode));
-        },
-        labelText: AppLocalizations.of(context)!.ticket_label_priority,
-      ),
+      builder: (context, state) => (state.ticketEntity?.template?.urgencyCode !=
+              null)
+          ? MultiRadioButtons(
+              key: const Key('ticketPriorityInput_textField'),
+              onSelectedPriority: (priorityCode) {
+                context
+                    .read<EditTicketBloc>()
+                    .add(TicketPriorityChanged(priorityCode));
+              },
+              labelText: AppLocalizations.of(context)!.ticket_label_priority,
+              indexSelectedRadio: state.ticketEntity?.template?.urgencyCode,
+            )
+          : Container(),
     );
   }
 }
@@ -377,6 +326,8 @@ class _TicketStepList extends StatelessWidget {
       builder: (context, state) {
         return (state.loadingStatus != LoadingStatus.initial)
             ? ListView.builder(
+                shrinkWrap: true,
+                physics: const ClampingScrollPhysics(),
                 itemCount: state.ticketEntity!.stepsList.length + 1,
                 itemBuilder: (context, index) {
                   if (index >= state.ticketEntity!.stepsList.length) {
