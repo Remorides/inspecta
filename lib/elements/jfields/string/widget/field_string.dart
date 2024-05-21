@@ -16,6 +16,7 @@ class FieldString extends StatefulWidget {
     this.isNullable = true,
     this.isEmptyAllowed = true,
     this.onTapBloc,
+    this.onCursorPosition,
     this.keyboardBloc,
   });
 
@@ -28,6 +29,7 @@ class FieldString extends StatefulWidget {
   final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
   final void Function(String?) onChanged;
+  final void Function(int)? onCursorPosition;
   final VirtualKeyboardBloc? keyboardBloc;
   final void Function(SimpleTextBloc)? onTapBloc;
   final String? initialText;
@@ -48,7 +50,7 @@ class _FieldStringState extends State<FieldString> {
           isEmptyAllowed: widget.isEmptyAllowed,
         );
     if (widget.initialText != null) {
-      widgetBloc.add(TextChanged(widget.initialText!));
+      widgetBloc.add(TextChanged(widget.initialText!, 0));
     }
   }
 
@@ -58,6 +60,15 @@ class _FieldStringState extends State<FieldString> {
       key: widget.key,
       enabled: widget.isEnabled,
       simpleTextBloc: widgetBloc,
+      onCursorPosition: (position) {
+        widgetBloc.add(
+          TextChanged(
+            widgetBloc.state.text ?? '',
+            position,
+          ),
+        );
+        widget.onCursorPosition?.call(position);
+      },
       onEditingComplete: (newValue) {
         if (newValue == null) return widget.onChanged(null);
         widget.onChanged(newValue);

@@ -123,6 +123,9 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           scheduled: state.ticketEntity?.scheduled?.copyWith(
             name: event.name,
           ),
+          template: state.ticketEntity?.template?.copyWith(
+            name: event.name,
+          ),
         ),
       ),
     );
@@ -136,7 +139,10 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
       state.copyWith(
         ticketEntity: state.ticketEntity?.copyWith(
           scheduled: state.ticketEntity?.scheduled?.copyWith(
-            name: event.desc,
+            description: event.desc,
+          ),
+          template: state.ticketEntity?.template?.copyWith(
+            description: event.desc,
           ),
         ),
       ),

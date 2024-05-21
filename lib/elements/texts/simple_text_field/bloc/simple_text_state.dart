@@ -9,6 +9,7 @@ final class SimpleTextState extends Equatable {
     this.status = SimpleTextStatus.initial,
     this.text,
     this.errorText = '',
+    this.cursorPosition = 0,
   });
 
   /// Current state status
@@ -26,11 +27,14 @@ final class SimpleTextState extends Equatable {
   /// if true data validation method skip notEmpty control
   final bool isEmptyAllowed;
 
+  final int cursorPosition;
+
   /// Update current state
   SimpleTextState copyWith({
     SimpleTextStatus? status,
     String? text,
     String? errorText,
+    int? cursorPosition,
   }) =>
       SimpleTextState(
         isNullable: isNullable,
@@ -38,6 +42,7 @@ final class SimpleTextState extends Equatable {
         status: status ?? this.status,
         text: text ?? this.text,
         errorText: errorText ?? this.errorText,
+        cursorPosition: cursorPosition ?? this.cursorPosition,
       );
 
   @override
@@ -45,5 +50,6 @@ final class SimpleTextState extends Equatable {
         status,
         text,
         errorText,
+        cursorPosition,
       ];
 }

@@ -133,6 +133,9 @@ class _OpenTicketViewState extends State<_EditTicketView> {
                   title: AppLocalizations.of(context)!.alert_title_fatal_error,
                   message: Text(
                     '${context.read<EditTicketBloc>().state.failureText}',
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
                   ),
                   type: AlertType.fatalError,
                   confirm: AppLocalizations.of(context)!.alert_btn_ok,
@@ -149,21 +152,35 @@ class _OpenTicketViewState extends State<_EditTicketView> {
     SimpleTextBloc bloc,
     VirtualKeyboardBloc keyboardBloc,
   ) {
-    var text = bloc.state.text ?? '';
+    final text = bloc.state.text ?? '';
+    final arrayText =
+        List<String>.generate(text.length, (index) => text[index]);
+
     if (key.keyType == VirtualKeyboardKeyType.String) {
-      text = text +
-          (keyboardBloc.state.isShiftEnabled
-              ? key.capsText.toString()
-              : key.text.toString());
+      arrayText.insert(
+        bloc.state.cursorPosition,
+        (keyboardBloc.state.isShiftEnabled
+            ? key.capsText.toString()
+            : key.text.toString()),
+      );
     } else if (key.keyType == VirtualKeyboardKeyType.Action) {
       switch (key.action) {
         case VirtualKeyboardKeyAction.Backspace:
           if (text.isEmpty) return;
-          text = text.substring(0, text.length - 1);
+          arrayText.removeAt(bloc.state.cursorPosition -1);
+          return bloc.add(
+            TextChanged(arrayText.join(), bloc.state.cursorPosition - 1),
+          );
         case VirtualKeyboardKeyAction.Return:
-          text = '$text\n';
+          arrayText.insert(
+            bloc.state.cursorPosition,
+            '\n',
+          );
         case VirtualKeyboardKeyAction.Space:
-          text = text + key.text.toString();
+          arrayText.insert(
+            bloc.state.cursorPosition,
+            key.text.toString(),
+          );
         case VirtualKeyboardKeyAction.Shift:
           keyboardBloc.add(ChangeShift());
         case VirtualKeyboardKeyAction.SwithLanguage:
@@ -171,7 +188,7 @@ class _OpenTicketViewState extends State<_EditTicketView> {
           break;
       }
     }
-    bloc.add(TextChanged(text));
+    bloc.add(TextChanged(arrayText.join(), bloc.state.cursorPosition + 1));
   }
 
   Widget twoColumnLayout(
@@ -245,25 +262,27 @@ class _TicketNameInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<EditTicketBloc, EditTicketState>(
       listenWhen: (previous, current) =>
-          previous.loadingStatus != current.loadingStatus,
+          previous.ticketEntity?.entity?.name !=
+          current.ticketEntity?.entity?.name,
       listener: (context, state) {
         if (state.ticketEntity?.entity?.name != null) {
-          bloc.add(TextChanged(state.ticketEntity!.entity!.name!));
+          bloc.add(
+            TextChanged(
+              state.ticketEntity!.entity!.name!,
+              bloc.state.cursorPosition,
+            ),
+          );
         }
       },
-      child: BlocBuilder<EditTicketBloc, EditTicketState>(
-        builder: (context, state) {
-          return FieldString(
-            key: const Key('ticketNameInput_textField'),
-            keyboardBloc: keyboardBloc,
-            onChanged: (text) =>
-                context.read<EditTicketBloc>().add(TicketNameChanged(text)),
-            labelText: AppLocalizations.of(context)!.ticket_label_name,
-            bloc: bloc,
-            onTapBloc: (bloc) =>
-                context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
-          );
-        },
+      child: FieldString(
+        key: const Key('ticketNameInput_textField'),
+        keyboardBloc: keyboardBloc,
+        onChanged: (text) =>
+            context.read<EditTicketBloc>().add(TicketNameChanged(text)),
+        labelText: AppLocalizations.of(context)!.ticket_label_name,
+        bloc: bloc,
+        onTapBloc: (bloc) =>
+            context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
       ),
     );
   }
@@ -288,23 +307,22 @@ class _TicketDescInput extends StatelessWidget {
       listener: (context, state) {
         if (state.ticketEntity?.scheduled?.description != null) {
           bloc.add(
-            TextChanged(state.ticketEntity?.scheduled?.description ?? ''),
+            TextChanged(
+              state.ticketEntity?.scheduled?.description ?? '',
+              bloc.state.cursorPosition,
+            ),
           );
         }
       },
-      child: BlocBuilder<EditTicketBloc, EditTicketState>(
-        builder: (context, state) {
-          return FieldString(
-            key: const Key('ticketDescInput_textField'),
-            keyboardBloc: keyboardBloc,
-            bloc: bloc,
-            onChanged: (text) =>
-                context.read<EditTicketBloc>().add(TicketDescChanged(text)),
-            labelText: AppLocalizations.of(context)!.ticket_label_description,
-            onTapBloc: (bloc) =>
-                context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
-          );
-        },
+      child: FieldString(
+        key: const Key('ticketDescInput_textField'),
+        keyboardBloc: keyboardBloc,
+        bloc: bloc,
+        onChanged: (text) =>
+            context.read<EditTicketBloc>().add(TicketDescChanged(text)),
+        labelText: AppLocalizations.of(context)!.ticket_label_description,
+        onTapBloc: (bloc) =>
+            context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
       ),
     );
   }

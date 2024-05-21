@@ -975,7 +975,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: fb995a3007dd6862ce02eaf573200352ecef40e5
+      resolved-ref: b39c643defc19445471e75d606e44cf6b17670ea
       url: "https://github.com/Remorides/opera-api-asset.git"
     source: git
     version: "0.1.0+1"
@@ -993,7 +993,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "140bb6a9d66e82f9bdb541c525aa70abf8b2d65a"
+      resolved-ref: d7a6e97ffb0c2cfb8977703847a43cf98378fb19
       url: "https://github.com/Remorides/opera-api-entity.git"
     source: git
     version: "0.1.0+1"

@@ -148,26 +148,40 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
   }
 
   void _onKeyPress(
-    BuildContext context,
-    VirtualKeyboardKey key,
-    SimpleTextBloc bloc,
-    VirtualKeyboardBloc keyboardBloc,
-  ) {
-    var text = bloc.state.text ?? '';
+      BuildContext context,
+      VirtualKeyboardKey key,
+      SimpleTextBloc bloc,
+      VirtualKeyboardBloc keyboardBloc,
+      ) {
+    final text = bloc.state.text ?? '';
+    final arrayText =
+    List<String>.generate(text.length, (index) => text[index]);
+
     if (key.keyType == VirtualKeyboardKeyType.String) {
-      text = text +
-          (keyboardBloc.state.isShiftEnabled
-              ? key.capsText.toString()
-              : key.text.toString());
+      arrayText.insert(
+        bloc.state.cursorPosition,
+        (keyboardBloc.state.isShiftEnabled
+            ? key.capsText.toString()
+            : key.text.toString()),
+      );
     } else if (key.keyType == VirtualKeyboardKeyType.Action) {
       switch (key.action) {
         case VirtualKeyboardKeyAction.Backspace:
           if (text.isEmpty) return;
-          text = text.substring(0, text.length - 1);
+          arrayText.removeAt(bloc.state.cursorPosition -1);
+          return bloc.add(
+            TextChanged(arrayText.join(), bloc.state.cursorPosition - 1),
+          );
         case VirtualKeyboardKeyAction.Return:
-          text = '$text\n';
+          arrayText.insert(
+            bloc.state.cursorPosition,
+            '\n',
+          );
         case VirtualKeyboardKeyAction.Space:
-          text = text + key.text.toString();
+          arrayText.insert(
+            bloc.state.cursorPosition,
+            key.text.toString(),
+          );
         case VirtualKeyboardKeyAction.Shift:
           keyboardBloc.add(ChangeShift());
         case VirtualKeyboardKeyAction.SwithLanguage:
@@ -175,7 +189,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
           break;
       }
     }
-    bloc.add(TextChanged(text));
+    bloc.add(TextChanged(arrayText.join(), bloc.state.cursorPosition + 1));
   }
 
   Widget twoColumnLayout(
@@ -200,7 +214,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                 widgetB: blocDesc,
               ),
               const Space.vertical(20),
-              _TicketPriorityInput(),
+              const _TicketPriorityInput(),
               const Space.vertical(20),
               const _TicketSchemaInput(),
             ],
@@ -255,7 +269,12 @@ class _AssetReference extends StatelessWidget {
       },
       listener: (context, state) {
         if (state.jMainNode?.name != null) {
-          bloc.add(TextChanged(state.jMainNode!.name!));
+          bloc.add(
+            TextChanged(
+              state.jMainNode!.name!,
+              bloc.state.cursorPosition,
+            ),
+          );
         }
       },
       child: BlocBuilder<OpenTicketBloc, OpenTicketState>(

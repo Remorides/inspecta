@@ -2,17 +2,18 @@ part of 'simple_text_bloc.dart';
 
 /// [SimpleTextBloc] events class
 @immutable
-sealed class SimpleTextEvent {
+final class SimpleTextEvent{
   const SimpleTextEvent();
 }
 
 /// Event to notify new text
 final class TextChanged extends SimpleTextEvent {
   /// Create [TextChanged] instance
-  const TextChanged(this.text);
+  const TextChanged(this.text, this.cursorPosition);
 
   /// New text
   final String text;
+  final int cursorPosition;
 }
 
 /// Event to set initial text

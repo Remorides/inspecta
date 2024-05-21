@@ -17,13 +17,12 @@ final class EditTicketState extends Equatable {
   final ScheduledActivity? ticketEntity;
   final String? failureText;
 
-  EditTicketState copyWith({
-    LoadingStatus? loadingStatus,
-    MappingVersion? ticketMapping,
-    SimpleTextBloc? activeFieldBloc,
-    ScheduledActivity? ticketEntity,
-    String? failureText,
-  }) {
+  EditTicketState copyWith(
+      {LoadingStatus? loadingStatus,
+      MappingVersion? ticketMapping,
+      SimpleTextBloc? activeFieldBloc,
+      ScheduledActivity? ticketEntity,
+      String? failureText}) {
     return EditTicketState(
       loadingStatus: loadingStatus ?? this.loadingStatus,
       ticketMapping: ticketMapping ?? this.ticketMapping,
@@ -39,6 +38,6 @@ final class EditTicketState extends Equatable {
         ticketMapping,
         activeFieldBloc,
         ticketEntity,
-        failureText,
+        failureText
       ];
 }
