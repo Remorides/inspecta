@@ -411,35 +411,39 @@ class _TicketStepList extends StatelessWidget {
           previous.loadingStatus != current.loadingStatus,
       builder: (context, state) {
         return (state.ticketEntity != null)
-            ? ListView.builder(
-                shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
-                itemCount: state.ticketEntity!.stepsList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index >= state.ticketEntity!.stepsList.length) {
-                    return submitTicket(context: context);
-                  }
-                  return ExpansionTile(
-                    iconColor: context.theme?.colorScheme.onSurface,
-                    collapsedIconColor: context.theme?.colorScheme.onSurface,
-                    initiallyExpanded: index == 0,
-                    title: Text(
-                      '${(state.ticketEntity!.stepsList[index].title?.singleWhereOrNull(
-                            (element) =>
-                                element.culture?.contains(
-                                  Localizations.localeOf(context).languageCode,
-                                ) ??
-                                false,
-                          ) ?? state.ticketEntity!.stepsList[index].title?[0])?.value}',
-                    ),
-                    children: buildFieldList(
-                      context: context,
-                      stepEntity: state.ticketEntity!.stepsList[index],
-                      schemaMapping: state.schemaMapping!,
-                      keyboardBloc: keyboardBloc,
-                    ),
-                  );
-                },
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: state.ticketEntity!.stepsList.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index >= state.ticketEntity!.stepsList.length) {
+                      return submitTicket(context: context);
+                    }
+                    return ExpansionTile(
+                      iconColor: context.theme?.colorScheme.onSurface,
+                      collapsedIconColor: context.theme?.colorScheme.onSurface,
+                      initiallyExpanded: index == 0,
+                      title: Text(
+                        '${(state.ticketEntity!.stepsList[index].title?.singleWhereOrNull(
+                              (element) =>
+                                  element.culture?.contains(
+                                    Localizations.localeOf(context)
+                                        .languageCode,
+                                  ) ??
+                                  false,
+                            ) ?? state.ticketEntity!.stepsList[index].title?[0])?.value}',
+                      ),
+                      children: buildFieldList(
+                        context: context,
+                        stepEntity: state.ticketEntity!.stepsList[index],
+                        schemaMapping: state.schemaMapping!,
+                        keyboardBloc: keyboardBloc,
+                      ),
+                    );
+                  },
+                ),
               )
             : Center(
                 child: Text(

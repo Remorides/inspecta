@@ -325,33 +325,37 @@ class _TicketStepList extends StatelessWidget {
           current.ticketEntity != null && current.ticketMapping != null,
       builder: (context, state) {
         return (state.loadingStatus != LoadingStatus.initial)
-            ? ListView.builder(
-                shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
-                itemCount: state.ticketEntity!.stepsList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index >= state.ticketEntity!.stepsList.length) {
-                    return submitTicket(context: context);
-                  }
-                  return ExpansionTile(
-                    initiallyExpanded: index == 0,
-                    title: Text(
-                      '${(state.ticketEntity!.stepsList[index].title?.singleWhereOrNull(
-                            (element) =>
-                                element.culture?.contains(
-                                  Localizations.localeOf(context).languageCode,
-                                ) ??
-                                false,
-                          ) ?? state.ticketEntity!.stepsList[index].title?[0])?.value}',
-                    ),
-                    children: buildFieldList(
-                      context: context,
-                      stepEntity: state.ticketEntity!.stepsList[index],
-                      schemaMapping: state.ticketMapping!,
-                      keyboardBloc: keyboardBloc,
-                    ),
-                  );
-                },
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: state.ticketEntity!.stepsList.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index >= state.ticketEntity!.stepsList.length) {
+                      return submitTicket(context: context);
+                    }
+                    return ExpansionTile(
+                      initiallyExpanded: index == 0,
+                      title: Text(
+                        '${(state.ticketEntity!.stepsList[index].title?.singleWhereOrNull(
+                              (element) =>
+                                  element.culture?.contains(
+                                    Localizations.localeOf(context)
+                                        .languageCode,
+                                  ) ??
+                                  false,
+                            ) ?? state.ticketEntity!.stepsList[index].title?[0])?.value}',
+                      ),
+                      children: buildFieldList(
+                        context: context,
+                        stepEntity: state.ticketEntity!.stepsList[index],
+                        schemaMapping: state.ticketMapping!,
+                        keyboardBloc: keyboardBloc,
+                      ),
+                    );
+                  },
+                ),
               )
             : Container();
       },
