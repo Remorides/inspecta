@@ -204,9 +204,13 @@ class _AppViewState extends State<AppView> {
 
                 /// Session doesn't exist
                 /// redirect user to login page
+                // await _navigator.pushAndRemoveUntil(
+                //   LoginPage.route(),
+                //   (route) => false,
+                // );
                 await _navigator.pushAndRemoveUntil(
-                  LoginPage.route(),
-                  (route) => false,
+                  OTPFailsPage.route(),
+                      (route) => false,
                 );
               case AuthStatus.unknown:
 

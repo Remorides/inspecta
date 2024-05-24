@@ -10,7 +10,6 @@ import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/alerts/alerts.dart';
 import 'package:omdk/elements/elements.dart';
 import 'package:omdk/pages/edit_ticket/bloc/edit_ticket_bloc.dart';
-import 'package:omdk_local_data/constants/default_colors.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
