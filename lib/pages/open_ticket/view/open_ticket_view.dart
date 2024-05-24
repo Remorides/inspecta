@@ -44,6 +44,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
         ),
         focusNode: FocusNode(),
         onPressed: () {
+          context.read<AuthRepo>().logOut();
           if (widget.closePage && kIsWeb) {
             return web.window.close();
           }
