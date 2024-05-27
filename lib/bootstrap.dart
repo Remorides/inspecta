@@ -10,6 +10,7 @@ import 'package:omdk_api/omdk_api.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
 import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_theme/omdk_theme.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_api_auth/opera_api_auth.dart';
 import 'package:opera_repo/opera_repo.dart';
@@ -59,6 +60,13 @@ Future<void> bootstrap({
     entityIsarSchema: (!kIsWeb) ? ScheduledActivitySchema : null,
   );
 
+  final themeRepo = ThemeRepo(
+    omdkLocalData,
+    themeRepo: OmdkApiTheme(omdkApi.apiClient.client),
+  );
+
+  await themeRepo.initTheme();
+
   runApp(
     App(
       operaRepo: operaRepo,
@@ -70,6 +78,7 @@ Future<void> bootstrap({
       mappingRepo: mappingRepo,
       scheduledRepo: scheduledRepo,
       companyCode: companyCode,
+      themeRepo: themeRepo,
     ),
   );
 }

@@ -5,7 +5,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/pages/auth/bloc/auth_bloc.dart';
-import 'package:omdk/pages/auth_login/view/login_page.dart';
 import 'package:omdk/pages/edit_ticket/edit_scheduled.dart';
 import 'package:omdk/pages/open_ticket/view/open_ticket_page.dart';
 import 'package:omdk/pages/otp_fails/otp_fails.dart';
@@ -13,7 +12,6 @@ import 'package:omdk/pages/splash/view/splash_page.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:omdk_theme/omdk_theme.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_repo/opera_repo.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +29,7 @@ class App extends StatefulWidget {
     required this.operaRepo,
     required this.scheduledRepo,
     required this.companyCode,
+    required this.themeRepo,
     super.key,
   });
 
@@ -60,6 +59,9 @@ class App extends StatefulWidget {
 
   /// [OMDKLocalData] instance
   final OMDKLocalData omdkLocalData;
+
+  /// [ThemeRepo] instance
+  final ThemeRepo themeRepo;
 
   @override
   State<App> createState() => _AppState();
@@ -101,10 +103,8 @@ class _AppState extends State<App> {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(
-            create: (_) => ThemeRepo(
-              widget.omdkLocalData,
-              themeRepo: OmdkApiTheme(widget.authRepo.omdkApi.apiClient.client),
-            )..downloadCustomTheme(widget.companyCode),
+            create: (_) =>
+                widget.themeRepo..downloadCustomTheme(widget.companyCode),
             lazy: true,
           ),
         ],
@@ -210,7 +210,7 @@ class _AppViewState extends State<AppView> {
                 // );
                 await _navigator.pushAndRemoveUntil(
                   OTPFailsPage.route(),
-                      (route) => false,
+                  (route) => false,
                 );
               case AuthStatus.unknown:
 
