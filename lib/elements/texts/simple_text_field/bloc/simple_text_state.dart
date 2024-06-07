@@ -6,6 +6,8 @@ final class SimpleTextState extends Equatable {
   const SimpleTextState({
     required this.isNullable,
     required this.isEmptyAllowed,
+    required this.isActionEnabled,
+    required this.isInputTextEnabled,
     this.status = SimpleTextStatus.initial,
     this.text,
     this.errorText = '',
@@ -23,6 +25,8 @@ final class SimpleTextState extends Equatable {
 
   /// if true data validation method skip nullable control
   final bool isNullable;
+  final bool isInputTextEnabled;
+  final bool isActionEnabled;
 
   /// if true data validation method skip notEmpty control
   final bool isEmptyAllowed;
@@ -35,6 +39,8 @@ final class SimpleTextState extends Equatable {
     String? text,
     String? errorText,
     int? cursorPosition,
+    bool? isInputTextEnabled,
+    bool? isActionEnabled,
   }) =>
       SimpleTextState(
         isNullable: isNullable,
@@ -43,6 +49,8 @@ final class SimpleTextState extends Equatable {
         text: text ?? this.text,
         errorText: errorText ?? this.errorText,
         cursorPosition: cursorPosition ?? this.cursorPosition,
+        isInputTextEnabled: isInputTextEnabled ?? this.isInputTextEnabled,
+        isActionEnabled: isActionEnabled ?? this.isActionEnabled,
       );
 
   @override
@@ -51,5 +59,7 @@ final class SimpleTextState extends Equatable {
         text,
         errorText,
         cursorPosition,
+        isInputTextEnabled,
+        isActionEnabled,
       ];
 }

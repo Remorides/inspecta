@@ -34,8 +34,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
   @override
   Widget build(BuildContext context) {
     late SimpleTextBloc activeBloc;
-    return OMDKAnimatedPage(
-      appBarTitle: '',
+    return OMDKSimplePage(
       withBottomBar: false,
       withDrawer: false,
       leading: OMDKElevatedButton(
@@ -473,15 +472,17 @@ class _TicketStepList extends StatelessWidget {
         (JFieldEntity jFieldEntity) =>
             jFieldEntity.mappingHash == jFieldMapping.hash,
       );
-      fieldWidgets.add(
-        buildField(
-          context: context,
-          jFieldMapping: jFieldMapping,
-          jFieldEntity: jFieldEntity,
-          stepGuid: stepEntity.guid!,
-          keyboardBloc: keyboardBloc,
-        ),
-      );
+      if (jFieldEntity!.operations!.design!.values!.contains('R')) {
+        fieldWidgets.add(
+          buildField(
+            context: context,
+            jFieldMapping: jFieldMapping,
+            jFieldEntity: jFieldEntity,
+            stepGuid: stepEntity.guid!,
+            keyboardBloc: keyboardBloc,
+          ),
+        );
+      }
     }
     return fieldWidgets;
   }
@@ -506,11 +507,13 @@ class _TicketStepList extends StatelessWidget {
                         false,
                   ) ?? jFieldMapping.title?[0])?.value}',
               listItem: jFieldMapping.poolListSettings!.value!,
+              isEnabled:
+                  jFieldEntity!.operations!.design!.values!.contains('U'),
               onChanged: (String? s) => context.read<OpenTicketBloc>().add(
                     FieldChanged(
                       stepGuid: stepGuid,
                       fieldMapping: jFieldMapping,
-                      fieldGuid: jFieldEntity!.guid!,
+                      fieldGuid: jFieldEntity.guid!,
                       fieldValue: <String>[s!],
                     ),
                   ),
@@ -527,11 +530,13 @@ class _TicketStepList extends StatelessWidget {
                           false,
                     ) ?? jFieldMapping.title?[0])?.value}',
                 listItem: jFieldMapping.poolListSettings!.value!,
+                isEnabled:
+                jFieldEntity!.operations!.design!.values!.contains('U'),
                 onChanged: (String? s) => context.read<OpenTicketBloc>().add(
                       FieldChanged(
                         stepGuid: stepGuid,
                         fieldMapping: jFieldMapping,
-                        fieldGuid: jFieldEntity!.guid!,
+                        fieldGuid: jFieldEntity.guid!,
                         fieldValue: <String>[s!],
                       ),
                     ),
@@ -545,6 +550,8 @@ class _TicketStepList extends StatelessWidget {
                           ) ??
                           false,
                     ) ?? jFieldMapping.title?[0])?.value}',
+                isEnabled:
+                jFieldEntity!.operations!.design!.values!.contains('U'),
                 listItem: jFieldMapping.poolListSettings!.value!,
                 focusNode: FocusNode(),
                 onSelected: (List<PoolItem?> selectedItems) {},
@@ -563,12 +570,14 @@ class _TicketStepList extends StatelessWidget {
                 onTapBloc: (bloc) => context
                     .read<OpenTicketBloc>()
                     .add(TicketEditing(bloc: bloc)),
+                isEnabled:
+                jFieldEntity!.operations!.design!.values!.contains('U'),
                 focusNode: FocusNode(),
                 onChanged: (String? s) => context.read<OpenTicketBloc>().add(
                       FieldChanged(
                         stepGuid: stepGuid,
                         fieldMapping: jFieldMapping,
-                        fieldGuid: jFieldEntity!.guid!,
+                        fieldGuid: jFieldEntity.guid!,
                         fieldValue: s,
                       ),
                     ),
@@ -592,11 +601,13 @@ class _TicketStepList extends StatelessWidget {
           onTapBloc: (bloc) =>
               context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
           focusNode: FocusNode(),
+          isEnabled:
+          jFieldEntity!.operations!.design!.values!.contains('U'),
           onChanged: (double? d) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
-                  fieldGuid: jFieldEntity!.guid!,
+                  fieldGuid: jFieldEntity.guid!,
                   fieldValue: d,
                 ),
               ),
@@ -612,13 +623,15 @@ class _TicketStepList extends StatelessWidget {
               ) ?? jFieldMapping.title?[0])?.value}',
           focusNode: FocusNode(),
           keyboardBloc: keyboardBloc,
+          isEnabled:
+          jFieldEntity!.operations!.design!.values!.contains('U'),
           onTapBloc: (bloc) =>
               context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
           onChanged: (int? i) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
-                  fieldGuid: jFieldEntity!.guid!,
+                  fieldGuid: jFieldEntity.guid!,
                   fieldValue: i,
                 ),
               ),
@@ -635,11 +648,13 @@ class _TicketStepList extends StatelessWidget {
                     false,
               ) ?? jFieldMapping.title?[0])?.value}',
           focusNode: FocusNode(),
+          isEnabled:
+          jFieldEntity!.operations!.design!.values!.contains('U'),
           onChanged: (bool? b) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
-                  fieldGuid: jFieldEntity!.guid!,
+                  fieldGuid: jFieldEntity.guid!,
                   fieldValue: b,
                 ),
               ),

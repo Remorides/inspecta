@@ -9,7 +9,10 @@ Future<void> main() async {
   await dotenv.load(fileName: 'assets/.env');
   WidgetsFlutterBinding.ensureInitialized();
 
-  final omdkApi = OMDKApi(apiEndpoint: dotenv.env['API_ENDPOINT']);
+  final omdkApi = OMDKApi(
+    apiEndpoint: dotenv.env['API_ENDPOINT'],
+    logEnabled: false,
+  );
   final companyCode = dotenv.env['COMPANY_CODE'];
   final omdkLocalData = OMDKLocalData();
 

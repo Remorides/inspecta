@@ -38,8 +38,8 @@ class _LoginView extends StatelessWidget {
             );
         }
       },
-      child: OMDKAnimatedPage(
-        appBarTitle: 'Login',
+      child: OMDKSimplePage(
+        appBarTitle: const Text('Login'),
         withBottomBar: false,
         withDrawer: false,
         focusNodeList: [
@@ -145,7 +145,7 @@ class _CompanyCodeInput extends StatelessWidget {
         return SimpleTextField(
           key: const Key('loginForm_companyInput_textField'),
           simpleTextBloc: widgetB,
-          onEditingComplete: (companyCode) => context
+          onSubmit: (companyCode) => context
               .read<LoginBloc>()
               .add(LoginCompanyCodeChanged(companyCode!)),
           labelText: 'CompanyCode',
@@ -177,7 +177,7 @@ class _UsernameInput extends StatelessWidget {
         return SimpleTextField(
           key: const Key('loginForm_usernameInput_textField'),
           simpleTextBloc: widgetB,
-          onEditingComplete: (username) =>
+          onSubmit: (username) =>
               context.read<LoginBloc>().add(LoginUsernameChanged(username!)),
           labelText: 'Username',
           textFocusNode: widgetFN,
@@ -208,7 +208,7 @@ class _PasswordInput extends StatelessWidget {
         return SimpleTextField(
           key: const Key('loginForm_passwordInput_textField'),
           simpleTextBloc: widgetB,
-          onEditingComplete: (password) =>
+          onSubmit: (password) =>
               context.read<LoginBloc>().add(LoginPasswordChanged(password!)),
           labelText: 'Password',
           isObscured: true,

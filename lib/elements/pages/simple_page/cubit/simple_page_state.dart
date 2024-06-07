@@ -1,7 +1,8 @@
-part of 'anp_cubit.dart';
+part of 'simple_page_cubit.dart';
 
-final class ANPState extends Equatable {
-  const ANPState({
+final class OMDKSimplePageState extends Equatable {
+  /// Create [OMDKSimplePageState] instance
+  const OMDKSimplePageState({
     this.isDrawerExpanded = false,
     this.xOffsetDrawer = 0,
   });
@@ -9,11 +10,11 @@ final class ANPState extends Equatable {
   final bool isDrawerExpanded;
   final double xOffsetDrawer;
 
-  ANPState copyWith({
+  OMDKSimplePageState copyWith({
     bool? isDrawerExpanded,
     double? xOffsetDrawer,
   }) =>
-      ANPState(
+      OMDKSimplePageState(
         isDrawerExpanded: isDrawerExpanded ?? this.isDrawerExpanded,
         xOffsetDrawer: xOffsetDrawer ?? this.xOffsetDrawer,
       );

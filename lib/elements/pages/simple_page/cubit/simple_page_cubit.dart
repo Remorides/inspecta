@@ -1,16 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-part 'anp_state.dart';
+part 'simple_page_state.dart';
 
-class ANPCubit extends Cubit<ANPState> {
-  /// Create [ANPCubit] instance with default [ANPState]
-  ANPCubit({bool isDrawerExpanded = false})
-      : super(
-          ANPState(
-            isDrawerExpanded: isDrawerExpanded,
-          ),
-        );
+class OMDKSimplePageCubit extends Cubit<OMDKSimplePageState> {
+  /// Create [OMDKAnimatedPageCubit] instance
+  OMDKSimplePageCubit({bool isDrawerExpanded = false})
+      : super(OMDKSimplePageState(isDrawerExpanded: isDrawerExpanded));
 
   void expandDrawer() => emit(
         state.copyWith(

@@ -16,13 +16,14 @@ final class TextChanged extends SimpleTextEvent {
   final int cursorPosition;
 }
 
-/// Event to set initial text
-final class InitialText extends SimpleTextEvent {
-  /// Create [InitialText] instance
-  const InitialText(this.initialText);
+final class EnableInputText extends SimpleTextEvent {
+  const EnableInputText();
+}
 
+final class EnableAction extends SimpleTextEvent {
+  const EnableAction(this.isEnabled);
   /// New text
-  final String initialText;
+  final bool isEnabled;
 }
 
 /// Event to request field reset

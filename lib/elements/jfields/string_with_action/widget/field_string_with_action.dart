@@ -1,56 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:omdk/elements/elements.dart';
 
-class FieldString extends StatefulWidget {
-  /// Create [FieldString] instance
-  const FieldString({
+class FieldStringWithAction extends StatefulWidget {
+  /// Create [FieldStringWithAction] instance
+  const FieldStringWithAction({
     required this.labelText,
+    required this.focusNode,
+    required this.actionIcon,
+    required this.onSubmit,
     super.key,
-    this.focusNode,
-    this.onSubmit,
-    this.onChanged,
-    this.onTap,
-    this.onTapBloc,
-    this.onBuildedBloc,
-    this.onCursorPosition,
     this.initialText,
     this.bloc,
     this.nextFocusNode,
-    this.isEnabled = true,
+    this.fieldValue,
+    this.isInputTextEnabled = false,
+    this.isActionEnabled = true,
     this.isNullable = true,
     this.isEmptyAllowed = true,
     this.withBorder = false,
-    this.autofocus = false,
-    this.isObscured = false,
+    this.onTap,
+    this.onCursorPosition,
+    this.onChanged,
+    this.onBuildedBloc,
     this.placeholder,
-    this.keyboardBloc,
+    this.onTapAction,
   });
 
   final String labelText;
   final SimpleTextBloc? bloc;
-  final bool isEnabled;
-  final bool autofocus;
+  final double? fieldValue;
+  final bool isInputTextEnabled;
+  final bool isActionEnabled;
   final bool isNullable;
   final bool isEmptyAllowed;
-  final bool isObscured;
   final bool withBorder;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
   final FocusNode? nextFocusNode;
-  final VirtualKeyboardBloc? keyboardBloc;
   final void Function(String?)? onChanged;
-  final void Function(String?)? onSubmit;
+  final void Function(String?) onSubmit;
   final void Function()? onTap;
-  final void Function(SimpleTextBloc)? onTapBloc;
+  final void Function()? onTapAction;
   final void Function(SimpleTextBloc)? onBuildedBloc;
   final void Function(int)? onCursorPosition;
   final String? initialText;
   final String? placeholder;
+  final Icon actionIcon;
 
   @override
-  State<FieldString> createState() => _FieldStringState();
+  State<FieldStringWithAction> createState() => _FieldStringWithActionState();
 }
 
-class _FieldStringState extends State<FieldString> {
+class _FieldStringWithActionState extends State<FieldStringWithAction> {
   late SimpleTextBloc widgetBloc;
 
   @override
@@ -58,7 +58,8 @@ class _FieldStringState extends State<FieldString> {
     super.initState();
     widgetBloc = widget.bloc ??
         SimpleTextBloc(
-          isInputTextEnabled: widget.isEnabled,
+          isInputTextEnabled: widget.isInputTextEnabled,
+          isActionEnabled: widget.isActionEnabled,
           isNullable: widget.isNullable,
           isEmptyAllowed: widget.isEmptyAllowed,
         );
@@ -71,13 +72,18 @@ class _FieldStringState extends State<FieldString> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    widget.focusNode.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SimpleTextField(
       key: widget.key,
-      autofocus: widget.autofocus,
-      isInputTextEnabled: widget.isEnabled,
-      isObscured: widget.isObscured,
+      isInputTextEnabled: widget.isInputTextEnabled,
       simpleTextBloc: widgetBloc,
+      actionIcon: widget.actionIcon,
       onCursorPosition: (position) {
         widgetBloc.add(
           TextChanged(
@@ -87,30 +93,16 @@ class _FieldStringState extends State<FieldString> {
         );
         widget.onCursorPosition?.call(position);
       },
-      onChanged: widget.onChanged,
-      onSubmit: (s) => widget.onSubmit?.call(s),
       labelText: widget.labelText.toUpperCase(),
+      placeholder: widget.placeholder,
       textFocusNode: widget.focusNode,
       nextFocusNode: widget.nextFocusNode,
-      onFocusChange: (focus) {
-        if(focus){
-          if (!widget.keyboardBloc!.state.isVisible) {
-            widget.keyboardBloc?.add(ChangeType());
-          } else {
-            widget.keyboardBloc
-              ?..add(ChangeType())
-              ..add(ChangeVisibility(isVisibile: true));
-          }
-        }
-      },
-      onTap: () {
-        widget.onTapBloc?.call(widgetBloc);
-        if (widget.keyboardBloc != null) {
-          widget.keyboardBloc
-            ?..add(ChangeType())
-            ..add(ChangeVisibility(isVisibile: true));
-        }
-      },
+      withBorder: widget.withBorder,
+      withAction: true,
+      onTap: widget.onTap,
+      onTapAction: widget.onTapAction,
+      onSubmit: widget.onSubmit,
+      onChanged: widget.onChanged,
     );
   }
 }

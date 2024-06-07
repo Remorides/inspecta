@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:omdk/elements/alerts/alerts.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_auth/opera_api_auth.dart';
 
@@ -31,6 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   @override
   Future<void> close() {
     _authStatusSubscription.cancel();
+    _authRepo.localData.sessionManager.deleteSession();
     return super.close();
   }
 
@@ -49,7 +49,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       case AuthStatus.unauthenticated:
         return emit(const AuthState.unauthenticated());
       case AuthStatus.authenticated:
-        final user = await _authRepo.user;
+        final user = _authRepo.user;
         return emit(
           user != null
               ? AuthState.authenticated(user)

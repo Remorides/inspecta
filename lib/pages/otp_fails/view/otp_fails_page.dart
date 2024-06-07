@@ -22,8 +22,8 @@ class OTPFailsPage extends StatefulWidget {
 class _OTPFailsPageState extends State<OTPFailsPage> {
   @override
   Widget build(BuildContext context) {
-    return OMDKAnimatedPage(
-      withAppBar: false,
+    return OMDKSimplePage(
+      withAppbar: false,
       withBottomBar: false,
       withDrawer: false,
       bodyPage: ResponsiveWidget.isSmallScreen(context)

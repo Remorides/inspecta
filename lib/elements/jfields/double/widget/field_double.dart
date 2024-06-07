@@ -6,28 +6,40 @@ class FieldDouble extends StatefulWidget {
   /// Create [FieldDouble] instance
   const FieldDouble({
     required this.labelText,
-    this.focusNode,
     required this.onChanged,
     super.key,
+    this.onSubmit,
+    this.focusNode,
     this.bloc,
     this.nextFocusNode,
     this.fieldValue,
     this.isEnabled = true,
+    this.isNullable = true,
+    this.isEmptyAllowed = true,
     this.onTap,
-    this.keyboardBloc,
     this.onTapBloc,
+    this.keyboardBloc,
+    this.onBuildedBloc,
+    this.initialText,
+    this.placeholder,
   });
 
   final String labelText;
   final SimpleTextBloc? bloc;
   final double? fieldValue;
   final bool isEnabled;
+  final bool isNullable;
+  final bool isEmptyAllowed;
   final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
   final void Function(double?) onChanged;
+  final void Function(double?)? onSubmit;
   final void Function()? onTap;
   final VirtualKeyboardBloc? keyboardBloc;
+  final void Function(SimpleTextBloc)? onBuildedBloc;
   final void Function(SimpleTextBloc)? onTapBloc;
+  final int? initialText;
+  final String? placeholder;
 
   @override
   State<FieldDouble> createState() => _FieldDoubleState();
@@ -38,9 +50,20 @@ class _FieldDoubleState extends State<FieldDouble> {
   late SimpleTextBloc widgetBloc;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    widgetBloc = widget.bloc ?? SimpleTextBloc();
+    widgetBloc = widget.bloc ??
+        SimpleTextBloc(
+          isInputTextEnabled: widget.isEnabled,
+          isNullable: widget.isNullable,
+          isEmptyAllowed: widget.isEmptyAllowed,
+        );
+    if (widget.initialText != null) {
+      widgetBloc.add(
+        TextChanged(widget.initialText!.toString(), 0),
+      );
+    }
+    widget.onBuildedBloc?.call(widgetBloc);
   }
 
   @override
@@ -48,11 +71,27 @@ class _FieldDoubleState extends State<FieldDouble> {
     return SimpleTextField(
       key: widget.key,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      enabled: widget.isEnabled,
+      isInputTextEnabled: widget.isEnabled,
       simpleTextBloc: widgetBloc,
-      onEditingComplete: (newValue) {
+      onChanged: (newValue) {
         if(newValue == null) return widget.onChanged(null);
         widget.onChanged(double.parse(newValue));
+      },
+      onSubmit: (newValue) {
+        if(newValue == null) return widget.onSubmit?.call(null);
+        widget.onSubmit?.call(double.parse(newValue));
+      },
+      onFocusChange: (focus) {
+        if (focus) {
+          if (!widget.keyboardBloc!.state.isVisible) {
+            widget.keyboardBloc
+                ?.add(ChangeType(keyboardType: VirtualKeyboardType.Numeric));
+          } else {
+            widget.keyboardBloc
+              ?..add(ChangeType())
+              ..add(ChangeVisibility(isVisibile: true));
+          }
+        }
       },
       labelText: widget.labelText.toUpperCase(),
       textFocusNode: widget.focusNode,
