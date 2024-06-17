@@ -87,11 +87,33 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     }
 
     try {
+      final participationList =
+          List<JUserParticipation>.from(state.ticketEntity!.partecipationsList);
+      final stateList =
+          List<JEntityState>.from(state.ticketEntity!.statesList ?? []);
+
+      final userParticipation = await operaRepo.getUserParticipation();
+      if (!participationList.contains(userParticipation)) {
+        participationList.add(userParticipation);
+      }
+      stateList.add(
+        JEntityState(
+          value: ActivityState.Running,
+          modified: await operaRepo.getParticipationDate(),
+        ),
+      );
+
       await scheduledRepo.putAPIItem(
         state.ticketEntity!.copyWith(
           dates: state.ticketEntity?.dates?.copyWith(
             modified: await operaRepo.getParticipationDate(),
+            executed: await operaRepo.getParticipationDate(),
           ),
+          scheduled: state.ticketEntity?.scheduled?.copyWith(
+            state: ActivityState.Running,
+          ),
+          statesList: stateList,
+          partecipationsList: participationList,
         ),
       );
       emit(
@@ -165,12 +187,11 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
   }
 
   void _onResetWarning(
-      ResetWarning event,
-      Emitter<EditTicketState> emit,
-      ) {
+    ResetWarning event,
+    Emitter<EditTicketState> emit,
+  ) {
     emit(state.copyWith(loadingStatus: LoadingStatus.inProgress));
   }
-
 
   void _onEditingMode(
     TicketEditing event,

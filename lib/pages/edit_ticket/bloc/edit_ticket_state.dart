@@ -22,7 +22,8 @@ final class EditTicketState extends Equatable {
       MappingVersion? ticketMapping,
       SimpleTextBloc? activeFieldBloc,
       ScheduledActivity? ticketEntity,
-      String? failureText}) {
+      String? failureText,
+      }) {
     return EditTicketState(
       loadingStatus: loadingStatus ?? this.loadingStatus,
       ticketMapping: ticketMapping ?? this.ticketMapping,
