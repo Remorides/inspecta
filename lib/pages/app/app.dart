@@ -11,6 +11,7 @@ import 'package:omdk/pages/otp_fails/otp_fails.dart';
 import 'package:omdk/pages/splash/view/splash_page.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
+import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
 import 'package:opera_repo/opera_repo.dart';
@@ -30,6 +31,7 @@ class App extends StatefulWidget {
     required this.scheduledRepo,
     required this.companyCode,
     required this.themeRepo,
+    required this.attachmentRepo,
     super.key,
   });
 
@@ -62,6 +64,9 @@ class App extends StatefulWidget {
 
   /// [ThemeRepo] instance
   final ThemeRepo themeRepo;
+
+  /// [AttachmentRepo] instance
+  final AttachmentRepo attachmentRepo;
 
   @override
   State<App> createState() => _AppState();
@@ -98,6 +103,9 @@ class _AppState extends State<App> {
         ),
         RepositoryProvider<EntityRepo<ScheduledActivity>>(
           create: (context) => widget.scheduledRepo,
+        ),
+        RepositoryProvider<AttachmentRepo>(
+          create: (context) => widget.attachmentRepo,
         ),
       ],
       child: MultiProvider(

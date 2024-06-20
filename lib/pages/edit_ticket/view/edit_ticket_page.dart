@@ -40,7 +40,7 @@ class EditTicketPage extends StatelessWidget {
         scheduledRepo: context.read<EntityRepo<ScheduledActivity>>(),
         mappingRepo: context.read<EntityRepo<MappingVersion>>(),
         operaRepo: context.read<OperaRepo>(),
-      )..add(InitTicket(guid: _paramGUID)),
+      )..add(CheckStateTicket(guid: _paramGUID)),
       child: _EditTicketView(
         closePage: _paramClose != null,
       ),

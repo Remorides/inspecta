@@ -6,6 +6,24 @@ sealed class EditTicketEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+final class CheckStateTicket extends EditTicketEvent {
+  CheckStateTicket({required this.guid});
+
+  final String? guid;
+
+  @override
+  List<Object?> get props => [guid];
+}
+
+final class ExecuteTicket extends EditTicketEvent {
+  ExecuteTicket({required this.guid});
+
+  final String guid;
+
+  @override
+  List<Object> get props => [guid];
+}
+
 final class InitTicket extends EditTicketEvent {
   InitTicket({required this.guid});
 

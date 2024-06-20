@@ -39,6 +39,6 @@ final class EditTicketState extends Equatable {
         ticketMapping,
         activeFieldBloc,
         ticketEntity,
-        failureText
+        failureText,
       ];
 }

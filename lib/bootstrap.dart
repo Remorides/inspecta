@@ -9,6 +9,7 @@ import 'package:omdk/pages/app/app_bloc_observer.dart';
 import 'package:omdk_api/omdk_api.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_mapping/omdk_mapping.dart';
+import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:omdk_theme/omdk_theme.dart';
 import 'package:opera_api_asset/opera_api_asset.dart';
@@ -65,6 +66,11 @@ Future<void> bootstrap({
     themeRepo: OmdkApiTheme(omdkApi.apiClient.client),
   );
 
+  final attachmentRepo = AttachmentRepo(
+    OperaApiAttachment(omdkApi.apiClient.client),
+    entityIsarSchema: !kIsWeb ? AttachmentSchema : null,
+  );
+
   await themeRepo.initTheme();
 
   runApp(
@@ -79,6 +85,7 @@ Future<void> bootstrap({
       scheduledRepo: scheduledRepo,
       companyCode: companyCode,
       themeRepo: themeRepo,
+      attachmentRepo: attachmentRepo,
     ),
   );
 }

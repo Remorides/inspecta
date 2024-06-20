@@ -92,6 +92,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                     color: Colors.black,
                   ),
                 ),
+                isDismissible: true,
                 confirm: AppLocalizations.of(context)!.alert_btn_ok,
                 onConfirm: () =>
                     context.read<OpenTicketBloc>().add(ResetWarning()),
@@ -584,10 +585,30 @@ class _TicketStepList extends StatelessWidget {
               );
             }
           case CollectionType.unknown:
-            return Container();
+            return const Stack();
         }
       case FieldType.Image:
-        return Container();
+        if(jFieldEntity?.value == null) return const Stack();
+        // return FieldImage(
+        //   labelText: '${(jFieldMapping.title?.singleWhereOrNull(
+        //         (element) =>
+        //     element.culture?.contains(
+        //       Localizations.localeOf(context).languageCode,
+        //     ) ??
+        //         false,
+        //   ) ?? jFieldMapping.title?[0])?.value}',
+        //   imageGuid: jFieldEntity?.value?.imagesList?.first,
+        // );
+        return FieldSliderImages(
+          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
+                (element) =>
+            element.culture?.contains(
+              Localizations.localeOf(context).languageCode,
+            ) ??
+                false,
+          ) ?? jFieldMapping.title?[0])?.value}',
+          imageList: jFieldEntity?.value?.imagesList,
+        );
       case FieldType.Double:
         return FieldDouble(
           labelText: '${(jFieldMapping.title?.singleWhereOrNull(
@@ -636,8 +657,6 @@ class _TicketStepList extends StatelessWidget {
                 ),
               ),
         );
-      case FieldType.Datetime:
-        return Container();
       case FieldType.Bool:
         return FieldBool(
           labelText: '${(jFieldMapping.title?.singleWhereOrNull(
@@ -659,11 +678,12 @@ class _TicketStepList extends StatelessWidget {
                 ),
               ),
         );
+      case FieldType.Datetime:
       case FieldType.File:
       case FieldType.StepResult:
       case FieldType.InternalStep:
       case FieldType.unknown:
-        return Container();
+        return const Stack();
     }
   }
 

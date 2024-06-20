@@ -10,5 +10,8 @@
   "ticket_label_priority": "Priorità",
   "ticket_label_typology": "Tipologia",
   "ticket_hint_select_schema": "Seleziona una tipologia per generare la step list",
-  "ticket_btn_submit": "Invia"
+  "ticket_btn_submit": "Invia",
+  "ticket_btn_execute": "Esegui",
+  "ticket_btn_alert_execute_title": "Conferma Esecuzione",
+  "ticket_btn_alert_execute_msg": "Per modificare il ticket e' necessario eseguirlo, vuoi continuare?"
 }

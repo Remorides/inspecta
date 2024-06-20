@@ -10,5 +10,8 @@
   "ticket_label_priority": "Priorité",
   "ticket_label_typology": "Typologie",
   "ticket_hint_select_schema": "Choisir un type pour générer une liste d’étapes",
-  "ticket_btn_submit": "Soumettre"
+  "ticket_btn_submit": "Soumettre",
+  "ticket_btn_execute": "Courir",
+  "ticket_btn_alert_execute_title": "Confirmer l'exécution",
+  "ticket_btn_alert_execute_msg": "Pour modifier le ticket dont vous avez besoin pour l'exécuter, souhaitez-vous continuer?"
 }

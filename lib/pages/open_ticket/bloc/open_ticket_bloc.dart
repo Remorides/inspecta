@@ -121,6 +121,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     Emitter<OpenTicketState> emit,
   ) async {
     try {
+      emit(state.copyWith(loadingStatus: LoadingStatus.initial));
       final schemaMapping =
           await mappingRepo.getAPIItem(guid: event.schemaMappingGuid);
       final schema = await schemaRepo.getAPIItem(guid: event.schemaGuid);
@@ -128,7 +129,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         schema,
         schemaMapping,
       );
-      emit(
+      return emit(
         state.copyWith(
           loadingStatus: LoadingStatus.inProgress,
           schemaMapping: schemaMapping,
@@ -138,7 +139,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         ),
       );
     } catch (_) {
-      emit(
+      return emit(
         state.copyWith(
           loadingStatus: LoadingStatus.failure,
           failureText: 'There was a problem with selected schema, '
@@ -211,9 +212,9 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   }
 
   void _onResetWarning(
-      ResetWarning event,
-      Emitter<OpenTicketState> emit,
-      ) {
+    ResetWarning event,
+    Emitter<OpenTicketState> emit,
+  ) {
     emit(state.copyWith(loadingStatus: LoadingStatus.inProgress));
   }
 

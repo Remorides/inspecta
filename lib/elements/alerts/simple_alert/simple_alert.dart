@@ -16,7 +16,7 @@ class OMDKAlert extends StatelessWidget {
     required this.type,
     this.close,
     this.onClose,
-    this.executePop = true,
+    this.isDismissible = false,
     this.buttonAlignment = ActionButtonAlignment.horizontal,
     super.key,
   });
@@ -77,7 +77,7 @@ class OMDKAlert extends StatelessWidget {
   final VoidCallback? onClose;
 
   /// Auto pop route
-  final bool executePop;
+  final bool isDismissible;
 
   /// Choose display mode of action buttons
   final ActionButtonAlignment buttonAlignment;
@@ -227,7 +227,7 @@ class OMDKAlert extends StatelessWidget {
       ),
       onPressed: () {
         onWillPop();
-        if (executePop) {
+        if (isDismissible) {
           Navigator.pop(context);
         }
         onConfirm();
@@ -242,14 +242,9 @@ class OMDKAlert extends StatelessWidget {
         Navigator.of(context).pop();
         onClose?.call();
       },
-      style: ButtonStyle(
-        overlayColor: MaterialStateProperty.all<Color>(
-          Colors.white,
-        ),
-      ),
       child: Text(
         close!,
-        style: TextStyle(color: context.theme?.colorScheme.onSurface),
+        //style: TextStyle(color: context.theme?.colorScheme.onSurface),
       ),
     );
   }

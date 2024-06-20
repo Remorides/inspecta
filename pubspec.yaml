@@ -79,6 +79,11 @@ dependencies:
       url: https://github.com/Remorides/opera-repo.git
       ref: main
 
+  omdk_opera_repo:
+    git:
+      url: https://github.com/Remorides/omdk-opera-repo.git
+      ref: main
+
   path_provider: ^2.1.3
   provider: ^6.1.2
   stream_transform: ^2.1.0

@@ -21,6 +21,8 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     required this.mappingRepo,
     required this.scheduledRepo,
   }) : super(const EditTicketState()) {
+    on<CheckStateTicket>(_onCheckStateTicket);
+    on<ExecuteTicket>(_onExecuteTicket);
     on<InitTicket>(_onInitTicket);
     on<TicketNameChanged>(_onTicketNameChanged);
     on<TicketDescChanged>(_onTicketDescChanged);
@@ -39,6 +41,107 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
 
   /// [EntityRepo] of [MappingVersion] instance
   final EntityRepo<MappingVersion> mappingRepo;
+
+  Future<void> _onCheckStateTicket(
+    CheckStateTicket event,
+    Emitter<EditTicketState> emit,
+  ) async {
+    if (event.guid == null) {
+      return emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.fatal,
+          failureText: 'Ticket guid is required',
+        ),
+      );
+    }
+    try {
+      final entity = await scheduledRepo.getAPIItem(guid: event.guid!);
+      switch (entity.scheduled?.state) {
+        case ActivityState.unknown:
+        case null:
+          return emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'There was a problem retrieving ticket data..',
+            ),
+          );
+        case ActivityState.Scheduled:
+          return emit(
+            state.copyWith(
+              ticketEntity: entity,
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'Ticket state is ${ActivityState.Scheduled.name},'
+                  ' you must execute it to modify',
+            ),
+          );
+        case ActivityState.Running:
+          return add(InitTicket(guid: event.guid));
+        case ActivityState.Paused:
+          return emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'Ticket state is ${ActivityState.Running.name},'
+                  ' you must resume it to modify',
+            ),
+          );
+        case ActivityState.Finished:
+          return emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'Ticket state is ${ActivityState.Finished.name},'
+                  ' you cannot edit anything',
+            ),
+          );
+        case ActivityState.Approving:
+          return emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'Ticket state is ${ActivityState.Approving.name},'
+                  ' you cannot edit anything',
+            ),
+          );
+        case ActivityState.Signing:
+          return emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'Ticket state is ${ActivityState.Signing.name},'
+                  ' you cannot edit anything',
+            ),
+          );
+        case ActivityState.Rejected:
+          return emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'Ticket state is ${ActivityState.Rejected.name},'
+                  ' you cannot edit anything',
+            ),
+          );
+        case ActivityState.Create:
+          return emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'Ticket state is ${ActivityState.Create.name},'
+                  ' you must scheduled it to modify',
+            ),
+          );
+        case ActivityState.Expired:
+          return emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'Ticket state is ${ActivityState.Expired.name},'
+                  ' you cannot edit anything',
+            ),
+          );
+      }
+    } catch (_) {
+      return emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.fatal,
+          failureText: 'There was a problem retrieving ticket data..',
+        ),
+      );
+    }
+  }
 
   Future<void> _onInitTicket(
     InitTicket event,
@@ -72,6 +175,53 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     }
   }
 
+  Future<void> _onExecuteTicket(
+    ExecuteTicket event,
+    Emitter<EditTicketState> emit,
+  ) async {
+    try {
+      final entity = await scheduledRepo.getAPIItem(guid: event.guid);
+
+      final participationList =
+          List<JUserParticipation>.from(entity.partecipationsList);
+      final stateList =
+          List<JEntityState>.from(entity.statesList ?? []);
+
+      final userParticipation = await operaRepo.getUserParticipation();
+      if (!participationList.contains(userParticipation)) {
+        participationList.add(userParticipation);
+      }
+      stateList.add(
+        JEntityState(
+          value: ActivityState.Running,
+          modified: await operaRepo.getParticipationDate(),
+        ),
+      );
+
+      await scheduledRepo.putAPIItem(
+        entity.copyWith(
+          dates: entity.dates?.copyWith(
+            modified: await operaRepo.getParticipationDate(),
+            executed: await operaRepo.getParticipationDate(),
+          ),
+          scheduled: entity.scheduled?.copyWith(
+            state: ActivityState.Running,
+          ),
+          statesList: stateList,
+          partecipationsList: participationList,
+        ),
+      );
+      add(InitTicket(guid: entity.scheduled?.guid));
+    } on Exception catch (_) {
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.failure,
+          failureText: 'There was a problem, please try again later..',
+        ),
+      );
+    }
+  }
+
   Future<void> _onTicketSubmitted(
     SubmitTicket event,
     Emitter<EditTicketState> emit,
@@ -98,7 +248,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
       }
       stateList.add(
         JEntityState(
-          value: ActivityState.Running,
+          value: ActivityState.Finished,
           modified: await operaRepo.getParticipationDate(),
         ),
       );
@@ -107,10 +257,10 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
         state.ticketEntity!.copyWith(
           dates: state.ticketEntity?.dates?.copyWith(
             modified: await operaRepo.getParticipationDate(),
-            executed: await operaRepo.getParticipationDate(),
+            closed: await operaRepo.getParticipationDate(),
           ),
           scheduled: state.ticketEntity?.scheduled?.copyWith(
-            state: ActivityState.Running,
+            state: ActivityState.Finished,
           ),
           statesList: stateList,
           partecipationsList: participationList,
@@ -119,7 +269,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
       emit(
         state.copyWith(
           loadingStatus: LoadingStatus.done,
-          failureText: 'Ticket updated successfully!',
+          failureText: 'Ticket closed successfully!',
         ),
       );
     } on Exception catch (_) {
