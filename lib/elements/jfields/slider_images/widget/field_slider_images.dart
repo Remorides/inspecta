@@ -4,6 +4,7 @@ import 'package:omdk/common/enums/enums.dart';
 import 'package:omdk/elements/jfields/slider_images/bloc/field_slider_images_bloc.dart';
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
+import 'package:widget_zoom/widget_zoom.dart';
 
 /// Generic input text field
 class FieldSliderImages extends StatelessWidget {
@@ -28,7 +29,7 @@ class FieldSliderImages extends StatelessWidget {
       create: (context) => FieldSliderImagesBloc(context.read<AttachmentRepo>())
         ..add(DownloadImages(imageList)),
       child: _FieldImage(
-          labelText: labelText,
+        labelText: labelText,
         width: maxWidth,
         height: maxHeight,
       ),
@@ -75,12 +76,15 @@ class _FieldImage extends StatelessWidget {
                 child: Row(
                   children: [
                     if (state.loadingStatus == LoadingStatus.done)
-                      for(final image in state.imageList!)
-                        Image.memory(
-                          image,
-                          width: width,
-                          height: height,
-                          fit: BoxFit.contain,
+                      for (final image in state.imageList!)
+                        WidgetZoom(
+                          heroAnimationTag: 'tag',
+                          zoomWidget: Image.memory(
+                            image,
+                            width: width,
+                            height: height,
+                            fit: BoxFit.contain,
+                          ),
                         )
                     else
                       Container(

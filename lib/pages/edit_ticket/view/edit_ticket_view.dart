@@ -160,7 +160,7 @@ class _OpenTicketViewState extends State<_EditTicketView> {
                   ),
                 )
               : Padding(
-                  padding: const EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(top: 20, left: 14, right: 14),
                   child: Column(
                     children: [
                       Expanded(

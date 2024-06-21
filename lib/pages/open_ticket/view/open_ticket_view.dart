@@ -106,7 +106,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
         child: (context.read<OpenTicketBloc>().state.loadingStatus !=
                 LoadingStatus.fatal)
             ? Padding(
-                padding: const EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 20, left: 14, right: 14),
                 child: Column(
                   children: [
                     Expanded(

@@ -88,6 +88,7 @@ dependencies:
   provider: ^6.1.2
   stream_transform: ^2.1.0
   virtual_keyboard_multi_language: ^1.0.3
+  widget_zoom: ^0.0.4
 
 dependency_overrides:
   intl: ^0.18.1
