@@ -1011,7 +1011,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: aa25c33128644ec23f623b44f25dc17753269a79
+      resolved-ref: c193fd7b89872daa21d8daf730772a0cb95f7d5a
       url: "https://github.com/Remorides/opera-repo.git"
     source: git
     version: "0.1.0+1"

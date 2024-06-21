@@ -333,63 +333,68 @@ class _TicketSchemaInput extends StatelessWidget {
           previous.selectedSchemaIndex != current.selectedSchemaIndex ||
           previous.schemas != current.schemas,
       builder: (context, state) {
-        return SizedBox(
-          height: 213,
-          child: Stack(
-            children: [
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.ticket_label_typology,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.theme?.inputDecorationTheme.labelStyle,
+        return Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: SizedBox(
+            height: 213,
+            child: Stack(
+              children: [
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context)!.ticket_label_typology,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.theme?.textTheme.labelLarge?.copyWith(
+                          color: context.theme?.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Opacity(
+                  opacity: 1,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 22),
+                    child: ListView.builder(
+                      itemCount: state.schemas.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: (index == state.selectedSchemaIndex)
+                                ? context.theme?.primaryColor
+                                : Colors.transparent,
+                          ),
+                          child: ListTile(
+                            selected: index == state.selectedSchemaIndex,
+                            selectedColor: Colors.white,
+                            onTap: () => context.read<OpenTicketBloc>().add(
+                              SelectedSchemaChanged(
+                                schemaIndex: index,
+                                schemaMappingGuid:
+                                state.schemas[index].mapping.guid!,
+                                schemaGuid: state.schemas[index].guid,
+                              ),
+                            ),
+                            title: Text(
+                              '${state.schemas[index].name}',
+                              style: (index == state.selectedSchemaIndex)
+                                  ? const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              )
+                                  : const TextStyle(
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ],
-              ),
-              Opacity(
-                opacity: 1,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 22),
-                  child: ListView.builder(
-                    itemCount: state.schemas.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: (index == state.selectedSchemaIndex)
-                              ? context.theme?.primaryColor
-                              : Colors.transparent,
-                        ),
-                        child: ListTile(
-                          selected: index == state.selectedSchemaIndex,
-                          selectedColor: Colors.white,
-                          onTap: () => context.read<OpenTicketBloc>().add(
-                                SelectedSchemaChanged(
-                                  schemaIndex: index,
-                                  schemaMappingGuid:
-                                      state.schemas[index].mapping.guid!,
-                                  schemaGuid: state.schemas[index].guid,
-                                ),
-                              ),
-                          title: Text(
-                            '${state.schemas[index].name}',
-                            style: (index == state.selectedSchemaIndex)
-                                ? const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  )
-                                : const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

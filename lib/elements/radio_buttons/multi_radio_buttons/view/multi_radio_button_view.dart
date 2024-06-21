@@ -59,47 +59,51 @@ class _MultiRadioButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.select((MrbCubit cubit) => cubit.state);
-    return Stack(
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                labelText.toUpperCase(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.theme?.inputDecorationTheme.labelStyle,
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  labelText.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.theme?.textTheme.labelLarge?.copyWith(
+                    color: context.theme?.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Opacity(
+            opacity: (!state.isEnabled) ? 0.5 : 1,
+            child: AbsorbPointer(
+              absorbing: !state.isEnabled,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: (MediaQuery.of(context).size.width / 3) < 480
+                    ? Column(
+                  children: [
+                    highButton(context, state),
+                    mediumButton(context, state),
+                    lowButton(context, state),
+                  ],
+                )
+                    : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    highButton(context, state),
+                    mediumButton(context, state),
+                    lowButton(context, state),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-        Opacity(
-          opacity: (!state.isEnabled) ? 0.5 : 1,
-          child: AbsorbPointer(
-            absorbing: !state.isEnabled,
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: (MediaQuery.of(context).size.width / 3) < 480
-                  ? Column(
-                      children: [
-                        highButton(context, state),
-                        mediumButton(context, state),
-                        lowButton(context, state),
-                      ],
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        highButton(context, state),
-                        mediumButton(context, state),
-                        lowButton(context, state),
-                      ],
-                    ),
-            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
