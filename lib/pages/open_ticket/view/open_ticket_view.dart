@@ -106,7 +106,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
         child: (context.read<OpenTicketBloc>().state.loadingStatus !=
                 LoadingStatus.fatal)
             ? Padding(
-          padding: const EdgeInsets.only(top: 20, left: 14, right: 14),
+                padding: const EdgeInsets.only(top: 20, left: 14, right: 14),
                 child: Column(
                   children: [
                     Expanded(
@@ -370,22 +370,22 @@ class _TicketSchemaInput extends StatelessWidget {
                             selected: index == state.selectedSchemaIndex,
                             selectedColor: Colors.white,
                             onTap: () => context.read<OpenTicketBloc>().add(
-                              SelectedSchemaChanged(
-                                schemaIndex: index,
-                                schemaMappingGuid:
-                                state.schemas[index].mapping.guid!,
-                                schemaGuid: state.schemas[index].guid,
-                              ),
-                            ),
+                                  SelectedSchemaChanged(
+                                    schemaIndex: index,
+                                    schemaMappingGuid:
+                                        state.schemas[index].mapping.guid!,
+                                    schemaGuid: state.schemas[index].guid,
+                                  ),
+                                ),
                             title: Text(
                               '${state.schemas[index].name}',
                               style: (index == state.selectedSchemaIndex)
                                   ? const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              )
+                                      fontWeight: FontWeight.bold,
+                                    )
                                   : const TextStyle(
-                                fontWeight: FontWeight.normal,
-                              ),
+                                      fontWeight: FontWeight.normal,
+                                    ),
                             ),
                           ),
                         );
@@ -430,7 +430,7 @@ class _TicketStepList extends StatelessWidget {
                     return ExpansionTile(
                       iconColor: context.theme?.colorScheme.onSurface,
                       collapsedIconColor: context.theme?.colorScheme.onSurface,
-                      initiallyExpanded: index == 0,
+                      //initiallyExpanded: index == 0, not expand automatically
                       title: Text(
                         '${(state.ticketEntity!.stepsList[index].title?.singleWhereOrNull(
                               (element) =>
@@ -537,7 +537,7 @@ class _TicketStepList extends StatelessWidget {
                     ) ?? jFieldMapping.title?[0])?.value}',
                 listItem: jFieldMapping.poolListSettings!.value!,
                 isEnabled:
-                jFieldEntity!.operations!.design!.values!.contains('U'),
+                    jFieldEntity!.operations!.design!.values!.contains('U'),
                 onChanged: (String? s) => context.read<OpenTicketBloc>().add(
                       FieldChanged(
                         stepGuid: stepGuid,
@@ -557,7 +557,7 @@ class _TicketStepList extends StatelessWidget {
                           false,
                     ) ?? jFieldMapping.title?[0])?.value}',
                 isEnabled:
-                jFieldEntity!.operations!.design!.values!.contains('U'),
+                    jFieldEntity!.operations!.design!.values!.contains('U'),
                 listItem: jFieldMapping.poolListSettings!.value!,
                 focusNode: FocusNode(),
                 onSelected: (List<PoolItem?> selectedItems) {},
@@ -577,7 +577,7 @@ class _TicketStepList extends StatelessWidget {
                     .read<OpenTicketBloc>()
                     .add(TicketEditing(bloc: bloc)),
                 isEnabled:
-                jFieldEntity!.operations!.design!.values!.contains('U'),
+                    jFieldEntity!.operations!.design!.values!.contains('U'),
                 focusNode: FocusNode(),
                 onChanged: (String? s) => context.read<OpenTicketBloc>().add(
                       FieldChanged(
@@ -593,7 +593,7 @@ class _TicketStepList extends StatelessWidget {
             return const Stack();
         }
       case FieldType.Image:
-        if(jFieldEntity?.value == null) return const Stack();
+        if (jFieldEntity?.value == null) return const Stack();
         // return FieldImage(
         //   labelText: '${(jFieldMapping.title?.singleWhereOrNull(
         //         (element) =>
@@ -607,11 +607,11 @@ class _TicketStepList extends StatelessWidget {
         return FieldSliderImages(
           labelText: '${(jFieldMapping.title?.singleWhereOrNull(
                 (element) =>
-            element.culture?.contains(
-              Localizations.localeOf(context).languageCode,
-            ) ??
-                false,
-          ) ?? jFieldMapping.title?[0])?.value}',
+                    element.culture?.contains(
+                      Localizations.localeOf(context).languageCode,
+                    ) ??
+                    false,
+              ) ?? jFieldMapping.title?[0])?.value}',
           imageList: jFieldEntity?.value?.imagesList,
         );
       case FieldType.Double:
@@ -627,8 +627,7 @@ class _TicketStepList extends StatelessWidget {
           onTapBloc: (bloc) =>
               context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
           focusNode: FocusNode(),
-          isEnabled:
-          jFieldEntity!.operations!.design!.values!.contains('U'),
+          isEnabled: jFieldEntity!.operations!.design!.values!.contains('U'),
           onChanged: (double? d) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
@@ -649,8 +648,7 @@ class _TicketStepList extends StatelessWidget {
               ) ?? jFieldMapping.title?[0])?.value}',
           focusNode: FocusNode(),
           keyboardBloc: keyboardBloc,
-          isEnabled:
-          jFieldEntity!.operations!.design!.values!.contains('U'),
+          isEnabled: jFieldEntity!.operations!.design!.values!.contains('U'),
           onTapBloc: (bloc) =>
               context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
           onChanged: (int? i) => context.read<OpenTicketBloc>().add(
@@ -672,8 +670,7 @@ class _TicketStepList extends StatelessWidget {
                     false,
               ) ?? jFieldMapping.title?[0])?.value}',
           focusNode: FocusNode(),
-          isEnabled:
-          jFieldEntity!.operations!.design!.values!.contains('U'),
+          isEnabled: jFieldEntity!.operations!.design!.values!.contains('U'),
           onChanged: (bool? b) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
