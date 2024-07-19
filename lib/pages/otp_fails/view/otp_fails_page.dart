@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:omdk/elements/alerts/alerts.dart';
-import 'package:omdk/elements/alerts/simple_alert/simple_alert.dart';
 import 'package:omdk/elements/elements.dart';
 
 /// Login page builder

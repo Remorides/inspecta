@@ -102,6 +102,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         0,
         15,
         optionalParams: {
+          'IsEnabled': true,
           'EntityType': JEntityType.Ticket.name,
         },
       );

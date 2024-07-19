@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:omdk/blocs/auth/auth.dart';
 import 'package:omdk/common/extensions/extension_list.dart';
 import 'package:omdk/elements/dividers/divider.dart';
 import 'package:omdk/elements/drawers/models/drawer_item.dart';
-import 'package:omdk/pages/auth/auth.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class OMDKAnimatedDrawer extends StatefulWidget {

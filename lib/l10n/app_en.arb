@@ -5,7 +5,7 @@
   "alert_btn_ok": "Ok",
   "alert_btn_cancel": "Cancel",
   "ticket_label_asset_reference": "Asset reference",
-  "ticket_label_name": "Name",
+  "ticket_label_name": "Report title",
   "ticket_label_description": "Description",
   "ticket_label_priority": "Priority",
   "ticket_label_typology": "Typology",

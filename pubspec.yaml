@@ -15,10 +15,6 @@ dependencies:
   dio: ^5.4.1
   equatable: ^2.0.5
 
-  #Firebase
-  firebase_analytics: ^10.8.8
-  firebase_crashlytics: ^3.4.17
-
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.4

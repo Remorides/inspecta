@@ -5,7 +5,7 @@
   "alert_btn_ok": "Ok",
   "alert_btn_cancel": "Cancelar",
   "ticket_label_asset_reference": "Referencia de activos",
-  "ticket_label_name": "Nombre",
+  "ticket_label_name": "Título del informe",
   "ticket_label_description": "Descripción",
   "ticket_label_priority": "Prioridad",
   "ticket_label_typology": "Tipología",
