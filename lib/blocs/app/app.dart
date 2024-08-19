@@ -185,6 +185,7 @@ class _AppViewState extends State<AppView> {
         return BlocListener<AuthBloc, AuthState>(
           listener: (context, state) async {
             switch (state.status) {
+              case AuthStatus.tokenExpired:
               case AuthStatus.authenticated:
                 await context.read<ThemeRepo>().changeTheme(
                       ThemeEnum.customLight,

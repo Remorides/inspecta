@@ -69,85 +69,96 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         ),
       );
     }
-    try {
-      final result = await assetRepo.getAPIItem(guid: event.guid!);
-      emit(
+    final assetRequest = await assetRepo.getAPIItem(guid: event.guid!);
+    assetRequest.fold(
+      (asset) => emit(
         state.copyWith(
           jMainNode: JMainNode(
-            id: result.entity?.id,
-            guid: result.entity?.guid,
+            id: asset.entity?.id,
+            guid: asset.entity?.guid,
             type: NodeType.Asset,
-            name: result.entity?.name,
-            description: result.asset?.description,
-            path: result.asset?.path,
+            name: asset.entity?.name,
+            description: asset.asset?.description,
+            path: asset.asset?.path,
           ),
         ),
-      );
-    } catch (_) {
-      emit(
+      ),
+      (failure) => emit(
         state.copyWith(
           loadingStatus: LoadingStatus.fatal,
           failureText: 'There was a problem retrieving asset data..',
         ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> _onInitSchemas(
     InitSchemas event,
     Emitter<OpenTicketState> emit,
   ) async {
-    try {
-      final schemas = await schemaListRepo.getAPIItems(
-        0,
-        15,
-        optionalParams: {
-          'IsEnabled': true,
-          'EntityType': JEntityType.Ticket.name,
-        },
-      );
-      emit(state.copyWith(schemas: schemas));
-    } catch (_) {
-      emit(
+    final schemasRequest = await schemaListRepo.getAPIItems(
+      0,
+      15,
+      optionalParams: {
+        'IsEnabled': true,
+        'EntityType': JEntityType.Ticket.name,
+      },
+    );
+    schemasRequest.fold(
+      (schemas) => emit(state.copyWith(schemas: schemas)),
+      (failure) => emit(
         state.copyWith(
           loadingStatus: LoadingStatus.fatal,
           failureText: 'There was a problem retrieving schemas data..',
         ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> _onSchemaChanges(
     SelectedSchemaChanged event,
     Emitter<OpenTicketState> emit,
   ) async {
-    try {
-      emit(state.copyWith(loadingStatus: LoadingStatus.initial));
-      final schemaMapping =
-          await mappingRepo.getAPIItem(guid: event.schemaMappingGuid);
-      final schema = await schemaRepo.getAPIItem(guid: event.schemaGuid);
-      final ticketEntity = await operaRepo.generateTicketOEFromSchema(
-        schema,
-        schemaMapping,
-      );
-      return emit(
-        state.copyWith(
-          loadingStatus: LoadingStatus.inProgress,
-          schemaMapping: schemaMapping,
-          selectedSchemaIndex: event.schemaIndex,
-          ticketSchema: schema,
-          ticketEntity: ticketEntity,
-        ),
-      );
-    } catch (_) {
-      return emit(
+    emit(state.copyWith(loadingStatus: LoadingStatus.initial));
+    final schemaMappingRequest =
+        await mappingRepo.getAPIItem(guid: event.schemaMappingGuid);
+    schemaMappingRequest.fold(
+      (schemaMapping) async {
+        final schemaRequest =
+            await schemaRepo.getAPIItem(guid: event.schemaGuid);
+        schemaRequest.fold(
+          (schema) async {
+            final ticketEntity = await operaRepo.generateTicketOEFromSchema(
+              schema,
+              schemaMapping,
+            );
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.inProgress,
+                schemaMapping: schemaMapping,
+                selectedSchemaIndex: event.schemaIndex,
+                ticketSchema: schema,
+                ticketEntity: ticketEntity,
+              ),
+            );
+          },
+          (failure) => emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.failure,
+              failureText: 'There was a problem with selected schema, '
+                  'please choose another one to open ticket.',
+            ),
+          ),
+        );
+      },
+      (failure) => emit(
         state.copyWith(
           loadingStatus: LoadingStatus.failure,
           failureText: 'There was a problem with selected schema, '
               'please choose another one to open ticket.',
         ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> _onSubmitTicket(

@@ -54,93 +54,94 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
         ),
       );
     }
-    try {
-      final entity = await scheduledRepo.getAPIItem(guid: event.guid!);
-      switch (entity.scheduled?.state) {
-        case ActivityState.unknown:
-        case null:
-          return emit(
-            state.copyWith(
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'There was a problem retrieving ticket data..',
-            ),
-          );
-        case ActivityState.Scheduled:
-          return emit(
-            state.copyWith(
-              ticketEntity: entity,
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'Ticket state is ${ActivityState.Scheduled.name},'
-                  ' you must execute it to modify',
-            ),
-          );
-        case ActivityState.Running:
-          return add(InitTicket(guid: event.guid));
-        case ActivityState.Paused:
-          return emit(
-            state.copyWith(
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'Ticket state is ${ActivityState.Running.name},'
-                  ' you must resume it to modify',
-            ),
-          );
-        case ActivityState.Finished:
-          return emit(
-            state.copyWith(
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'Ticket state is ${ActivityState.Finished.name},'
-                  ' you cannot edit anything',
-            ),
-          );
-        case ActivityState.Approving:
-          return emit(
-            state.copyWith(
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'Ticket state is ${ActivityState.Approving.name},'
-                  ' you cannot edit anything',
-            ),
-          );
-        case ActivityState.Signing:
-          return emit(
-            state.copyWith(
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'Ticket state is ${ActivityState.Signing.name},'
-                  ' you cannot edit anything',
-            ),
-          );
-        case ActivityState.Rejected:
-          return emit(
-            state.copyWith(
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'Ticket state is ${ActivityState.Rejected.name},'
-                  ' you cannot edit anything',
-            ),
-          );
-        case ActivityState.Create:
-          return emit(
-            state.copyWith(
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'Ticket state is ${ActivityState.Create.name},'
-                  ' you must scheduled it to modify',
-            ),
-          );
-        case ActivityState.Expired:
-          return emit(
-            state.copyWith(
-              loadingStatus: LoadingStatus.fatal,
-              failureText: 'Ticket state is ${ActivityState.Expired.name},'
-                  ' you cannot edit anything',
-            ),
-          );
-      }
-    } catch (_) {
-      return emit(
+    final entityRequest = await scheduledRepo.getAPIItem(guid: event.guid!);
+    entityRequest.fold(
+      (entity) {
+        switch (entity.scheduled?.state) {
+          case ActivityState.unknown:
+          case null:
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'There was a problem retrieving ticket data..',
+              ),
+            );
+          case ActivityState.Scheduled:
+            return emit(
+              state.copyWith(
+                ticketEntity: entity,
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'Ticket state is ${ActivityState.Scheduled.name},'
+                    ' you must execute it to modify',
+              ),
+            );
+          case ActivityState.Running:
+            return add(InitTicket(guid: event.guid));
+          case ActivityState.Paused:
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'Ticket state is ${ActivityState.Running.name},'
+                    ' you must resume it to modify',
+              ),
+            );
+          case ActivityState.Finished:
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'Ticket state is ${ActivityState.Finished.name},'
+                    ' you cannot edit anything',
+              ),
+            );
+          case ActivityState.Approving:
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'Ticket state is ${ActivityState.Approving.name},'
+                    ' you cannot edit anything',
+              ),
+            );
+          case ActivityState.Signing:
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'Ticket state is ${ActivityState.Signing.name},'
+                    ' you cannot edit anything',
+              ),
+            );
+          case ActivityState.Rejected:
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'Ticket state is ${ActivityState.Rejected.name},'
+                    ' you cannot edit anything',
+              ),
+            );
+          case ActivityState.Create:
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'Ticket state is ${ActivityState.Create.name},'
+                    ' you must scheduled it to modify',
+              ),
+            );
+          case ActivityState.Expired:
+            return emit(
+              state.copyWith(
+                loadingStatus: LoadingStatus.fatal,
+                failureText: 'Ticket state is ${ActivityState.Expired.name},'
+                    ' you cannot edit anything',
+              ),
+            );
+        }
+      },
+      (failure) => emit(
         state.copyWith(
           loadingStatus: LoadingStatus.fatal,
           failureText: 'There was a problem retrieving ticket data..',
         ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> _onInitTicket(
@@ -155,71 +156,81 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
         ),
       );
     }
-    try {
-      final entity = await scheduledRepo.getAPIItem(guid: event.guid!);
-      final mapping = await mappingRepo.getAPIItem(guid: entity.mapping!.guid!);
-      emit(
-        state.copyWith(
-          loadingStatus: LoadingStatus.inProgress,
-          ticketEntity: entity,
-          ticketMapping: mapping,
-        ),
-      );
-    } catch (_) {
-      emit(
+    final entityRequest = await scheduledRepo.getAPIItem(guid: event.guid!);
+    entityRequest.fold(
+      (entity) async {
+        final mappingRequest = await mappingRepo.getAPIItem(
+          guid: entity.mapping!.guid!,
+        );
+        mappingRequest.fold(
+          (mapping) => emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.inProgress,
+              ticketEntity: entity,
+              ticketMapping: mapping,
+            ),
+          ),
+          (failure) => emit(
+            state.copyWith(
+              loadingStatus: LoadingStatus.fatal,
+              failureText: 'There was a problem retrieving ticket data..',
+            ),
+          ),
+        );
+      },
+      (failure) => emit(
         state.copyWith(
           loadingStatus: LoadingStatus.fatal,
           failureText: 'There was a problem retrieving ticket data..',
         ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> _onExecuteTicket(
     ExecuteTicket event,
     Emitter<EditTicketState> emit,
   ) async {
-    try {
-      final entity = await scheduledRepo.getAPIItem(guid: event.guid);
+    final entityRequest = await scheduledRepo.getAPIItem(guid: event.guid);
+    entityRequest.fold(
+      (entity) async {
+        final participationList =
+            List<JUserParticipation>.from(entity.partecipationsList);
+        final stateList = List<JEntityState>.from(entity.statesList ?? []);
 
-      final participationList =
-          List<JUserParticipation>.from(entity.partecipationsList);
-      final stateList =
-          List<JEntityState>.from(entity.statesList ?? []);
-
-      final userParticipation = await operaRepo.getUserParticipation();
-      if (!participationList.contains(userParticipation)) {
-        participationList.add(userParticipation);
-      }
-      stateList.add(
-        JEntityState(
-          value: ActivityState.Running,
-          modified: await operaRepo.getParticipationDate(),
-        ),
-      );
-
-      await scheduledRepo.putAPIItem(
-        entity.copyWith(
-          dates: entity.dates?.copyWith(
+        final userParticipation = await operaRepo.getUserParticipation();
+        if (!participationList.contains(userParticipation)) {
+          participationList.add(userParticipation);
+        }
+        stateList.add(
+          JEntityState(
+            value: ActivityState.Running,
             modified: await operaRepo.getParticipationDate(),
-            executed: await operaRepo.getParticipationDate(),
           ),
-          scheduled: entity.scheduled?.copyWith(
-            state: ActivityState.Running,
+        );
+
+        await scheduledRepo.putAPIItem(
+          entity.copyWith(
+            dates: entity.dates?.copyWith(
+              modified: await operaRepo.getParticipationDate(),
+              executed: await operaRepo.getParticipationDate(),
+            ),
+            scheduled: entity.scheduled?.copyWith(
+              state: ActivityState.Running,
+            ),
+            statesList: stateList,
+            partecipationsList: participationList,
           ),
-          statesList: stateList,
-          partecipationsList: participationList,
-        ),
-      );
-      add(InitTicket(guid: entity.scheduled?.guid));
-    } on Exception catch (_) {
-      emit(
+        );
+        add(InitTicket(guid: entity.scheduled?.guid));
+      },
+      (failure) => emit(
         state.copyWith(
           loadingStatus: LoadingStatus.failure,
           failureText: 'There was a problem, please try again later..',
         ),
-      );
-    }
+      ),
+    );
   }
 
   Future<void> _onTicketSubmitted(

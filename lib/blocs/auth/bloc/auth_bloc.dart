@@ -46,6 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       Emitter<AuthState> emit,
       ) async {
     switch (event.status) {
+      case AuthStatus.tokenExpired:
       case AuthStatus.unauthenticated:
         return emit(const AuthState.unauthenticated());
       case AuthStatus.authenticated:
