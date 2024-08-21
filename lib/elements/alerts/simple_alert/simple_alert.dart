@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:omdk/elements/alerts/alerts.dart';
-import 'package:omdk/elements/elements.dart';
+import 'package:omdk_inspecta/elements/alerts/alerts.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 /// OMDK default alert example

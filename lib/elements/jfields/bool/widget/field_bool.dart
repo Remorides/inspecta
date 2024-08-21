@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/jfields/bool/cubit/field_bool_cubit.dart';
+import 'package:omdk_inspecta/elements/jfields/bool/cubit/field_bool_cubit.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class FieldBool extends StatelessWidget {

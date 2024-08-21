@@ -1,4 +1,4 @@
-name: omdk
+name: omdk_inspecta
 description: "Full modular project"
 publish_to: 'none'
 version: 1.0.0+1
@@ -39,11 +39,6 @@ dependencies:
       url: https://github.com/Remorides/omdk-local-data.git
       ref: main
 
-  omdk_mapping:
-    git:
-      url: https://github.com/Remorides/omdk-mapping.git
-      ref: main
-
   omdk_repo:
     git:
       url: https://github.com/Remorides/omdk-repo.git
@@ -55,29 +50,19 @@ dependencies:
       ref: main
 
   #OPERA
-  opera_api_asset:
+  omdk_opera_api:
     git:
-      url: https://github.com/Remorides/opera-api-asset.git
-      ref: main
-
-  opera_api_auth:
-    git:
-      url: https://github.com/Remorides/opera-api-auth.git
-      ref: main
-
-  opera_api_entity:
-    git:
-      url: https://github.com/Remorides/opera-api-entity.git
-      ref: main
-
-  opera_repo:
-    git:
-      url: https://github.com/Remorides/opera-repo.git
+      url: https://github.com/Remorides/omdk-opera-api.git
       ref: main
 
   omdk_opera_repo:
     git:
       url: https://github.com/Remorides/omdk-opera-repo.git
+      ref: main
+
+  opera_api_auth:
+    git:
+      url: https://github.com/Remorides/opera-api-auth.git
       ref: main
 
   path_provider: ^2.1.3

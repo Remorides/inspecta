@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/jfields/pool_list/cubit/pool_list_cubit.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/jfields/pool_list/cubit/pool_list_cubit.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class FieldPoolList extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/search_bars/simple_search_bar/bloc/simple_search_bar_bloc.dart';
+import 'package:omdk_inspecta/elements/search_bars/simple_search_bar/bloc/simple_search_bar_bloc.dart';
 
 /// Generic input text field
 class OMDKSearchBar extends StatelessWidget {

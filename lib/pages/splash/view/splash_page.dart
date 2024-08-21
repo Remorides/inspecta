@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omdk/elements/alerts/alerts.dart';
+import 'package:omdk_inspecta/elements/alerts/alerts.dart';
 
 /// Example splash screen page
 class SplashPage extends StatelessWidget {

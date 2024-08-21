@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/texts/simple_text_field/simple_text_field.dart';
+import 'package:omdk_inspecta/elements/texts/simple_text_field/simple_text_field.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 /// Generic input text field

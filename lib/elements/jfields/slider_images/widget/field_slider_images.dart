@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/jfields/slider_images/bloc/field_slider_images_bloc.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/jfields/slider_images/bloc/field_slider_images_bloc.dart';
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:widget_zoom/widget_zoom.dart';
@@ -26,8 +26,9 @@ class FieldSliderImages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => FieldSliderImagesBloc(context.read<AttachmentRepo>())
-        ..add(DownloadImages(imageList)),
+      create: (context) =>
+          FieldSliderImagesBloc(context.read<OperaAttachmentRepo>())
+            ..add(DownloadImages(imageList)),
       child: _FieldImage(
         labelText: labelText,
         width: maxWidth,

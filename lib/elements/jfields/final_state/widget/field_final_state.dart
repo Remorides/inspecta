@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/common/utils/utils.dart';
-import 'package:omdk/elements/jfields/final_state/cubit/final_state_cubit.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/common/utils/utils.dart';
+import 'package:omdk_inspecta/elements/jfields/final_state/cubit/final_state_cubit.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:opera_api_entity/opera_api_entity.dart';
+import 'package:omdk_opera_api/omdk_opera_api.dart';
 
 class FieldFinalState extends StatelessWidget {
   /// Create [FieldFinalState] instance

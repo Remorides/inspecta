@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/alerts/alerts.dart';
-import 'package:omdk/elements/alerts/simple_alert/simple_alert.dart';
-import 'package:omdk/elements/elements.dart';
-import 'package:omdk/pages/auth_login/login.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/alerts/alerts.dart';
+import 'package:omdk_inspecta/elements/alerts/simple_alert/simple_alert.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
+import 'package:omdk_inspecta/pages/auth_login/login.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 part 'login_view.dart';

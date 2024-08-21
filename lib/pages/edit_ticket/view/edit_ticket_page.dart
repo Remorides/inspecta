@@ -6,15 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/alerts/alerts.dart';
-import 'package:omdk/elements/elements.dart';
-import 'package:omdk/pages/edit_ticket/bloc/edit_ticket_bloc.dart';
-import 'package:omdk_mapping/omdk_mapping.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/alerts/alerts.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
+import 'package:omdk_inspecta/pages/edit_ticket/bloc/edit_ticket_bloc.dart';
+import 'package:omdk_opera_api/omdk_opera_api.dart';
+import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:opera_api_asset/opera_api_asset.dart';
-import 'package:opera_api_entity/opera_api_entity.dart';
-import 'package:opera_repo/opera_repo.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 part 'edit_ticket_view.dart';
@@ -39,7 +37,7 @@ class EditTicketPage extends StatelessWidget {
       create: (context) => EditTicketBloc(
         scheduledRepo: context.read<EntityRepo<ScheduledActivity>>(),
         mappingRepo: context.read<EntityRepo<MappingVersion>>(),
-        operaRepo: context.read<OperaRepo>(),
+        operaUtils: context.read<OperaUtils>(),
       )..add(CheckStateTicket(guid: _paramGUID)),
       child: _EditTicketView(
         closePage: _paramClose != null,

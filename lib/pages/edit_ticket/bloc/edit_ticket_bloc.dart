@@ -1,13 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/elements.dart';
-import 'package:omdk_mapping/omdk_mapping.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
+import 'package:omdk_opera_api/omdk_opera_api.dart';
+import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:opera_api_asset/opera_api_asset.dart';
-import 'package:opera_api_entity/opera_api_entity.dart';
-import 'package:opera_repo/opera_repo.dart';
 
 part 'edit_ticket_event.dart';
 
@@ -17,7 +15,7 @@ part 'edit_ticket_state.dart';
 class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
   /// Create [EditTicketBloc] instance
   EditTicketBloc({
-    required this.operaRepo,
+    required this.operaUtils,
     required this.mappingRepo,
     required this.scheduledRepo,
   }) : super(const EditTicketState()) {
@@ -33,8 +31,8 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     on<ResetWarning>(_onResetWarning);
   }
 
-  /// [OperaRepo] instance
-  final OperaRepo operaRepo;
+  /// [OperaUtils] instance
+  final OperaUtils operaUtils;
 
   /// [EntityRepo] of [ScheduledActivity] instance
   final EntityRepo<ScheduledActivity> scheduledRepo;
@@ -198,22 +196,22 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
             List<JUserParticipation>.from(entity.partecipationsList);
         final stateList = List<JEntityState>.from(entity.statesList ?? []);
 
-        final userParticipation = await operaRepo.getUserParticipation();
+        final userParticipation = await operaUtils.getUserParticipation();
         if (!participationList.contains(userParticipation)) {
           participationList.add(userParticipation);
         }
         stateList.add(
           JEntityState(
             value: ActivityState.Running,
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
           ),
         );
 
         await scheduledRepo.putAPIItem(
           entity.copyWith(
             dates: entity.dates?.copyWith(
-              modified: await operaRepo.getParticipationDate(),
-              executed: await operaRepo.getParticipationDate(),
+              modified: await operaUtils.getParticipationDate(),
+              executed: await operaUtils.getParticipationDate(),
             ),
             scheduled: entity.scheduled?.copyWith(
               state: ActivityState.Running,
@@ -253,22 +251,22 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
       final stateList =
           List<JEntityState>.from(state.ticketEntity!.statesList ?? []);
 
-      final userParticipation = await operaRepo.getUserParticipation();
+      final userParticipation = await operaUtils.getUserParticipation();
       if (!participationList.contains(userParticipation)) {
         participationList.add(userParticipation);
       }
       stateList.add(
         JEntityState(
           value: ActivityState.Finished,
-          modified: await operaRepo.getParticipationDate(),
+          modified: await operaUtils.getParticipationDate(),
         ),
       );
 
       await scheduledRepo.putAPIItem(
         state.ticketEntity!.copyWith(
           dates: state.ticketEntity?.dates?.copyWith(
-            modified: await operaRepo.getParticipationDate(),
-            closed: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
+            closed: await operaUtils.getParticipationDate(),
           ),
           scheduled: state.ticketEntity?.scheduled?.copyWith(
             state: ActivityState.Finished,
@@ -377,7 +375,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               stringValue: (event.fieldValue is String?)
                   ? event.fieldValue as String?
@@ -391,7 +389,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               floatValue: event.fieldValue as double?,
             ),
@@ -400,7 +398,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               intValue: event.fieldValue as int?,
             ),
@@ -409,7 +407,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               dateTimeValue: event.fieldValue as DateTime?,
             ),
@@ -418,7 +416,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               boolValue: event.fieldValue as bool?,
             ),
@@ -427,7 +425,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               intValue: event.fieldValue as int?,
             ),

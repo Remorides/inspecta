@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:omdk/common/enums/loading_status.dart';
+import 'package:omdk_inspecta/common/enums/loading_status.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:opera_api_auth/opera_api_auth.dart';
 

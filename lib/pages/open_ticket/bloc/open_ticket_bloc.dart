@@ -3,13 +3,11 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/elements.dart';
-import 'package:omdk_mapping/omdk_mapping.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
+import 'package:omdk_opera_api/omdk_opera_api.dart';
+import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:opera_api_asset/opera_api_asset.dart';
-import 'package:opera_api_entity/opera_api_entity.dart';
-import 'package:opera_repo/opera_repo.dart';
 
 part 'open_ticket_event.dart';
 
@@ -19,7 +17,7 @@ part 'open_ticket_state.dart';
 class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   /// Create [OpenTicketBloc] instance
   OpenTicketBloc({
-    required this.operaRepo,
+    required this.operaUtils,
     required this.schemaRepo,
     required this.assetRepo,
     required this.schemaListRepo,
@@ -42,7 +40,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   final EntityRepo<Asset> assetRepo;
 
   /// [OperaRepo] instance
-  final OperaRepo operaRepo;
+  final OperaUtils operaUtils;
 
   /// [EntityRepo] of [SchemaListItem] instance
   final EntityRepo<SchemaListItem> schemaListRepo;
@@ -128,7 +126,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
             await schemaRepo.getAPIItem(guid: event.schemaGuid);
         schemaRequest.fold(
           (schema) async {
-            final ticketEntity = await operaRepo.generateTicketOEFromSchema(
+            final ticketEntity = await operaUtils.generateTicketOEFromSchema(
               schema,
               schemaMapping,
             );
@@ -267,7 +265,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               stringValue: (event.fieldValue is String?)
                   ? event.fieldValue as String?
@@ -281,7 +279,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               floatValue: event.fieldValue as double?,
             ),
@@ -290,7 +288,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               intValue: event.fieldValue as int?,
             ),
@@ -299,7 +297,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               dateTimeValue: event.fieldValue as DateTime?,
             ),
@@ -308,7 +306,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
-            modified: await operaRepo.getParticipationDate(),
+            modified: await operaUtils.getParticipationDate(),
             value: JFieldValue(
               boolValue: event.fieldValue as bool?,
             ),

@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:omdk/common/enums/enums.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
 
 part 'date_time_cupertino_state.dart';
 

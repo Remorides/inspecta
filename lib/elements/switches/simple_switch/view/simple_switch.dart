@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/switches/simple_switch/cubit/switch_cubit.dart';
+import 'package:omdk_inspecta/elements/switches/simple_switch/cubit/switch_cubit.dart';
 
 /// Generic input text field
 class OMDKSwitch extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/buttons/outlined_button/outlined_button.dart';
+import 'package:omdk_inspecta/elements/buttons/outlined_button/outlined_button.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class OMDKOutlinedButton extends StatelessWidget {

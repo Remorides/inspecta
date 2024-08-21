@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/buttons/elevated_button/elevated_button.dart';
+import 'package:omdk_inspecta/elements/buttons/elevated_button/elevated_button.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class OMDKElevatedButton extends StatelessWidget {

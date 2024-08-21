@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:omdk/common/enums/enums.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 
 part 'field_slider_images_event.dart';
@@ -17,7 +17,7 @@ class FieldSliderImagesBloc
     on<DownloadImages>(_onDownloadImages);
   }
 
-  final AttachmentRepo _attachmentRepo;
+  final OperaAttachmentRepo _attachmentRepo;
 
   Future<void> _onDownloadImages(
     DownloadImages event,
@@ -30,9 +30,12 @@ class FieldSliderImagesBloc
     }
     try {
       final imageList = <Uint8List>[];
-      for(final i in event.images!){
-        final image = await _attachmentRepo.download(i);
-        imageList.add(image);
+      for (final i in event.images!) {
+        final imageRequest = await _attachmentRepo.download(i);
+        imageRequest.fold(
+          imageList.add,
+          (r) => null,
+        );
       }
       emit(
         state.copyWith(

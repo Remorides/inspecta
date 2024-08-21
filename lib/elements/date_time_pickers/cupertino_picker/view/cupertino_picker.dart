@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/date_time_pickers/cupertino_picker/cupertino_picker.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/date_time_pickers/cupertino_picker/cupertino_picker.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class OMDKCupertinoPicker extends StatelessWidget {

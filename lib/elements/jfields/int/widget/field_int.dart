@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omdk/elements/elements.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 class FieldInt extends StatefulWidget {

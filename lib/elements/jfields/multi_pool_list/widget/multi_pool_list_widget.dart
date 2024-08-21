@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/jfields/multi_pool_list/cubit/multi_pool_list_cubit.dart';
-import 'package:omdk/elements/jfields/multi_pool_list/models/pool_item.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/jfields/multi_pool_list/cubit/multi_pool_list_cubit.dart';
+import 'package:omdk_inspecta/elements/jfields/multi_pool_list/models/pool_item.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class FieldMultiPoolList extends StatelessWidget {

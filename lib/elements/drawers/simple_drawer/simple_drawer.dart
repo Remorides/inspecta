@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omdk/elements/drawers/models/drawer_item.dart';
+import 'package:omdk_inspecta/elements/drawers/models/drawer_item.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class OMDKDrawer extends StatelessWidget {

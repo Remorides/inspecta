@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/elements/jfields/image/image.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/elements/jfields/image/image.dart';
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:widget_zoom/widget_zoom.dart';
@@ -26,7 +26,7 @@ class FieldImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => FieldImageBloc(context.read<AttachmentRepo>())
+      create: (context) => FieldImageBloc(context.read<OperaAttachmentRepo>())
         ..add(DownloadImage(imageGuid)),
       child: _FieldImage(
         labelText: labelText,
@@ -94,7 +94,7 @@ class _FieldImage extends StatelessWidget {
                       ),
                     ),
                 ],
-              )
+              ),
             ],
           ),
         );

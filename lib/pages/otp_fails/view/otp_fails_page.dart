@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:omdk/elements/alerts/alerts.dart';
-import 'package:omdk/elements/elements.dart';
+import 'package:omdk_inspecta/elements/alerts/alerts.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 
 /// Login page builder
 class OTPFailsPage extends StatefulWidget {

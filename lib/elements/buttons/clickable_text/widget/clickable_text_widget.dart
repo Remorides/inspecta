@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/buttons/clickable_text/cubit/clickable_text_cubit.dart';
+import 'package:omdk_inspecta/elements/buttons/clickable_text/cubit/clickable_text_cubit.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 /// OMDK widget to add possibility to tap

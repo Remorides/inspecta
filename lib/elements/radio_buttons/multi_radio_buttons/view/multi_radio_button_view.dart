@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/elements.dart';
-import 'package:omdk/elements/radio_buttons/multi_radio_buttons/multi_radio_button.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
+import 'package:omdk_inspecta/elements/radio_buttons/multi_radio_buttons/multi_radio_button.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 class MultiRadioButtons extends StatelessWidget {

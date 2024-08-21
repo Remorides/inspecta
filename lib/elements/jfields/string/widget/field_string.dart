@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omdk/elements/elements.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 
 class FieldString extends StatefulWidget {
   /// Create [FieldString] instance

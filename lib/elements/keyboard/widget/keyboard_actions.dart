@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:omdk/elements/keyboard/keyboard.dart';
+import 'package:omdk_inspecta/elements/keyboard/keyboard.dart';
 
 /// Custom keyboard actions class to extend classic behaviour
 class CustomKeyboardActions extends StatelessWidget {

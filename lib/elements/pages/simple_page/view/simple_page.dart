@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk/elements/elements.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 
 /// Login form class provide all required field to login

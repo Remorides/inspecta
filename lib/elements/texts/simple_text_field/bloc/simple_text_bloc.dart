@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:omdk/elements/texts/simple_text_field/enum/simple_text_status.dart';
+import 'package:omdk_inspecta/elements/texts/simple_text_field/enum/simple_text_status.dart';
 
 part 'simple_text_event.dart';
 

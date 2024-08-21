@@ -3,18 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:omdk/blocs/auth/auth.dart';
-import 'package:omdk/common/enums/enums.dart';
-import 'package:omdk/pages/edit_ticket/edit_scheduled.dart';
-import 'package:omdk/pages/open_ticket/view/open_ticket_page.dart';
-import 'package:omdk/pages/otp_fails/otp_fails.dart';
-import 'package:omdk/pages/splash/view/splash_page.dart';
+import 'package:omdk_inspecta/blocs/auth/auth.dart';
+import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/pages/edit_ticket/edit_scheduled.dart';
+import 'package:omdk_inspecta/pages/open_ticket/view/open_ticket_page.dart';
+import 'package:omdk_inspecta/pages/otp_fails/otp_fails.dart';
+import 'package:omdk_inspecta/pages/splash/view/splash_page.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
-import 'package:omdk_mapping/omdk_mapping.dart';
+import 'package:omdk_opera_api/omdk_opera_api.dart';
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:opera_api_asset/opera_api_asset.dart';
-import 'package:opera_repo/opera_repo.dart';
 import 'package:provider/provider.dart';
 
 /// Create base [App] to instance repo layer
@@ -27,7 +25,7 @@ class App extends StatefulWidget {
     required this.schemaListRepo,
     required this.mappingRepo,
     required this.schemaRepo,
-    required this.operaRepo,
+    required this.operaUtils,
     required this.scheduledRepo,
     required this.companyCode,
     required this.themeRepo,
@@ -41,8 +39,8 @@ class App extends StatefulWidget {
   /// [AuthRepo] instance
   final AuthRepo authRepo;
 
-  /// [OperaRepo] instance
-  final OperaRepo operaRepo;
+  /// [OperaUtils] instance
+  final OperaUtils operaUtils;
 
   /// [EntityRepo] instance
   final EntityRepo<Asset> assetRepo;
@@ -65,8 +63,8 @@ class App extends StatefulWidget {
   /// [ThemeRepo] instance
   final ThemeRepo themeRepo;
 
-  /// [AttachmentRepo] instance
-  final AttachmentRepo attachmentRepo;
+  /// [OperaAttachmentRepo] instance
+  final OperaAttachmentRepo attachmentRepo;
 
   @override
   State<App> createState() => _AppState();
@@ -88,7 +86,7 @@ class _AppState extends State<App> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<AuthRepo>(create: (context) => widget.authRepo),
-        RepositoryProvider<OperaRepo>(create: (context) => widget.operaRepo),
+        RepositoryProvider<OperaUtils>(create: (context) => widget.operaUtils),
         RepositoryProvider<EntityRepo<Asset>>(
           create: (context) => widget.assetRepo,
         ),
@@ -104,7 +102,7 @@ class _AppState extends State<App> {
         RepositoryProvider<EntityRepo<ScheduledActivity>>(
           create: (context) => widget.scheduledRepo,
         ),
-        RepositoryProvider<AttachmentRepo>(
+        RepositoryProvider<OperaAttachmentRepo>(
           create: (context) => widget.attachmentRepo,
         ),
       ],
