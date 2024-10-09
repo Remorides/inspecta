@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk_inspecta/common/enums/enums.dart';
 import 'package:omdk_inspecta/elements/jfields/slider_images/bloc/field_slider_images_bloc.dart';
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
-import 'package:omdk_repo/omdk_repo.dart';
 import 'package:widget_zoom/widget_zoom.dart';
 
 /// Generic input text field
@@ -65,9 +64,9 @@ class _FieldImage extends StatelessWidget {
                       labelText.toUpperCase(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: context.theme?.textTheme.labelLarge?.copyWith(
-                        color: context.theme?.colorScheme.onSurface,
-                      ),
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                     ),
                   ),
                 ],
@@ -91,7 +90,7 @@ class _FieldImage extends StatelessWidget {
                       Container(
                         width: width,
                         height: height,
-                        color: context.theme?.colorScheme.background,
+                        color: Theme.of(context).colorScheme.surface,
                         child: const Padding(
                           padding: EdgeInsets.all(20),
                           child: CircularProgressIndicator(),

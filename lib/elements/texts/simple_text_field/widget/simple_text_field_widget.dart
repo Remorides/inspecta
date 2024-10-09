@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk_inspecta/elements/texts/simple_text_field/simple_text_field.dart';
-import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 
 /// Generic input text field
 class SimpleTextField extends StatelessWidget {
   /// Create [SimpleTextField] instance
   const SimpleTextField({
-    required this.onSubmit,
     required this.labelText,
-    this.textFocusNode,
+    required this.textFocusNode,
+    this.onSubmit,
+    this.onChanged,
     this.simpleTextBloc,
     this.initialText = '',
     this.nextFocusNode,
@@ -26,14 +26,14 @@ class SimpleTextField extends StatelessWidget {
     this.isTextValueNullable = false,
     this.onTap,
     this.onTapAction,
-    this.onChanged,
     this.onCursorPosition,
     this.onFocusChange,
     this.withBorder = false,
     this.withAction = false,
     this.autofocus = false,
-    this.borderColor,
     this.actionIcon,
+    this.textAlign = TextAlign.start,
+    this.fieldNote,
     super.key,
   });
 
@@ -43,13 +43,10 @@ class SimpleTextField extends StatelessWidget {
   /// Result function with input data
   final void Function(String?)? onChanged;
 
-  final void Function(String?) onSubmit;
+  final void Function(String?)? onSubmit;
 
   /// Manage on tap event
   final void Function()? onTap;
-
-  /// Manage on focys event
-  final void Function(bool)? onFocusChange;
 
   /// Manage on change event (cursor position)
   final void Function(int)? onCursorPosition;
@@ -58,7 +55,7 @@ class SimpleTextField extends StatelessWidget {
   final String labelText;
 
   /// Focus node of current widget
-  final FocusNode? textFocusNode;
+  final FocusNode textFocusNode;
 
   /// If exist, pass next focus node to autofocus if on editing complete
   final FocusNode? nextFocusNode;
@@ -108,27 +105,37 @@ class SimpleTextField extends StatelessWidget {
   /// Manage on tap event on action button
   final void Function()? onTapAction;
 
+  final void Function(bool)? onFocusChange;
+
   /// Icon of action button
   final Icon? actionIcon;
-
-  /// Customize border color
-  final Color? borderColor;
 
   /// Specify custom border to add on the widget
   final BoxBorder? customBoxBorder;
 
+  final TextAlign textAlign;
+
+  final String? fieldNote;
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          simpleTextBloc ??
-          SimpleTextBloc(
-            isActionEnabled: isActionEnabled,
-            isInputTextEnabled: isInputTextEnabled,
-            isEmptyAllowed: isEmptyAllowed,
-            isNullable: isTextValueNullable,
-          ),
-      child: _SimpleTextFieldView(
+    return simpleTextBloc != null
+        ? BlocProvider<SimpleTextBloc>.value(
+            value: simpleTextBloc!,
+            child: _child,
+          )
+        : BlocProvider(
+            create: (context) => SimpleTextBloc(
+              isActionEnabled: isActionEnabled,
+              isInputTextEnabled: isInputTextEnabled,
+              isEmptyAllowed: isEmptyAllowed,
+              isNullable: isTextValueNullable,
+            ),
+            child: _child,
+          );
+  }
+
+  Widget get _child => _SimpleTextFieldView(
         onTap: onTap,
         onSubmit: onSubmit,
         labelText: labelText,
@@ -145,15 +152,14 @@ class SimpleTextField extends StatelessWidget {
         isObscured: isObscured,
         onCursorPosition: onCursorPosition,
         withBorder: withBorder,
-        borderColor: borderColor,
         withAction: withAction,
         onTapAction: onTapAction,
         actionIcon: actionIcon,
         autofocus: autofocus,
+        textAlign: textAlign,
+        fieldNote: fieldNote,
         onFocusChange: onFocusChange,
-      ),
-    );
-  }
+      );
 }
 
 class _SimpleTextFieldView extends StatefulWidget {
@@ -161,10 +167,9 @@ class _SimpleTextFieldView extends StatefulWidget {
     required this.labelText,
     required this.textFocusNode,
     required this.withAction,
-    required this.onSubmit,
+    this.onSubmit,
     this.onChanged,
     this.onTap,
-    this.onTapAction,
     this.onFocusChange,
     this.onCursorPosition,
     this.initialText = '',
@@ -177,19 +182,21 @@ class _SimpleTextFieldView extends StatefulWidget {
     this.isObscured = false,
     this.withBorder = false,
     this.autofocus = false,
-    this.borderColor,
     this.customBoxBorder,
+    this.onTapAction,
     this.actionIcon,
+    this.textAlign = TextAlign.start,
+    this.fieldNote,
   });
 
   final void Function(String?)? onChanged;
-  final void Function(String?) onSubmit;
+  final void Function(String?)? onSubmit;
   final void Function()? onTap;
   final void Function()? onTapAction;
   final void Function(int)? onCursorPosition;
   final void Function(bool)? onFocusChange;
   final String labelText;
-  final FocusNode? textFocusNode;
+  final FocusNode textFocusNode;
   final FocusNode? nextFocusNode;
   final String initialText;
   final TextInputType keyboardType;
@@ -202,8 +209,9 @@ class _SimpleTextFieldView extends StatefulWidget {
   final bool withBorder;
   final bool withAction;
   final Icon? actionIcon;
-  final Color? borderColor;
   final BoxBorder? customBoxBorder;
+  final TextAlign textAlign;
+  final String? fieldNote;
 
   @override
   State<_SimpleTextFieldView> createState() => _SimpleTextFieldViewState();
@@ -211,7 +219,6 @@ class _SimpleTextFieldView extends StatefulWidget {
 
 class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
   bool _passwordVisible = false;
-  bool _textShowCursor = false;
   final _controller = TextEditingController();
   int _cursorPosition = 0;
 
@@ -227,8 +234,14 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocListener<SimpleTextBloc, SimpleTextState>(
+    return BlocConsumer<SimpleTextBloc, SimpleTextState>(
       listenWhen: (previous, current) => previous.text != current.text,
       listener: (context, state) {
         if (state.text != null) {
@@ -242,179 +255,133 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
           );
         }
       },
-      child: BlocBuilder<SimpleTextBloc, SimpleTextState>(
-        builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        widget.labelText.toUpperCase(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.theme?.textTheme.labelLarge?.copyWith(
-                          color: context.theme?.colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Opacity(
-                        opacity: (!state.isInputTextEnabled) ? 0.5 : 1,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: context.theme?.colorScheme.background,
-                            borderRadius: BorderRadius.circular(8),
-                            border: widget.withBorder
-                                ? Border.all(
-                                    color: widget.borderColor ??
-                                        context.theme?.colorScheme.outline ??
-                                        const Color(0xFF000000),
-                                  )
-                                : null,
-                          ),
-                          child: AbsorbPointer(
-                            absorbing: !state.isInputTextEnabled,
-                            child: Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Focus(
-                                onFocusChange: (bool focus) {
-                                  setState(() => _textShowCursor = focus);
-                                  widget.onFocusChange?.call(focus);
-                                },
-                                child: _textView(state),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (widget.withAction)
-                      Opacity(
-                        opacity: (!state.isActionEnabled) ? 0.5 : 1,
-                        child: AbsorbPointer(
-                          absorbing: !state.isActionEnabled,
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 22, left: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: widget.withBorder
-                                  ? Border.all(
-                                      color: widget.borderColor ??
-                                          context.theme?.colorScheme.outline ??
-                                          const Color(0xFF000000),
-                                    )
-                                  : null,
-                            ),
-                            height:
-                                (52 + ((widget.maxLines - 1) * 16)).toDouble(),
-                            width:
-                                (52 + ((widget.maxLines - 1) * 16)).toDouble(),
-                            child: Material(
-                              elevation: 2,
-                              borderRadius: BorderRadius.circular(8),
-                              shadowColor:
-                                  context.theme?.dialogTheme.shadowColor,
-                              child: Focus(
-                                child: InkWell(
-                                  onTap: widget.onTapAction,
-                                  child: widget.actionIcon,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                if (state.status == SimpleTextStatus.failure)
-                  Positioned(
-                    bottom: 5,
+      builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
                     child: Text(
-                      state.errorText,
+                      widget.labelText.toUpperCase(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: context.theme?.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: context.theme?.colorScheme.error,
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                ],
+              ),
+              const Space.vertical(3),
+              Row(
+                children: [
+                  Expanded(
+                    child: Opacity(
+                      opacity: (!state.isInputTextEnabled) ? 0.5 : 1,
+                      child: AbsorbPointer(
+                        absorbing: !state.isInputTextEnabled,
+                        child: Focus(
+                          onFocusChange: (bool focus) {
+                            widget.onFocusChange?.call(focus);
+                          },
+                          child: textField(state),
+                        ),
                       ),
                     ),
                   ),
-              ],
-            ),
-          );
-        },
-      ),
+                  if (widget.withAction)
+                    Opacity(
+                      opacity: (!state.isActionEnabled) ? 0.7 : 1,
+                      child: AbsorbPointer(
+                        absorbing: !state.isActionEnabled,
+                        child: Container(
+                          margin: const EdgeInsets.only(left: 10),
+                          height: 36,
+                          width: 36,
+                          child: Focus(
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(8),
+                              onTap: widget.onTapAction,
+                              child: widget.actionIcon,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              if (widget.fieldNote != null)
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${widget.fieldNote}',
+                        textAlign: TextAlign.end,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _textView(SimpleTextState state) => TextField(
-    key: widget.key,
-    controller: _controller,
-    showCursor: _textShowCursor,
-    onTap: widget.onTap,
-    autofocus: widget.autofocus,
-    readOnly: !state.isInputTextEnabled,
-    focusNode: widget.textFocusNode,
-    keyboardType: widget.keyboardType,
-    textCapitalization: widget.textCapitalization,
-    textInputAction: widget.textInputAction,
-    obscureText:
-    widget.isObscured && !_passwordVisible,
-    maxLines: widget.maxLines,
-    onChanged: (text) {
-      context.read<SimpleTextBloc>().add(
-          TextChanged(text, _cursorPosition));
-      widget.onChanged?.call(text);
-    },
-    onSubmitted: widget.onSubmit,
-    onEditingComplete: () {
-      context
-          .read<SimpleTextBloc>()
-          .add(ValidateData());
-      if (widget.nextFocusNode != null) {
-        FocusScope.of(context)
-            .requestFocus(widget.nextFocusNode);
-      } else {
-        FocusScope.of(context).unfocus();
-      }
-    },
-    style: TextStyle(
-      color:
-      context.theme?.colorScheme.onBackground,
-    ),
-    decoration: InputDecoration(
-      filled: false,
-      enabledBorder: InputBorder.none,
-      focusedBorder: InputBorder.none,
-      errorBorder: InputBorder.none,
-      focusedErrorBorder: InputBorder.none,
-      alignLabelWithHint: true,
-      hintText: widget.placeholder,
-      hintMaxLines: widget.maxLines,
-      suffixIcon: widget.isObscured
-          ? IconButton(
-        icon: Icon(
-          _passwordVisible
-              ? Icons.visibility
-              : Icons.visibility_off,
-        ),
-        onPressed: () {
-          setState(() {
-            _passwordVisible =
-            !_passwordVisible;
-          });
+  Widget textField(SimpleTextState state) => TextField(
+        key: widget.key,
+        controller: _controller,
+        onTap: widget.onTap,
+        autofocus: widget.autofocus,
+        //enabled: state.isInputTextEnabled,
+        readOnly: !state.isInputTextEnabled,
+        focusNode: widget.textFocusNode,
+        keyboardType: widget.keyboardType,
+        textCapitalization: widget.textCapitalization,
+        textInputAction: widget.textInputAction,
+        textAlign: widget.textAlign,
+        obscureText: widget.isObscured && !_passwordVisible,
+        maxLines: widget.maxLines,
+        onChanged: (text) {
+          context
+              .read<SimpleTextBloc>()
+              .add(TextChanged(text, _cursorPosition));
+          widget.onChanged?.call(text);
         },
-      )
-          : null,
-      suffixIconColor: Colors.grey,
-    ),
-  );
+        onSubmitted: (s) {
+          context.read<SimpleTextBloc>().add(ValidateData());
+          if (widget.nextFocusNode != null) {
+            FocusScope.of(context).requestFocus(widget.nextFocusNode);
+          } else {
+            FocusScope.of(context).unfocus();
+          }
+          widget.onSubmit?.call(s);
+        },
+        onEditingComplete: () =>
+            context.read<SimpleTextBloc>().add(ValidateData()),
+        decoration: InputDecoration(
+          border: widget.withBorder
+              ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
+              : null,
+          hintText: widget.placeholder,
+          hintMaxLines: widget.maxLines,
+          errorText: state.errorText,
+          suffixIcon: widget.isObscured
+              ? IconButton(
+                  icon: Icon(
+                    _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _passwordVisible = !_passwordVisible;
+                    });
+                  },
+                )
+              : null,
+          suffixIconColor: Colors.grey,
+        ),
+      );
 }

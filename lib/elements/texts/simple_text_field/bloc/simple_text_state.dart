@@ -10,7 +10,7 @@ final class SimpleTextState extends Equatable {
     required this.isInputTextEnabled,
     this.status = SimpleTextStatus.initial,
     this.text,
-    this.errorText = '',
+    this.errorText,
     this.cursorPosition = 0,
   });
 
@@ -21,7 +21,7 @@ final class SimpleTextState extends Equatable {
   final String? text;
 
   /// String with reported error
-  final String errorText;
+  final String? errorText;
 
   /// if true data validation method skip nullable control
   final bool isNullable;
@@ -41,13 +41,14 @@ final class SimpleTextState extends Equatable {
     int? cursorPosition,
     bool? isInputTextEnabled,
     bool? isActionEnabled,
+    bool? forceFocusRequested,
   }) =>
       SimpleTextState(
         isNullable: isNullable,
         isEmptyAllowed: isEmptyAllowed,
         status: status ?? this.status,
         text: text ?? this.text,
-        errorText: errorText ?? this.errorText,
+        errorText: errorText,
         cursorPosition: cursorPosition ?? this.cursorPosition,
         isInputTextEnabled: isInputTextEnabled ?? this.isInputTextEnabled,
         isActionEnabled: isActionEnabled ?? this.isActionEnabled,

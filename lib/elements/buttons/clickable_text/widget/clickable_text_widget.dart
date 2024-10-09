@@ -1,8 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk_inspecta/elements/buttons/clickable_text/cubit/clickable_text_cubit.dart';
-import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_inspecta/elements/buttons/buttons.dart';
 
 /// OMDK widget to add possibility to tap
 /// over text to invoke function
@@ -19,27 +18,35 @@ class OMDKTextButton extends StatelessWidget {
 
   /// Custom cubit to manage [OMDKTextButton] state
   final ClickableTextCubit? cubit;
+
   /// Function to invoke on button click
   final void Function() onPressed;
+
   /// Text string
   final String text;
+
   /// Set custom text style
   final TextStyle? style;
+
   /// Enable or not tap
   final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => cubit ?? ClickableTextCubit(enabled: enabled),
-      child: _OMDKTextButton(
+    return cubit != null
+        ? BlocProvider.value(value: cubit!, child: _child)
+        : BlocProvider(
+            create: (_) => ClickableTextCubit(enabled: enabled),
+            child: _child,
+          );
+  }
+
+  Widget get _child => _OMDKTextButton(
         key: key,
         onPressed: onPressed,
         text: text,
         style: style,
-      ),
-    );
-  }
+      );
 }
 
 class _OMDKTextButton extends StatelessWidget {
@@ -62,9 +69,9 @@ class _OMDKTextButton extends StatelessWidget {
         text: text,
         style: state.enabled
             ? style
-            : context.theme?.inputDecorationTheme.labelStyle?.copyWith(
-          color: context.theme!.disabledColor.withOpacity(0.8),
-        ),
+            : Theme.of(context).inputDecorationTheme.labelStyle?.copyWith(
+                  color: Theme.of(context).disabledColor.withOpacity(0.8),
+                ),
         recognizer: TapGestureRecognizer()
           ..onTap = (state.enabled) ? onPressed : null,
       ),

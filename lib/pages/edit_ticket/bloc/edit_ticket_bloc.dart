@@ -155,7 +155,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
       );
     }
     final entityRequest = await scheduledRepo.getAPIItem(guid: event.guid!);
-    entityRequest.fold(
+    await entityRequest.fold(
       (entity) async {
         final mappingRequest = await mappingRepo.getAPIItem(
           guid: entity.mapping!.guid!,
@@ -176,7 +176,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
           ),
         );
       },
-      (failure) => emit(
+      (failure) async => emit(
         state.copyWith(
           loadingStatus: LoadingStatus.fatal,
           failureText: 'There was a problem retrieving ticket data..',
@@ -209,7 +209,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
 
         await scheduledRepo.putAPIItem(
           entity.copyWith(
-            dates: entity.dates?.copyWith(
+            dates: entity.dates.copyWith(
               modified: await operaUtils.getParticipationDate(),
               executed: await operaUtils.getParticipationDate(),
             ),
@@ -235,7 +235,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     SubmitTicket event,
     Emitter<EditTicketState> emit,
   ) async {
-    if (state.ticketEntity!.entity!.name!.isEmpty) {
+    if (state.ticketEntity!.entity.name!.isEmpty) {
       return emit(
         state.copyWith(
           loadingStatus: LoadingStatus.failure,
@@ -264,7 +264,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
 
       await scheduledRepo.putAPIItem(
         state.ticketEntity!.copyWith(
-          dates: state.ticketEntity?.dates?.copyWith(
+          dates: state.ticketEntity?.dates.copyWith(
             modified: await operaUtils.getParticipationDate(),
             closed: await operaUtils.getParticipationDate(),
           ),
@@ -298,7 +298,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     emit(
       state.copyWith(
         ticketEntity: state.ticketEntity?.copyWith(
-          entity: state.ticketEntity?.entity?.copyWith(
+          entity: state.ticketEntity?.entity.copyWith(
             name: event.name,
           ),
           scheduled: state.ticketEntity?.scheduled?.copyWith(
@@ -403,7 +403,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
               intValue: event.fieldValue as int?,
             ),
           );
-        case FieldType.Datetime:
+        case FieldType.DateTime:
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(
@@ -438,7 +438,12 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
       }
       emit(state.copyWith(loadingStatus: LoadingStatus.updated));
     } catch (_) {
-      emit(state.copyWith(loadingStatus: LoadingStatus.failure));
+      emit(
+        state.copyWith(
+          failureText: _.toString(),
+          loadingStatus: LoadingStatus.failure,
+        ),
+      );
     }
   }
 }

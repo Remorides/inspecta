@@ -24,9 +24,13 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
           ),
         ) {
     on<TextChanged>(_onTextChanges);
+    on<SetErrorText>(_onSetErrorText);
     on<ValidateData>(_onValidateData);
     on<EnableInputText>(_onEnableInputText);
+    on<DisableInputText>(_onDisableInputText);
     on<ResetText>(_onResetText);
+    on<CancelRequestFocus>(_onCancelRequestFocus);
+    on<RequestFocus>(_onRequestFocus);
   }
 
   Future<void> _onTextChanges(
@@ -37,8 +41,20 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
       state.copyWith(
         status: SimpleTextStatus.initial,
         text: event.text,
-        errorText: '',
         cursorPosition: event.cursorPosition,
+      ),
+    );
+  }
+
+  Future<void> _onSetErrorText(
+    SetErrorText event,
+    Emitter<SimpleTextState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        errorText: event.errorText,
+        text: '',
+        cursorPosition: 0,
       ),
     );
   }
@@ -48,6 +64,27 @@ class SimpleTextBloc extends Bloc<SimpleTextEvent, SimpleTextState> {
     Emitter<SimpleTextState> emit,
   ) async {
     emit(state.copyWith(isInputTextEnabled: true));
+  }
+
+  Future<void> _onDisableInputText(
+    DisableInputText event,
+    Emitter<SimpleTextState> emit,
+  ) async {
+    emit(state.copyWith(isInputTextEnabled: false));
+  }
+
+  Future<void> _onRequestFocus(
+    RequestFocus event,
+    Emitter<SimpleTextState> emit,
+  ) async {
+    emit(state.copyWith(forceFocusRequested: true));
+  }
+
+  Future<void> _onCancelRequestFocus(
+    CancelRequestFocus event,
+    Emitter<SimpleTextState> emit,
+  ) async {
+    emit(state.copyWith(forceFocusRequested: false));
   }
 
   Future<void> _onResetText(

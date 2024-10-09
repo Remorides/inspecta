@@ -1,10 +1,19 @@
 part of 'field_image_bloc.dart';
 
-@immutable
 sealed class FieldImageEvent {}
 
-final class DownloadImage extends FieldImageEvent {
-  DownloadImage(this.imageGuid);
+final class LoadImages extends FieldImageEvent {
+  LoadImages(this.imageGuidList);
 
-  final String? imageGuid;
+  final List<String>? imageGuidList;
 }
+
+final class AddImage extends FieldImageEvent {
+  AddImage(this.file);
+
+  final File file;
+}
+
+class TakeCameraPhoto extends FieldImageEvent {}
+
+class PickImage extends FieldImageEvent {}

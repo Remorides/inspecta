@@ -72,10 +72,10 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       (asset) => emit(
         state.copyWith(
           jMainNode: JMainNode(
-            id: asset.entity?.id,
-            guid: asset.entity?.guid,
+            id: asset.entity.id,
+            guid: asset.entity.guid,
             type: NodeType.Asset,
-            name: asset.entity?.name,
+            name: asset.entity.name,
             description: asset.asset?.description,
             path: asset.asset?.path,
           ),
@@ -120,11 +120,11 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     emit(state.copyWith(loadingStatus: LoadingStatus.initial));
     final schemaMappingRequest =
         await mappingRepo.getAPIItem(guid: event.schemaMappingGuid);
-    schemaMappingRequest.fold(
+    await schemaMappingRequest.fold(
       (schemaMapping) async {
         final schemaRequest =
             await schemaRepo.getAPIItem(guid: event.schemaGuid);
-        schemaRequest.fold(
+        await schemaRequest.fold(
           (schema) async {
             final ticketEntity = await operaUtils.generateTicketOEFromSchema(
               schema,
@@ -140,7 +140,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
               ),
             );
           },
-          (failure) => emit(
+          (failure) async => emit(
             state.copyWith(
               loadingStatus: LoadingStatus.failure,
               failureText: 'There was a problem with selected schema, '
@@ -149,7 +149,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
           ),
         );
       },
-      (failure) => emit(
+      (failure) async => emit(
         state.copyWith(
           loadingStatus: LoadingStatus.failure,
           failureText: 'There was a problem with selected schema, '
@@ -293,7 +293,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
               intValue: event.fieldValue as int?,
             ),
           );
-        case FieldType.Datetime:
+        case FieldType.DateTime:
           state.ticketEntity!.stepsList[indexStep!].fieldsList?[indexField!] =
               state.ticketEntity!.stepsList[indexStep].fieldsList![indexField]
                   .copyWith(

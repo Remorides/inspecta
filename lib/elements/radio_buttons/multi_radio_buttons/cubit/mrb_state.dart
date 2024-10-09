@@ -19,5 +19,5 @@ final class MrbState extends Equatable {
       );
 
   @override
-  List<Object?> get props => [selectedRadio];
+  List<Object?> get props => [isEnabled, selectedRadio];
 }

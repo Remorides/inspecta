@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk_inspecta/common/enums/enums.dart';
-import 'package:omdk_inspecta/elements/date_time_pickers/cupertino_picker/cupertino_picker.dart';
-import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_inspecta/common/common.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 
 class OMDKCupertinoPicker extends StatelessWidget {
   /// Create [OMDKCupertinoPicker] instance
@@ -24,17 +23,20 @@ class OMDKCupertinoPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          cubit ?? DateTimeCupertinoCubit(isEnabled: isEnabled),
-      child: _CupertinoPicker(
+    return cubit != null
+        ? BlocProvider.value(value: cubit!, child: _child)
+        : BlocProvider(
+            create: (context) => DateTimeCupertinoCubit(isEnabled: isEnabled),
+            child: _child,
+          );
+  }
+
+  Widget get _child => _CupertinoPicker(
         mode: mode,
         labelText: labelText,
         key: key,
         focusNode: focusNode,
-      ),
-    );
-  }
+      );
 }
 
 class _CupertinoPicker extends StatefulWidget {
@@ -75,7 +77,7 @@ class _CupertinoPickerState extends State<_CupertinoPicker> {
                     widget.labelText!.toUpperCase(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: context.theme?.inputDecorationTheme.labelStyle,
+                    style: Theme.of(context).inputDecorationTheme.labelStyle,
                   ),
                 ),
               ],
@@ -104,10 +106,13 @@ class _CupertinoPickerState extends State<_CupertinoPicker> {
                         ),
                         child: Text(
                           state.dateTime.toString(),
-                          style: context.theme?.cupertinoOverrideTheme
-                              ?.textTheme?.textStyle.copyWith(
-                            fontSize: 16,
-                          ),
+                          style: Theme.of(context)
+                              .cupertinoOverrideTheme
+                              ?.textTheme
+                              ?.textStyle
+                              .copyWith(
+                                fontSize: 16,
+                              ),
                         ),
                       ),
                     ),
@@ -140,7 +145,7 @@ class _CupertinoPickerState extends State<_CupertinoPicker> {
                 state.errorText ?? '!',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.theme?.inputDecorationTheme.errorStyle,
+                style: Theme.of(context).inputDecorationTheme.errorStyle,
               ),
             ),
         ],

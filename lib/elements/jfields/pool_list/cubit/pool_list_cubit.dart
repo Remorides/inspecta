@@ -1,14 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/common/common.dart';
 
 part 'pool_list_state.dart';
 
 class PoolListCubit extends Cubit<PoolListState> {
   /// Create [PoolListCubit] instance
   PoolListCubit({
-    required List<String> listItem,
+    required List<String?> listItem,
     bool isEnabled = true,
     String? selectedItem,
   }) : super(

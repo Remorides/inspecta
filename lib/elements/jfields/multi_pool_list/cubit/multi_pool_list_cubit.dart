@@ -12,12 +12,12 @@ class MultiPoolListCubit extends Cubit<MultiPoolListState> {
     bool isEnabled = true,
     List<String> selectedItems = const [],
   }) : super(
-    MultiPoolListState(
-      listItem: listItem,
-      selectedItems: selectedItems,
-      isEnabled: isEnabled,
-    ),
-  );
+          MultiPoolListState(
+            listItem: listItem,
+            selectedItems: selectedItems,
+            isEnabled: isEnabled,
+          ),
+        );
 
   /// Set current tab on home page
   void enable() => emit(state.copyWith(isEnabled: true));

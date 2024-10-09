@@ -39,7 +39,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
       withDrawer: false,
       leading: OMDKElevatedButton(
         style: const ButtonStyle(
-          backgroundColor: MaterialStatePropertyAll(Colors.red),
+          backgroundColor: WidgetStatePropertyAll(Colors.red),
         ),
         focusNode: FocusNode(),
         onPressed: () {
@@ -49,10 +49,11 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
           }
         },
         child: Text(
-          AppLocalizations.of(context)!.alert_btn_cancel,
-          style: TextStyle(
-            color: context.theme?.buttonTheme.colorScheme?.onSurface,
-          ),
+          context.l.alert_btn_cancel,
+          style: Theme.of(context)
+              .textTheme
+              .labelLarge
+              ?.copyWith(color: Colors.white),
         ),
       ),
       bodyPage: BlocListener<OpenTicketBloc, OpenTicketState>(
@@ -92,7 +93,6 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
                     color: Colors.black,
                   ),
                 ),
-                isDismissible: true,
                 confirm: AppLocalizations.of(context)!.alert_btn_ok,
                 onConfirm: () =>
                     context.read<OpenTicketBloc>().add(ResetWarning()),
@@ -206,6 +206,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
               const _AssetReference(),
               _TicketNameInput(keyboardBloc: blocKeyboard),
               _TicketDescInput(keyboardBloc: blocKeyboard),
+              const Space.vertical(10),
               const _TicketPriorityInput(),
               const _TicketSchemaInput(),
             ],
@@ -226,6 +227,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
           const _AssetReference(),
           _TicketNameInput(keyboardBloc: blocKeyboard),
           _TicketDescInput(keyboardBloc: blocKeyboard),
+          const Space.vertical(10),
           const _TicketPriorityInput(),
           const _TicketSchemaInput(),
           _TicketStepList(keyboardBloc: blocKeyboard),
@@ -246,9 +248,9 @@ class _AssetReference extends StatelessWidget {
               key: const Key('assetReference_textField'),
               isEnabled: false,
               onChanged: (text) {},
-              labelText:
-                  AppLocalizations.of(context)!.ticket_label_asset_reference,
+              labelText: context.l.ticket_label_asset_reference,
               initialText: state.jMainNode?.name,
+              focusNode: FocusNode(),
             )
           : const Center(child: CircularProgressIndicator()),
     );
@@ -269,10 +271,11 @@ class _TicketNameInput extends StatelessWidget {
         initialText: state.ticketName,
         onChanged: (text) =>
             context.read<OpenTicketBloc>().add(TicketNameChanged(text)),
-        labelText: AppLocalizations.of(context)!.ticket_label_name,
+        labelText: context.l.ticket_label_name,
         keyboardBloc: keyboardBloc,
         onTapBloc: (bloc) =>
             context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
+        focusNode: FocusNode(),
       ),
     );
   }
@@ -292,10 +295,11 @@ class _TicketDescInput extends StatelessWidget {
         initialText: state.ticketDescription,
         onChanged: (text) =>
             context.read<OpenTicketBloc>().add(TicketDescChanged(text)),
-        labelText: AppLocalizations.of(context)!.ticket_label_description,
+        labelText: context.l.ticket_label_description,
         keyboardBloc: keyboardBloc,
         onTapBloc: (bloc) =>
             context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
+        focusNode: FocusNode(),
       ),
     );
   }
@@ -310,13 +314,14 @@ class _TicketPriorityInput extends StatelessWidget {
     return BlocBuilder<OpenTicketBloc, OpenTicketState>(
       buildWhen: (previous, current) =>
           previous.ticketPriority != current.ticketPriority,
-      builder: (context, state) => MultiRadioButtons(
+      builder: (context, state) => PriorityButtons(
         key: const Key('ticketPriorityInput_textField'),
         onSelectedPriority: (priorityCode) => context
             .read<OpenTicketBloc>()
             .add(TicketPriorityChanged(priorityCode)),
-        labelText: AppLocalizations.of(context)!.ticket_label_priority,
+        labelText: context.l.ticket_label_priority,
         indexSelectedRadio: state.ticketPriority,
+        focusNode: FocusNode(),
       ),
     );
   }
@@ -335,66 +340,62 @@ class _TicketSchemaInput extends StatelessWidget {
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.only(top: 20),
-          child: SizedBox(
-            height: 213,
-            child: Stack(
-              children: [
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        AppLocalizations.of(context)!.ticket_label_typology,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.theme?.textTheme.labelLarge?.copyWith(
-                          color: context.theme?.colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Opacity(
-                  opacity: 1,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 22),
-                    child: ListView.builder(
-                      itemCount: state.schemas.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: (index == state.selectedSchemaIndex)
-                                ? context.theme?.primaryColor
-                                : Colors.transparent,
-                          ),
-                          child: ListTile(
-                            selected: index == state.selectedSchemaIndex,
-                            selectedColor: Colors.white,
-                            onTap: () => context.read<OpenTicketBloc>().add(
-                                  SelectedSchemaChanged(
-                                    schemaIndex: index,
-                                    schemaMappingGuid:
-                                        state.schemas[index].mapping.guid!,
-                                    schemaGuid: state.schemas[index].guid,
-                                  ),
-                                ),
-                            title: Text(
-                              '${state.schemas[index].name}',
-                              style: (index == state.selectedSchemaIndex)
-                                  ? const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    )
-                                  : const TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                            ),
-                          ),
-                        );
-                      },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      context.l.ticket_label_typology.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ),
+                ],
+              ),
+              SizedBox(
+                height: 250,
+                child: ListView.builder(
+                  itemCount: state.schemas.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ColoredBox(
+                      color: index == state.selectedSchemaIndex
+                          ? Colors.white
+                          : Theme.of(context).scaffoldBackgroundColor,
+                      child: ListTile(
+                        selected: index == state.selectedSchemaIndex,
+                        selectedColor:
+                            Theme.of(context).inputDecorationTheme.fillColor,
+                        onTap: () => context.read<OpenTicketBloc>().add(
+                              SelectedSchemaChanged(
+                                schemaIndex: index,
+                                schemaMappingGuid:
+                                    state.schemas[index].mapping.guid!,
+                                schemaGuid: state.schemas[index].guid,
+                              ),
+                            ),
+                        title: Text(
+                          '${state.schemas[index].name}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge
+                              ?.copyWith(
+                                color: index == state.selectedSchemaIndex
+                                    ? Theme.of(context).colorScheme.primary
+                                    : null,
+                                fontWeight: index == state.selectedSchemaIndex
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -428,18 +429,10 @@ class _TicketStepList extends StatelessWidget {
                       return submitTicket(context: context);
                     }
                     return ExpansionTile(
-                      iconColor: context.theme?.colorScheme.onSurface,
-                      collapsedIconColor: context.theme?.colorScheme.onSurface,
                       //initiallyExpanded: index == 0, not expand automatically
                       title: Text(
-                        '${(state.ticketEntity!.stepsList[index].title?.singleWhereOrNull(
-                              (element) =>
-                                  element.culture?.contains(
-                                    Localizations.localeOf(context)
-                                        .languageCode,
-                                  ) ??
-                                  false,
-                            ) ?? state.ticketEntity!.stepsList[index].title?[0])?.value}',
+                        '${context.localizeLabel(state.ticketEntity!.stepsList[index].title)}',
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                       children: buildFieldList(
                         context: context,
@@ -505,21 +498,14 @@ class _TicketStepList extends StatelessWidget {
         switch (jFieldMapping.collectionType) {
           case CollectionType.List:
             return FieldPoolList(
-              labelText: '${(jFieldMapping.title?.singleWhereOrNull(
-                    (element) =>
-                        element.culture?.contains(
-                          Localizations.localeOf(context).languageCode,
-                        ) ??
-                        false,
-                  ) ?? jFieldMapping.title?[0])?.value}',
+              labelText: '${context.localizeLabel(jFieldMapping.title)}',
               listItem: jFieldMapping.poolListSettings!.value!,
-              isEnabled:
-                  jFieldEntity!.operations!.design!.values!.contains('U'),
+              isEnabled: jFieldMapping.operations!.design.checkU,
               onChanged: (String? s) => context.read<OpenTicketBloc>().add(
                     FieldChanged(
                       stepGuid: stepGuid,
                       fieldMapping: jFieldMapping,
-                      fieldGuid: jFieldEntity.guid!,
+                      fieldGuid: jFieldEntity!.guid!,
                       fieldValue: <String>[s!],
                     ),
                   ),
@@ -528,34 +514,21 @@ class _TicketStepList extends StatelessWidget {
             if (jFieldMapping.poolListSettings?.value != null) {
               return FieldPoolList(
                 selectedItem: jFieldEntity?.value?.stringsList?.first,
-                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
-                      (element) =>
-                          element.culture?.contains(
-                            Localizations.localeOf(context).languageCode,
-                          ) ??
-                          false,
-                    ) ?? jFieldMapping.title?[0])?.value}',
+                labelText: '${context.localizeLabel(jFieldMapping.title)}',
                 listItem: jFieldMapping.poolListSettings!.value!,
-                isEnabled:
-                    jFieldEntity!.operations!.design!.values!.contains('U'),
+                isEnabled: jFieldMapping.operations!.design.checkU,
                 onChanged: (String? s) => context.read<OpenTicketBloc>().add(
                       FieldChanged(
                         stepGuid: stepGuid,
                         fieldMapping: jFieldMapping,
-                        fieldGuid: jFieldEntity.guid!,
+                        fieldGuid: jFieldEntity!.guid!,
                         fieldValue: <String>[s!],
                       ),
                     ),
               );
             } else if (jFieldMapping.poolListSettings?.multiSelect ?? false) {
               return FieldMultiPoolList(
-                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
-                      (element) =>
-                          element.culture?.contains(
-                            Localizations.localeOf(context).languageCode,
-                          ) ??
-                          false,
-                    ) ?? jFieldMapping.title?[0])?.value}',
+                labelText: '${context.localizeLabel(jFieldMapping.title)}',
                 isEnabled:
                     jFieldEntity!.operations!.design!.values!.contains('U'),
                 listItem: jFieldMapping.poolListSettings!.value!,
@@ -564,26 +537,19 @@ class _TicketStepList extends StatelessWidget {
               );
             } else {
               return FieldString(
-                labelText: '${(jFieldMapping.title?.singleWhereOrNull(
-                      (element) =>
-                          element.culture?.contains(
-                            Localizations.localeOf(context).languageCode,
-                          ) ??
-                          false,
-                    ) ?? jFieldMapping.title?[0])?.value}',
+                labelText: '${context.localizeLabel(jFieldMapping.title)}',
                 initialText: jFieldEntity?.value?.stringValue,
                 keyboardBloc: keyboardBloc,
                 onTapBloc: (bloc) => context
                     .read<OpenTicketBloc>()
                     .add(TicketEditing(bloc: bloc)),
-                isEnabled:
-                    jFieldEntity!.operations!.design!.values!.contains('U'),
+                isEnabled: jFieldMapping.operations!.design.checkU,
                 focusNode: FocusNode(),
                 onChanged: (String? s) => context.read<OpenTicketBloc>().add(
                       FieldChanged(
                         stepGuid: stepGuid,
                         fieldMapping: jFieldMapping,
-                        fieldGuid: jFieldEntity.guid!,
+                        fieldGuid: jFieldEntity!.guid!,
                         fieldValue: s,
                       ),
                     ),
@@ -605,82 +571,58 @@ class _TicketStepList extends StatelessWidget {
         //   imageGuid: jFieldEntity?.value?.imagesList?.first,
         // );
         return FieldSliderImages(
-          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
-                (element) =>
-                    element.culture?.contains(
-                      Localizations.localeOf(context).languageCode,
-                    ) ??
-                    false,
-              ) ?? jFieldMapping.title?[0])?.value}',
+          labelText: '${context.localizeLabel(jFieldMapping.title)}',
           imageList: jFieldEntity?.value?.imagesList,
         );
       case FieldType.Double:
         return FieldDouble(
-          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
-                (element) =>
-                    element.culture?.contains(
-                      Localizations.localeOf(context).languageCode,
-                    ) ??
-                    false,
-              ) ?? jFieldMapping.title?[0])?.value}',
+          labelText: '${context.localizeLabel(jFieldMapping.title)}',
           keyboardBloc: keyboardBloc,
           onTapBloc: (bloc) =>
               context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
           focusNode: FocusNode(),
-          isEnabled: jFieldEntity!.operations!.design!.values!.contains('U'),
+          isEnabled: jFieldMapping.operations!.design.checkU,
           onChanged: (double? d) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
-                  fieldGuid: jFieldEntity.guid!,
+                  fieldGuid: jFieldEntity!.guid!,
                   fieldValue: d,
                 ),
               ),
         );
       case FieldType.Int32:
         return FieldInt(
-          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
-                (element) =>
-                    element.culture?.contains(
-                      Localizations.localeOf(context).languageCode,
-                    ) ??
-                    false,
-              ) ?? jFieldMapping.title?[0])?.value}',
+          labelText: '${context.localizeLabel(jFieldMapping.title)}',
           focusNode: FocusNode(),
           keyboardBloc: keyboardBloc,
-          isEnabled: jFieldEntity!.operations!.design!.values!.contains('U'),
+          isEnabled: jFieldMapping.operations!.design.checkU,
           onTapBloc: (bloc) =>
               context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
           onChanged: (int? i) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
-                  fieldGuid: jFieldEntity.guid!,
+                  fieldGuid: jFieldEntity!.guid!,
                   fieldValue: i,
                 ),
               ),
         );
       case FieldType.Bool:
         return FieldBool(
-          labelText: '${(jFieldMapping.title?.singleWhereOrNull(
-                (element) =>
-                    element.culture?.contains(
-                      Localizations.localeOf(context).languageCode,
-                    ) ??
-                    false,
-              ) ?? jFieldMapping.title?[0])?.value}',
+          labelText: '${context.localizeLabel(jFieldMapping.title)}',
           focusNode: FocusNode(),
-          isEnabled: jFieldEntity!.operations!.design!.values!.contains('U'),
+          isEnabled: jFieldMapping.operations!.design.checkU,
           onChanged: (bool? b) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
                   fieldMapping: jFieldMapping,
-                  fieldGuid: jFieldEntity.guid!,
+                  fieldGuid: jFieldEntity!.guid!,
                   fieldValue: b,
                 ),
               ),
         );
-      case FieldType.Datetime:
+      case FieldType.DateTime:
       case FieldType.File:
       case FieldType.StepResult:
       case FieldType.InternalStep:
@@ -701,10 +643,7 @@ class _TicketStepList extends StatelessWidget {
               focusNode: FocusNode(),
               onPressed: () =>
                   context.read<OpenTicketBloc>().add(SubmitTicket()),
-              child: Text(
-                AppLocalizations.of(context)!.ticket_btn_submit,
-                style: TextStyle(color: context.theme?.colorScheme.onSurface),
-              ),
+              child: Text(context.l.ticket_btn_submit),
             ),
           ),
         ],

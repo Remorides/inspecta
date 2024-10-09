@@ -1,59 +1,52 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 
 class OMDKBottomBar extends StatelessWidget {
   const OMDKBottomBar({
     super.key,
-    this.widgets = const [],
-    this.onTap,
+    this.buttons = const [],
+    this.onTapAddBTN,
+    this.extraButtonHeight = 18,
+    this.buttonDiameter = 75,
+    this.bottomPadding = 12,
+    this.buttonPadding = 8,
   });
 
-  final List<Widget> widgets;
-  final void Function()? onTap;
-
-  static late double barHeight;
-
-  static const double extraButtonHeight = 18;
-  static const double buttonDiameter = 75;
-
-  static double totalHeight(double bottomSafe) =>
-      bottomSafe + barHeight + extraButtonHeight + bottomPadding;
-
-  static const double bottomPadding = 12;
-  static const double buttonPadding = 8;
-
-  static const _Clipper _clipper = _Clipper(
-    guest: Rect.fromLTWH(
-      10 - buttonPadding,
-      -extraButtonHeight - buttonPadding,
-      buttonDiameter + buttonPadding * 2,
-      buttonDiameter + buttonPadding * 2,
-    ),
-  );
+  final List<OMDKBottomBarButton> buttons;
+  final void Function()? onTapAddBTN;
+  final double extraButtonHeight;
+  final double buttonDiameter;
+  final double bottomPadding;
+  final double buttonPadding;
 
   @override
   Widget build(BuildContext context) {
     final bottomSafe = MediaQuery.of(context).padding.bottom;
-    barHeight = 50 + (bottomSafe == 0 ? 20 : 0);
+    final barHeight = 50 + (bottomSafe == 0 ? 20 : 0);
 
     return SizedBox(
       width: double.infinity,
-      height: totalHeight(bottomSafe),
+      height: _totalHeight(bottomSafe, barHeight),
       child: Stack(
-        children: <Widget>[
+        children: [
           Positioned.fill(
             top: extraButtonHeight,
             child: ClipPath(
-              clipper: _clipper,
+              clipper: _Clipper(
+                guest: Rect.fromLTWH(
+                  10 - buttonPadding,
+                  -extraButtonHeight - buttonPadding,
+                  buttonDiameter + buttonPadding * 2,
+                  buttonDiameter + buttonPadding * 2,
+                ),
+              ),
               child: Material(
-                color: context.theme?.bottomNavigationBarTheme.backgroundColor,
+                color: Theme.of(context).colorScheme.primary,
                 child: Padding(
                   padding: EdgeInsets.only(
                     left: 112 - 22,
                     right: 37 - 22,
-                    bottom: bottomPadding +
-                        (bottomSafe > 20 ? 10 : 0),
+                    bottom: bottomPadding + (bottomSafe > 20 ? 10 : 0),
                   ),
                   child: _buttons(context),
                 ),
@@ -65,58 +58,22 @@ class OMDKBottomBar extends StatelessWidget {
             top: 0,
             height: buttonDiameter,
             width: buttonDiameter,
-            child: _addButton(context),
+            child: OMDKSimpleActionButton(onTapAddBTN: onTapAddBTN),
           ),
         ],
       ),
     );
   }
 
+  double _totalHeight(double bottomSafe, int barHeight) =>
+      bottomSafe + barHeight + extraButtonHeight + bottomPadding;
+
   Row _buttons(BuildContext context) {
     return Row(
       children: <Widget>[
-        for (final Widget child in widgets)
+        for (final Widget child in buttons)
           Expanded(child: Center(child: child)),
       ],
-    );
-  }
-
-  Material _addButton(BuildContext context) => Material(
-    borderRadius: BorderRadius.circular(500),
-    child: InkWell(
-      borderRadius: BorderRadius.circular(900),
-      onTap: onTap,
-      child: const Center(
-        child: Icon(
-          CupertinoIcons.plus,
-          size: 26,
-        ),
-      ),
-    ),
-  );
-
-  static Widget button(String asset, VoidCallback onTap) {
-    return Material(
-      shape: const CircleBorder(
-        side: BorderSide(
-          width: 1.5,
-        ),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(300),
-        child: SizedBox.square(
-          dimension: 40,
-          child: Center(
-            child: Image.asset(
-              asset,
-              width: 17,
-              height: 17,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

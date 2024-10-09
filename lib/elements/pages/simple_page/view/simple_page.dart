@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:omdk_inspecta/common/assets/assets.dart';
 import 'package:omdk_inspecta/elements/elements.dart';
-import 'package:omdk_repo/omdk_repo.dart';
 
 /// Login form class provide all required field to login
 class OMDKSimplePage extends StatelessWidget {
@@ -15,6 +15,7 @@ class OMDKSimplePage extends StatelessWidget {
     this.withAppbar = true,
     this.withBottomBar = true,
     this.withDrawer = true,
+    this.withBackgroundImage = false,
     this.withKeyboardShortcuts = false,
     this.appBarTitle,
     this.focusNodeList = const [],
@@ -22,7 +23,11 @@ class OMDKSimplePage extends StatelessWidget {
     this.leading,
     this.trailing,
     this.previousRoute,
-    this.onPopInvoked,
+    this.onPopCallback,
+    this.bottomWidget,
+    this.onTapAddBTN,
+    this.bottomBar,
+    this.floatingActionButton,
   });
 
   /// Choose if you want to show or not appbar
@@ -33,6 +38,10 @@ class OMDKSimplePage extends StatelessWidget {
 
   /// Choose if you want to integrate drawer or not in appBar
   final bool withDrawer;
+
+  final bool withBackgroundImage;
+
+  final VoidCallback? onPopCallback;
 
   /// Choose if you want to add shortcuts over keyboard
   final bool withKeyboardShortcuts;
@@ -52,10 +61,17 @@ class OMDKSimplePage extends StatelessWidget {
   /// App bar trailing widget
   final Widget? trailing;
 
+  /// Bottom bar widget
+  final Widget? bottomWidget;
+
   /// App bar details
   final String? previousRoute;
 
-  final void Function(bool)? onPopInvoked;
+  final VoidCallback? onTapAddBTN;
+
+  final Widget? bottomBar;
+
+  final Widget? floatingActionButton;
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +83,17 @@ class OMDKSimplePage extends StatelessWidget {
         withAppbar: withAppbar,
         withBottomBar: withBottomBar,
         withDrawer: withDrawer,
+        withBackgroundImage: withBackgroundImage,
         withKeyboardShortcuts: withKeyboardShortcuts,
         appBarTitle: appBarTitle,
         leading: leading,
         trailing: trailing,
+        bottomWidget: bottomWidget,
         previousRoute: previousRoute,
-        onPopInvoked: onPopInvoked,
+        onPopCallback: onPopCallback,
+        onTapAddBTN: onTapAddBTN,
+        bottomBar: bottomBar,
+        floatingActionButton: floatingActionButton,
       ),
     );
   }
@@ -85,63 +106,87 @@ class _OMDKSimplePage extends StatelessWidget {
     required this.withAppbar,
     required this.withBottomBar,
     required this.withDrawer,
+    required this.withBackgroundImage,
     required this.withKeyboardShortcuts,
+    this.floatingActionButton,
+    this.onPopCallback,
     this.appBarTitle,
     this.leading,
     this.trailing,
+    this.bottomWidget,
     this.previousRoute,
-    this.onPopInvoked,
+    this.onTapAddBTN,
+    this.bottomBar,
   });
 
   final bool withAppbar;
   final bool withBottomBar;
   final bool withKeyboardShortcuts;
-  final void Function(bool)? onPopInvoked;
+  final VoidCallback? onPopCallback;
   final bool withDrawer;
+  final bool withBackgroundImage;
   final Widget bodyPage;
+  final Widget? floatingActionButton;
   final List<FocusNode> focusNodeList;
   final Widget? appBarTitle;
   final Widget? leading;
   final Widget? trailing;
+  final Widget? bottomWidget;
   final String? previousRoute;
+  final VoidCallback? onTapAddBTN;
+  final Widget? bottomBar;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.select((OMDKSimplePageCubit cubit) => cubit.state);
+    final state = context.select((OMDKSimplePageCubit cubit) => cubit.state);
     return Material(
-      child: PopScope(
-        onPopInvoked: onPopInvoked,
-        child: withDrawer
-            ? Stack(
-                children: [
-                  const OMDKAnimatedDrawer(),
-                  AnimatedContainer(
-                    transform:
-                        Matrix4.translationValues(cubit.xOffsetDrawer, 0, 0),
-                    duration: const Duration(milliseconds: 150),
-                    child: GestureDetector(
-                      onTap: () =>
-                          context.read<OMDKSimplePageCubit>().collapseDrawer(),
-                      child: AbsorbPointer(
-                        absorbing: cubit.isDrawerExpanded,
-                        child: _buildScaffold(context),
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Stack(
+        children: [
+          if (withDrawer)
+            AnimatedContainer(
+              width: 300,
+              transform: Matrix4.translationValues(
+                (state.isDrawerExpanded ? 0 : state.initialXOffsetDrawer),
+                0,
+                0,
+              ),
+              duration: const Duration(milliseconds: 150),
+              child: const OMDKAnimatedDrawer(),
+            ),
+          AnimatedContainer(
+            transform: Matrix4.translationValues(state.xOffsetDrawer, 0, 0),
+            duration: const Duration(milliseconds: 150),
+            decoration: BoxDecoration(
+              image: withBackgroundImage
+                  ? DecorationImage(
+                      image: AssetImage(
+                        CompanyAssets.operaBackground.iconAsset,
                       ),
-                    ),
-                  ),
-                ],
-              )
-            : _buildScaffold(context),
+                      alignment: Alignment.bottomRight,
+                      fit: BoxFit.contain,
+                    )
+                  : null,
+            ),
+            child: GestureDetector(
+              onTap: withDrawer && state.isDrawerExpanded
+                  ? () => context.read<OMDKSimplePageCubit>().collapseDrawer()
+                  : null,
+              child: AbsorbPointer(
+                absorbing: state.isDrawerExpanded,
+                child: _buildScaffold(context),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  CupertinoPageScaffold _buildScaffold(BuildContext context) =>
-      CupertinoPageScaffold(
-        backgroundColor: context.theme?.colorScheme.surface,
-        navigationBar: withAppbar
+  Scaffold _buildScaffold(BuildContext context) => Scaffold(
+        appBar: withAppbar
             ? CupertinoNavigationBar(
-                backgroundColor: context.theme?.appBarTheme.backgroundColor,
-                brightness: Brightness.light,
+                backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
                 leading: withDrawer && !Navigator.of(context).canPop()
                     ? GestureDetector(
                         child: const Icon(
@@ -151,23 +196,35 @@ class _OMDKSimplePage extends StatelessWidget {
                         onTap: () =>
                             context.read<OMDKSimplePageCubit>().expandDrawer(),
                       )
-                    : leading,
+                    : leading ??
+                        IconButton(
+                          onPressed: onPopCallback ??
+                              () => Navigator.of(context).pop(),
+                          icon: Icon(
+                            size: 22,
+                            CupertinoIcons.back,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
                 middle: appBarTitle,
                 trailing: trailing,
                 previousPageTitle: previousRoute,
               )
             : null,
-        child: _buildPage(context),
+        body: _buildPage(context),
+        extendBody: true,
+        bottomNavigationBar: withBottomBar
+            ? bottomBar ??
+                OMDKBottomBar(
+                  onTapAddBTN: onTapAddBTN,
+                  buttons: OMDKBottomBarButton.defaultBottomButtons,
+                )
+            : null,
+        floatingActionButton: floatingActionButton,
+        floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
       );
 
-  Widget _buildPage(BuildContext context) => withBottomBar
-      ? FloatingBottom(
-          bottom: const OMDKBottomBar(),
-          child: _buildBodyPage(context),
-        )
-      : _buildBodyPage(context);
-
-  Widget _buildBodyPage(BuildContext context) {
+  Widget _buildPage(BuildContext context) {
     if (kIsWeb) {
       return SafeArea(child: bodyPage);
     }

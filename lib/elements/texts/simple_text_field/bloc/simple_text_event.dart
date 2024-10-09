@@ -16,9 +16,22 @@ final class TextChanged extends SimpleTextEvent {
   final int cursorPosition;
 }
 
-final class EnableInputText extends SimpleTextEvent {
-  const EnableInputText();
+/// Event to notify new text
+final class SetErrorText extends SimpleTextEvent {
+  /// Create [SetErrorText] instance
+  const SetErrorText(this.errorText);
+
+  /// New text
+  final String? errorText;
 }
+
+final class EnableInputText extends SimpleTextEvent {}
+
+final class RequestFocus extends SimpleTextEvent {}
+
+final class CancelRequestFocus extends SimpleTextEvent {}
+
+final class DisableInputText extends SimpleTextEvent {}
 
 final class EnableAction extends SimpleTextEvent {
   const EnableAction(this.isEnabled);

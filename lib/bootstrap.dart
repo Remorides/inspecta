@@ -8,17 +8,14 @@ import 'package:omdk_api/omdk_api.dart';
 import 'package:omdk_inspecta/blocs/app/app.dart';
 import 'package:omdk_inspecta/blocs/app/app_bloc_observer.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
-import 'package:omdk_opera_api/omdk_opera_api.dart';
-import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
-import 'package:omdk_theme/omdk_theme.dart';
 import 'package:opera_api_auth/opera_api_auth.dart';
 
 /// Bootstrap class load custom BlocObserver and create repoLayer instance
 Future<void> bootstrap({
   required OMDKApi omdkApi,
   required OMDKLocalData omdkLocalData,
-  required String companyCode,
+  required String? companyCode,
 }) async {
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
@@ -33,57 +30,19 @@ Future<void> bootstrap({
     omdkApi: omdkApi,
   );
 
-  final operaUtils = OperaUtils(omdkLocalData);
-
-  final assetRepo = EntityRepo(
-    OperaApiAsset(omdkApi.apiClient.client),
-    entityIsarSchema: (!kIsWeb) ? AssetSchema : null,
-  );
-
-  final schemaListRepo = EntityRepo(
-    OperaApiSchemaListItem(omdkApi.apiClient.client),
-  );
-
-  final schemaRepo = EntityRepo(
-    OperaApiSchema(omdkApi.apiClient.client),
-    entityIsarSchema: (!kIsWeb) ? OSchemaSchema : null,
-  );
-
-  final mappingRepo = EntityRepo(
-    OperaApiMapping(omdkApi.apiClient.client),
-    entityIsarSchema: (!kIsWeb) ? MappingVersionSchema : null,
-  );
-
-  final scheduledRepo = EntityRepo(
-    OperaApiScheduled(omdkApi.apiClient.client),
-    entityIsarSchema: (!kIsWeb) ? ScheduledActivitySchema : null,
-  );
-
-  final themeRepo = ThemeRepo(
-    omdkLocalData,
-    themeRepo: OmdkApiTheme(omdkApi.apiClient.client),
-  );
-
-  final attachmentRepo = OperaAttachmentRepo(
-    OperaApiAttachment(omdkApi.apiClient.client),
-    entityIsarSchema: !kIsWeb ? AttachmentSchema : null,
-  );
-
-  await themeRepo.initTheme();
+  if (!kIsWeb) {
+    omdkLocalData.coordinateProvider.resumeStreamPosition();
+  }
+  final defaultTheme =
+      await omdkLocalData.themeManager.getTheme(ThemeEnum.light);
 
   runApp(
     App(
-      operaUtils: operaUtils,
-      assetRepo: assetRepo,
       authRepo: authRepo,
-      schemaRepo: schemaRepo,
+      omdkApi: omdkApi,
       omdkLocalData: omdkLocalData,
-      schemaListRepo: schemaListRepo,
-      mappingRepo: mappingRepo,
-      scheduledRepo: scheduledRepo,
+      defaultTheme: defaultTheme,
       companyCode: companyCode,
-      themeRepo: themeRepo,
-      attachmentRepo: attachmentRepo,
     ),
   );
 }
