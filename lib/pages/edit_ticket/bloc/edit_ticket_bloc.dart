@@ -433,6 +433,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
         case FieldType.unknown:
         case FieldType.Image:
         case FieldType.InternalStep:
+        case FieldType.LinkToEntities:
         case FieldType.File:
           break;
       }

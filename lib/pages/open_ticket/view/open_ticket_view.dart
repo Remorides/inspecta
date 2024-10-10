@@ -447,6 +447,7 @@ class _TicketStepList extends StatelessWidget {
             : Center(
                 child: Text(
                   AppLocalizations.of(context)!.ticket_hint_select_schema,
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               );
       },
@@ -623,10 +624,25 @@ class _TicketStepList extends StatelessWidget {
               ),
         );
       case FieldType.DateTime:
+        return FieldDateTime(
+          labelText: '${context.localizeLabel(jFieldMapping.title)}',
+          isActionEnabled: jFieldMapping.operations!.design.checkU,
+          initialDate: jFieldEntity?.value?.dateTimeValue,
+          onChanged: (date) => context.read<OpenTicketBloc>().add(
+                FieldChanged(
+                  stepGuid: stepGuid,
+                  fieldMapping: jFieldMapping,
+                  fieldGuid: jFieldEntity!.guid!,
+                  fieldValue: date,
+                ),
+              ),
+          focusNode: FocusNode(),
+        );
       case FieldType.File:
       case FieldType.StepResult:
       case FieldType.InternalStep:
       case FieldType.unknown:
+      case FieldType.LinkToEntities:
         return const Stack();
     }
   }

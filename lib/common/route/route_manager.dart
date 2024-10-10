@@ -8,7 +8,7 @@ class RouteManager {
     switch (settings.name) {
       case splashRoute:
         return CupertinoPageRoute(
-          //settings: const RouteSettings(name: splashRoute),
+          settings: const RouteSettings(name: splashRoute),
           builder: (_) => const SplashPage(),
         );
       case loginRoute:

@@ -20,12 +20,9 @@ class SplashPage extends StatelessWidget {
       );
     }
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
-        child: alert != null
-            ? const CircularProgressIndicator()
-            : Container(
-                color: Colors.transparent,
-              ),
+        child: alert != null ? const CircularProgressIndicator() : null,
       ),
     );
   }

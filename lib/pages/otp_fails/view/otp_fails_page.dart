@@ -36,13 +36,7 @@ class _OTPFailsPageState extends State<OTPFailsPage> {
                   message: const Text('OTP is not valid'),
                   confirm: 'OK',
                   type: AlertType.warning,
-                  onConfirm: () async {
-                    // await Navigator.pushAndRemoveUntil(
-                    //   context,
-                    //   LoginPage.route(),
-                    //   (route) => false,
-                    // );
-                  },
+                  onConfirm: () async {},
                 ),
               ),
             ),

@@ -73,7 +73,9 @@ class _CustomVirtualKeyboardState extends State<CustomVirtualKeyboard> {
                       //reverseLayout :true,
                       type: state.keyboardType,
                       onKeyPress: widget.onKeyPress,
-                      textColor: Theme.of(context).colorScheme.onSurface,
+                      textColor:
+                          Theme.of(context).textTheme.labelLarge?.color ??
+                              Colors.white,
                     ),
                   ],
                 )

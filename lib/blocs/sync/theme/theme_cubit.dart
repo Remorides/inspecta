@@ -71,11 +71,11 @@ class ThemeCubit extends HydratedCubit<ThemeState> {
         clientType: ClientType.Webapp,
       );
       //Dark theme
-      await _themeRepo.downloadAndSaveCustomTheme(
-        clientType: ClientType.Webapp,
-        companyCode ?? state.companyCode!,
-        themeEnum: ThemeEnum.customDark,
-      );
+      // await _themeRepo.downloadAndSaveCustomTheme(
+      //   clientType: ClientType.Webapp,
+      //   companyCode ?? state.companyCode!,
+      //   themeEnum: ThemeEnum.customDark,
+      // );
       await changeTheme(
         companyCode != null ? ThemeEnum.customLight : state.themeEnum,
         companyCode ?? state.companyCode,

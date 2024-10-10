@@ -15,7 +15,7 @@ class FieldString extends StatefulWidget {
     this.isEnabled = true,
     this.isNullable = true,
     this.isEmptyAllowed = true,
-    this.withBorder = false,
+    this.withBorder = true,
     this.autofocus = false,
     this.isObscured = false,
     this.onTap,

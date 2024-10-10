@@ -15,7 +15,6 @@ class OMDKSimpleActionButton extends StatelessWidget {
       child: Icon(
         CupertinoIcons.plus,
         size: 26,
-        color: Theme.of(context).colorScheme.onPrimaryContainer,
       ),
     );
   }

@@ -542,8 +542,6 @@ class _TicketStepList extends StatelessWidget {
                 ),
               ),
         );
-      case FieldType.DateTime:
-        return Container();
       case FieldType.Bool:
         return FieldBool(
           focusNode: FocusNode(),
@@ -576,8 +574,24 @@ class _TicketStepList extends StatelessWidget {
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
           hintText: '',
         );
+      case FieldType.DateTime:
+        return FieldDateTime(
+          labelText: '${context.localizeLabel(jFieldMapping.title)}',
+          isActionEnabled: jFieldMapping.operations!.design.checkU,
+          initialDate: jFieldEntity?.value?.dateTimeValue,
+          onChanged: (date) => context.read<EditTicketBloc>().add(
+                FieldChanged(
+                  stepGuid: stepGuid,
+                  fieldMapping: jFieldMapping,
+                  fieldGuid: jFieldEntity!.guid!,
+                  fieldValue: date,
+                ),
+              ),
+          focusNode: FocusNode(),
+        );
       case FieldType.File:
       case FieldType.InternalStep:
+      case FieldType.LinkToEntities:
       case FieldType.unknown:
         return Container();
     }

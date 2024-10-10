@@ -107,9 +107,7 @@ class _FieldPoolList extends StatelessWidget {
                   labelText.toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
               ),
             ],

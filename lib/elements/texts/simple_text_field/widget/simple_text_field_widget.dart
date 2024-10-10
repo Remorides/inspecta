@@ -281,9 +281,7 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
                       child: AbsorbPointer(
                         absorbing: !state.isInputTextEnabled,
                         child: Focus(
-                          onFocusChange: (bool focus) {
-                            widget.onFocusChange?.call(focus);
-                          },
+                          onFocusChange: widget.onFocusChange,
                           child: textField(state),
                         ),
                       ),
@@ -352,20 +350,15 @@ class _SimpleTextFieldViewState extends State<_SimpleTextFieldView> {
           widget.onChanged?.call(text);
         },
         onSubmitted: (s) {
-          context.read<SimpleTextBloc>().add(ValidateData());
-          if (widget.nextFocusNode != null) {
-            FocusScope.of(context).requestFocus(widget.nextFocusNode);
-          } else {
-            FocusScope.of(context).unfocus();
-          }
           widget.onSubmit?.call(s);
+          context.read<SimpleTextBloc>().add(ValidateData());
+          FocusScope.of(context).requestFocus(widget.nextFocusNode);
         },
         onEditingComplete: () =>
             context.read<SimpleTextBloc>().add(ValidateData()),
         decoration: InputDecoration(
-          border: widget.withBorder
-              ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
-              : null,
+          border: Theme.of(context).inputDecorationTheme.border,
+          enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
           hintText: widget.placeholder,
           hintMaxLines: widget.maxLines,
           errorText: state.errorText,

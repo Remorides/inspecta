@@ -1017,7 +1017,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "918732b7f66aa4f03ef9c4fec4ded5bb29e75f93"
+      resolved-ref: "430af5d2dd5bf27f389ba4cc1926587ac874a127"
       url: "https://github.com/Remorides/omdk-opera-api.git"
     source: git
     version: "0.1.0+2"
@@ -1026,7 +1026,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "83ba14f2692aa8019754abacaef66ab3cbe90e48"
+      resolved-ref: b8e1a31ac73bd6261b5e57329efad317d7d6e684
       url: "https://github.com/Remorides/omdk-opera-repo.git"
     source: git
     version: "0.1.0+1"

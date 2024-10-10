@@ -181,7 +181,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
       );
     }
     final scheduledActivity = state.ticketEntity?.copyWith(
-      entity: state.ticketEntity?.entity?.copyWith(
+      entity: state.ticketEntity?.entity.copyWith(
         name: state.ticketName,
       ),
       scheduled: state.ticketEntity?.scheduled?.copyWith(
@@ -316,6 +316,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         case FieldType.InternalStep:
         case FieldType.StepResult:
         case FieldType.File:
+        case FieldType.LinkToEntities:
           break;
       }
       emit(state.copyWith(loadingStatus: LoadingStatus.updated));
