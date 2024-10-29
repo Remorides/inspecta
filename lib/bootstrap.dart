@@ -23,9 +23,9 @@ Future<void> bootstrap({
 
   Bloc.observer = const AppBlocObserver();
 
-  final IAuthApi<AuthSession> authApi = OperaApiAuth(omdkApi.apiClient.client);
+  final IAuthApi<AuthSession> authApi = OperaApiAuth(omdkApi.apiClient);
   final authRepo = AuthRepo(
-    authApi,
+    authApi: authApi,
     localData: omdkLocalData,
     omdkApi: omdkApi,
   );

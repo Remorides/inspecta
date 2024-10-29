@@ -11,7 +11,7 @@ Future<void> main() async {
   await dotenv.load(fileName: 'assets/.env');
   WidgetsFlutterBinding.ensureInitialized();
 
-  final omdkApi = OMDKApi(apiEndpoint: dotenv.env['API_ENDPOINT']);
+  final omdkApi = OMDKApi(baseUrl: dotenv.env['API_ENDPOINT']!);
   final omdkLocalData = OMDKLocalData();
 
   HydratedBloc.storage = await HydratedStorage.build(

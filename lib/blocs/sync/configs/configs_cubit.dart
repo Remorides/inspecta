@@ -14,8 +14,8 @@ class ConfigsCubit extends HydratedCubit<ConfigsState> {
   final OMDKApi _omdkApi;
 
   void _updateApiEndpoint(String? apiEndpoint) {
-    _omdkApi.apiClient.client.options =
-        _omdkApi.apiClient.client.options.copyWith(
+    _omdkApi.apiClient.options =
+        _omdkApi.apiClient.options.copyWith(
       baseUrl: apiEndpoint,
     );
   }

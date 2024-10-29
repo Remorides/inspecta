@@ -37,7 +37,7 @@ class _OpenTicketViewState extends State<_OpenTicketView> {
     return OMDKSimplePage(
       withBottomBar: false,
       withDrawer: false,
-      leading: OMDKElevatedButton(
+      leading: FilledButton(
         style: const ButtonStyle(
           backgroundColor: WidgetStatePropertyAll(Colors.red),
         ),
@@ -655,7 +655,7 @@ class _TicketStepList extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: OMDKElevatedButton(
+            child: FilledButton(
               focusNode: FocusNode(),
               onPressed: () =>
                   context.read<OpenTicketBloc>().add(SubmitTicket()),

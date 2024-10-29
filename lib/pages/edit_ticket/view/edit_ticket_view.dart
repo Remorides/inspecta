@@ -35,7 +35,7 @@ class _OpenTicketViewState extends State<_EditTicketView> {
     return OMDKSimplePage(
       withBottomBar: false,
       withDrawer: false,
-      leading: OMDKElevatedButton(
+      leading: FilledButton(
         style: const ButtonStyle(
           backgroundColor: WidgetStatePropertyAll(Colors.red),
         ),

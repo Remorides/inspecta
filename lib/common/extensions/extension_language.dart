@@ -11,6 +11,7 @@ extension LanguageContextHelper on BuildContext {
 
 extension LanguageCodeHelper on BuildContext {
   String get languageCode => Localizations.localeOf(this).languageCode;
+
 }
 
 extension LabelLanguageContextHelper on BuildContext {

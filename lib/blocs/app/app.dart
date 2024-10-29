@@ -65,20 +65,20 @@ class _AppState extends State<App> {
         RepositoryProvider.value(value: widget.omdkLocalData),
         RepositoryProvider<EntityRepo<Asset>>(
           create: (_) => EntityRepo(
-            OperaApiAsset(widget.omdkApi.apiClient.client),
+            OperaApiAsset(widget.omdkApi.apiClient),
             entityIsarSchema: !kIsWeb ? AssetSchema : null,
           ),
         ),
         RepositoryProvider<EntityRepo<Node>>(
           create: (_) => EntityRepo(
-            OperaApiNode(widget.omdkApi.apiClient.client),
+            OperaApiNode(widget.omdkApi.apiClient),
             entityIsarSchema: !kIsWeb ? NodeSchema : null,
           ),
         ),
         RepositoryProvider<EntityRepo<ScheduledActivity>>(
           create: (_) => EntityRepo(
             OperaApiScheduled(
-              widget.omdkApi.apiClient.client,
+              widget.omdkApi.apiClient,
             ),
             entityIsarSchema: !kIsWeb ? ScheduledActivitySchema : null,
           ),
@@ -86,7 +86,7 @@ class _AppState extends State<App> {
         RepositoryProvider<OperaAttachmentRepo>(
           create: (_) => OperaAttachmentRepo(
             OperaApiAttachment(
-              widget.omdkApi.apiClient.client,
+              widget.omdkApi.apiClient,
             ),
             entityIsarSchema: !kIsWeb ? AttachmentSchema : null,
           ),
@@ -94,7 +94,7 @@ class _AppState extends State<App> {
         RepositoryProvider<EntityRepo<OSchema>>(
           create: (_) => EntityRepo(
             OperaApiSchema(
-              widget.omdkApi.apiClient.client,
+              widget.omdkApi.apiClient,
             ),
             entityIsarSchema: !kIsWeb ? OSchemaSchema : null,
           ),
@@ -102,7 +102,7 @@ class _AppState extends State<App> {
         RepositoryProvider<EntityRepo<Group>>(
           create: (_) => EntityRepo(
             OperaApiGroupManager(
-              widget.omdkApi.apiClient.client,
+              widget.omdkApi.apiClient,
             ),
             entityIsarSchema: !kIsWeb ? GroupSchema : null,
           ),
@@ -110,7 +110,7 @@ class _AppState extends State<App> {
         RepositoryProvider<EntityRepo<MappingVersion>>(
           create: (_) => EntityRepo(
             OperaMappingVersionManager(
-              widget.omdkApi.apiClient.client,
+              widget.omdkApi.apiClient,
             ),
             entityIsarSchema: !kIsWeb ? MappingVersionSchema : null,
           ),
@@ -118,7 +118,7 @@ class _AppState extends State<App> {
         RepositoryProvider<OperaUserRepo>(
           create: (_) => OperaUserRepo(
             OperaApiUser(
-              widget.omdkApi.apiClient.client,
+              widget.omdkApi.apiClient,
             ),
             entityIsarSchema: !kIsWeb ? UserSchema : null,
           ),
@@ -126,31 +126,34 @@ class _AppState extends State<App> {
         RepositoryProvider<OperaMappingMapRepo>(
           create: (_) => OperaMappingMapRepo(
             OperaMappingMapManager(
-              widget.omdkApi.apiClient.client,
+              widget.omdkApi.apiClient,
             ),
             entityIsarSchema: !kIsWeb ? MappingMapSchema : null,
           ),
         ),
         RepositoryProvider<OperaSynchronizationRepo>(
           create: (_) => OperaSynchronizationRepo(
-            widget.omdkApi.apiClient.client,
+            widget.omdkApi.apiClient,
           ),
         ),
         RepositoryProvider<OperaNodeOrganizationRepo>(
           create: (_) => OperaNodeOrganizationRepo(
             OperaApiNodeOrganization(
-              widget.omdkApi.apiClient.client,
+              widget.omdkApi.apiClient,
             ),
             entityIsarSchema: !kIsWeb ? OrganizationNodeSchema : null,
           ),
         ),
         RepositoryProvider<EntityRepo<SchemaListItem>>(
           create: (context) => EntityRepo(
-            OperaApiSchemaListItem(widget.omdkApi.apiClient.client),
+            OperaApiSchemaListItem(widget.omdkApi.apiClient),
           ),
         ),
         RepositoryProvider<OperaUtils>(
-          create: (_) => OperaUtils(widget.omdkLocalData),
+          create: (_) => OperaUtils(
+            localData: widget.omdkLocalData,
+            authRepo: widget.authRepo,
+          ),
         ),
       ],
       child: MultiProvider(
@@ -170,7 +173,7 @@ class _AppState extends State<App> {
                 localData: widget.omdkLocalData,
                 themeRepo: OperaThemeRepo(
                   widget.omdkLocalData,
-                  themeApi: OperaApiTheme(widget.omdkApi.apiClient.client),
+                  themeApi: OperaApiTheme(widget.omdkApi.apiClient),
                 ),
               ),
               lazy: false,
@@ -261,6 +264,7 @@ class _AppViewState extends State<AppView> {
                 }
 
               case AuthStatus.tokenExpired:
+              case AuthStatus.conflicted:
               case AuthStatus.unauthenticated:
 
                 /// Session doesn't exist

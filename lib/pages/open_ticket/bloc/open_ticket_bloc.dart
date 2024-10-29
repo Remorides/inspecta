@@ -39,7 +39,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   /// [EntityRepo] of [Asset] instance
   final EntityRepo<Asset> assetRepo;
 
-  /// [OperaRepo] instance
+  /// [OperaUtils] instance
   final OperaUtils operaUtils;
 
   /// [EntityRepo] of [SchemaListItem] instance
@@ -183,6 +183,10 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     final scheduledActivity = state.ticketEntity?.copyWith(
       entity: state.ticketEntity?.entity.copyWith(
         name: state.ticketName,
+      ),
+      dates: state.ticketEntity?.dates.copyWith(
+        scheduled: await operaUtils.getParticipationDate(),
+        modified: await operaUtils.getParticipationDate(),
       ),
       scheduled: state.ticketEntity?.scheduled?.copyWith(
         name: state.ticketName,
