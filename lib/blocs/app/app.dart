@@ -1,70 +1,45 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:omdk_api/omdk_api.dart';
 import 'package:omdk_inspecta/blocs/auth/auth.dart';
-import 'package:omdk_inspecta/common/enums/enums.dart';
-import 'package:omdk_inspecta/pages/edit_ticket/edit_scheduled.dart';
-import 'package:omdk_inspecta/pages/open_ticket/view/open_ticket_page.dart';
-import 'package:omdk_inspecta/pages/otp_fails/otp_fails.dart';
-import 'package:omdk_inspecta/pages/splash/view/splash_page.dart';
+import 'package:omdk_inspecta/blocs/mode/mode.dart';
+import 'package:omdk_inspecta/blocs/sync/configs/configs_cubit.dart';
+import 'package:omdk_inspecta/blocs/sync/theme/theme_cubit.dart';
+import 'package:omdk_inspecta/common/common.dart';
 import 'package:omdk_local_data/omdk_local_data.dart';
 import 'package:omdk_opera_api/omdk_opera_api.dart';
 import 'package:omdk_opera_repo/omdk_opera_repo.dart';
 import 'package:omdk_repo/omdk_repo.dart';
 import 'package:provider/provider.dart';
+import 'package:route_observer_mixin/route_observer_mixin.dart';
 
 /// Create base [App] to instance repo layer
 class App extends StatefulWidget {
   /// Build [App] instance
   const App({
+    required this.defaultTheme,
     required this.authRepo,
+    required this.omdkApi,
     required this.omdkLocalData,
-    required this.assetRepo,
-    required this.schemaListRepo,
-    required this.mappingRepo,
-    required this.schemaRepo,
-    required this.operaUtils,
-    required this.scheduledRepo,
-    required this.companyCode,
-    required this.themeRepo,
-    required this.attachmentRepo,
     super.key,
+    this.companyCode,
   });
-
-  /// Default company code
-  final String companyCode;
 
   /// [AuthRepo] instance
   final AuthRepo authRepo;
 
-  /// [OperaUtils] instance
-  final OperaUtils operaUtils;
-
-  /// [EntityRepo] instance
-  final EntityRepo<Asset> assetRepo;
-
-  /// [EntityRepo] instance
-  final EntityRepo<OSchema> schemaRepo;
-
-  /// [EntityRepo] instance
-  final EntityRepo<MappingVersion> mappingRepo;
-
-  /// [EntityRepo] instance
-  final EntityRepo<SchemaListItem> schemaListRepo;
-
-  /// [EntityRepo] instance
-  final EntityRepo<ScheduledActivity> scheduledRepo;
+  /// [OMDKApi] instance
+  final OMDKApi omdkApi;
 
   /// [OMDKLocalData] instance
   final OMDKLocalData omdkLocalData;
 
-  /// [ThemeRepo] instance
-  final ThemeRepo themeRepo;
+  final ThemeData defaultTheme;
 
-  /// [OperaAttachmentRepo] instance
-  final OperaAttachmentRepo attachmentRepo;
+  final String? companyCode;
 
   @override
   State<App> createState() => _AppState();
@@ -74,6 +49,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   void dispose() {
+    //widget.authRepo.logOut();
     widget.authRepo.dispose();
     super.dispose();
   }
@@ -85,41 +61,135 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<AuthRepo>(create: (context) => widget.authRepo),
-        RepositoryProvider<OperaUtils>(create: (context) => widget.operaUtils),
+        RepositoryProvider.value(value: widget.authRepo),
+        RepositoryProvider.value(value: widget.omdkLocalData),
         RepositoryProvider<EntityRepo<Asset>>(
-          create: (context) => widget.assetRepo,
+          create: (_) => EntityRepo(
+            OperaApiAsset(widget.omdkApi.apiClient),
+            entityIsarSchema: !kIsWeb ? AssetSchema : null,
+          ),
         ),
-        RepositoryProvider<EntityRepo<OSchema>>(
-          create: (context) => widget.schemaRepo,
-        ),
-        RepositoryProvider<EntityRepo<SchemaListItem>>(
-          create: (context) => widget.schemaListRepo,
-        ),
-        RepositoryProvider<EntityRepo<MappingVersion>>(
-          create: (context) => widget.mappingRepo,
+        RepositoryProvider<EntityRepo<Node>>(
+          create: (_) => EntityRepo(
+            OperaApiNode(widget.omdkApi.apiClient),
+            entityIsarSchema: !kIsWeb ? NodeSchema : null,
+          ),
         ),
         RepositoryProvider<EntityRepo<ScheduledActivity>>(
-          create: (context) => widget.scheduledRepo,
+          create: (_) => EntityRepo(
+            OperaApiScheduled(
+              widget.omdkApi.apiClient,
+            ),
+            entityIsarSchema: !kIsWeb ? ScheduledActivitySchema : null,
+          ),
         ),
         RepositoryProvider<OperaAttachmentRepo>(
-          create: (context) => widget.attachmentRepo,
+          create: (_) => OperaAttachmentRepo(
+            OperaApiAttachment(
+              widget.omdkApi.apiClient,
+            ),
+            entityIsarSchema: !kIsWeb ? AttachmentSchema : null,
+          ),
+        ),
+        RepositoryProvider<EntityRepo<OSchema>>(
+          create: (_) => EntityRepo(
+            OperaApiSchema(
+              widget.omdkApi.apiClient,
+            ),
+            entityIsarSchema: !kIsWeb ? OSchemaSchema : null,
+          ),
+        ),
+        RepositoryProvider<EntityRepo<Group>>(
+          create: (_) => EntityRepo(
+            OperaApiGroupManager(
+              widget.omdkApi.apiClient,
+            ),
+            entityIsarSchema: !kIsWeb ? GroupSchema : null,
+          ),
+        ),
+        RepositoryProvider<EntityRepo<MappingVersion>>(
+          create: (_) => EntityRepo(
+            OperaMappingVersionManager(
+              widget.omdkApi.apiClient,
+            ),
+            entityIsarSchema: !kIsWeb ? MappingVersionSchema : null,
+          ),
+        ),
+        RepositoryProvider<OperaUserRepo>(
+          create: (_) => OperaUserRepo(
+            OperaApiUser(
+              widget.omdkApi.apiClient,
+            ),
+            entityIsarSchema: !kIsWeb ? UserSchema : null,
+          ),
+        ),
+        RepositoryProvider<OperaMappingMapRepo>(
+          create: (_) => OperaMappingMapRepo(
+            OperaMappingMapManager(
+              widget.omdkApi.apiClient,
+            ),
+            entityIsarSchema: !kIsWeb ? MappingMapSchema : null,
+          ),
+        ),
+        RepositoryProvider<OperaSynchronizationRepo>(
+          create: (_) => OperaSynchronizationRepo(
+            widget.omdkApi.apiClient,
+          ),
+        ),
+        RepositoryProvider<OperaNodeOrganizationRepo>(
+          create: (_) => OperaNodeOrganizationRepo(
+            OperaApiNodeOrganization(
+              widget.omdkApi.apiClient,
+            ),
+            entityIsarSchema: !kIsWeb ? OrganizationNodeSchema : null,
+          ),
+        ),
+        RepositoryProvider<EntityRepo<SchemaListItem>>(
+          create: (context) => EntityRepo(
+            OperaApiSchemaListItem(widget.omdkApi.apiClient),
+          ),
+        ),
+        RepositoryProvider<OperaUtils>(
+          create: (_) => OperaUtils(
+            localData: widget.omdkLocalData,
+            authRepo: widget.authRepo,
+          ),
         ),
       ],
       child: MultiProvider(
         providers: [
-          ChangeNotifierProvider(
-            create: (_) =>
-                widget.themeRepo..downloadCustomTheme(widget.companyCode),
-            lazy: true,
+          RouteObserverProvider(),
+          ChangeNotifierProvider<ConnectivityProvider>(
+            create: (_) => ConnectivityProvider(),
+            lazy: false,
           ),
         ],
-        child: BlocProvider(
-          create: (_) => AuthBloc(authRepo: widget.authRepo)
-            ..add(
-              paramOTP != null ? ValidateOTP(otp: paramOTP!) : RestoreSession(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) => ThemeCubit(
+                companyCode: widget.companyCode,
+                defaultTheme: widget.defaultTheme,
+                localData: widget.omdkLocalData,
+                themeRepo: OperaThemeRepo(
+                  widget.omdkLocalData,
+                  themeApi: OperaApiTheme(widget.omdkApi.apiClient),
+                ),
+              ),
+              lazy: false,
             ),
-          child: AppView(companyCode: widget.companyCode),
+            BlocProvider(create: (_) => ConfigsCubit(omdkApi: widget.omdkApi)),
+            BlocProvider(
+              create: (_) => AuthBloc(authRepo: widget.authRepo)
+                ..add(
+                  paramOTP != null
+                      ? ValidateOTP(otp: paramOTP!)
+                      : RestoreSession(),
+                ),
+            ),
+            BlocProvider(create: (_) => SessionModeCubit()),
+          ],
+          child: const AppView(),
         ),
       ),
     );
@@ -129,12 +199,7 @@ class _AppState extends State<App> {
 ///
 class AppView extends StatefulWidget {
   /// create [AppView] instance
-  const AppView({
-    required this.companyCode,
-    super.key,
-  });
-
-  final String companyCode;
+  const AppView({super.key});
 
   @override
   State<AppView> createState() => _AppViewState();
@@ -150,7 +215,6 @@ class _AppViewState extends State<AppView> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        systemStatusBarContrastEnforced: true,
         systemNavigationBarColor: Colors.transparent,
         systemNavigationBarDividerColor: Colors.transparent,
       ),
@@ -164,8 +228,11 @@ class _AppViewState extends State<AppView> {
     final paramMode = Uri.base.queryParameters['mode'];
 
     return MaterialApp(
-      theme: context.theme,
+      onGenerateRoute: RouteManager.generateRoute,
+      initialRoute: splashRoute,
+      theme: context.watch<ThemeCubit>().state.themeData,
       navigatorKey: _navigatorKey,
+      navigatorObservers: [RouteObserverProvider.of(context)],
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -183,30 +250,21 @@ class _AppViewState extends State<AppView> {
         return BlocListener<AuthBloc, AuthState>(
           listener: (context, state) async {
             switch (state.status) {
-              case AuthStatus.tokenExpired:
               case AuthStatus.authenticated:
-                await context.read<ThemeRepo>().changeTheme(
-                      ThemeEnum.customLight,
-                      widget.companyCode,
-                    );
 
                 /// Redirect user to home page only if
                 /// local session is validated
                 switch (Mode.fromJson(paramMode ?? 'none')) {
                   case Mode.editTicket:
-                    await _navigator.pushAndRemoveUntil(
-                      EditTicketPage.route(),
-                      (route) => false,
-                    );
+                    await _navigator.pushReplacementNamed(editTicketRoute);
                   case Mode.openTicket:
-                    await _navigator.pushAndRemoveUntil(
-                      OpenTicketPage.route(),
-                      (route) => false,
-                    );
+                    await _navigator.pushReplacementNamed(openTicketRoute);
                   case Mode.none:
                     return;
                 }
 
+              case AuthStatus.tokenExpired:
+              case AuthStatus.conflicted:
               case AuthStatus.unauthenticated:
 
                 /// Session doesn't exist
@@ -215,10 +273,7 @@ class _AppViewState extends State<AppView> {
                 //   LoginPage.route(),
                 //   (route) => false,
                 // );
-                await _navigator.pushAndRemoveUntil(
-                  OTPFailsPage.route(),
-                  (route) => false,
-                );
+                await _navigator.pushReplacementNamed(otpFailsRoute);
               case AuthStatus.unknown:
 
                 /// Initial and default status of AuthStatus
@@ -226,16 +281,12 @@ class _AppViewState extends State<AppView> {
                 break;
 
               case AuthStatus.otpFailed:
-                await _navigator.pushAndRemoveUntil(
-                  OTPFailsPage.route(),
-                  (route) => false,
-                );
+                await _navigator.pushReplacementNamed(otpFailsRoute);
             }
           },
           child: child,
         );
       },
-      onGenerateRoute: (_) => SplashPage.route(),
     );
   }
 

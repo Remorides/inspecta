@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk_inspecta/elements/buttons/elevated_button/elevated_button.dart';
-import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_inspecta/elements/buttons/buttons.dart';
 
 class OMDKElevatedButton extends StatelessWidget {
   /// Create [OMDKElevatedButton] instance
@@ -15,7 +14,7 @@ class OMDKElevatedButton extends StatelessWidget {
     this.onFocusChange,
     this.style,
     this.enabled = true,
-    this.autofocus = false,
+    this.autofocus = true,
     this.focusNode,
   });
 
@@ -32,9 +31,15 @@ class OMDKElevatedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => cubit ?? ElevatedButtonCubit(enabled: enabled),
-      child: _OMDKElevatedButton(
+    return cubit != null
+        ? BlocProvider.value(value: cubit!, child: _child)
+        : BlocProvider(
+            create: (_) => ElevatedButtonCubit(enabled: enabled),
+            child: _child,
+          );
+  }
+
+  Widget get _child => _OMDKElevatedButton(
         key: key,
         onPressed: onPressed,
         onLongPress: onLongPress,
@@ -44,9 +49,7 @@ class OMDKElevatedButton extends StatelessWidget {
         autofocus: autofocus,
         focusNode: focusNode,
         child: child,
-      ),
-    );
-  }
+      );
 }
 
 class _OMDKElevatedButton extends StatelessWidget {
@@ -81,12 +84,12 @@ class _OMDKElevatedButton extends StatelessWidget {
       onHover: onHover,
       onFocusChange: onFocusChange,
       style: state.enabled
-          ? style
-          : style?.copyWith(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                context.theme!.disabledColor.withOpacity(0.8),
+          ? style ?? Theme.of(context).elevatedButtonTheme.style
+          : Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                backgroundColor: WidgetStateProperty.all<Color>(
+                  Theme.of(context).disabledColor.withOpacity(0.8),
+                ),
               ),
-            ),
       autofocus: autofocus,
       focusNode: focusNode,
       child: child,

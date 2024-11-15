@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk_inspecta/elements/buttons/outlined_button/outlined_button.dart';
-import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_inspecta/elements/buttons/buttons.dart';
 
 class OMDKOutlinedButton extends StatelessWidget {
   /// Create [OMDKOutlinedButton] instance
@@ -32,9 +31,15 @@ class OMDKOutlinedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => cubit ?? OutlinedButtonCubit(enabled: enabled),
-      child: _OMDKOutlinedButton(
+    return cubit != null
+        ? BlocProvider.value(value: cubit!, child: _child)
+        : BlocProvider(
+            create: (_) => OutlinedButtonCubit(enabled: enabled),
+            child: _child,
+          );
+  }
+
+  Widget get _child => _OMDKOutlinedButton(
         key: key,
         onPressed: onPressed,
         onLongPress: onLongPress,
@@ -44,9 +49,7 @@ class OMDKOutlinedButton extends StatelessWidget {
         autofocus: autofocus,
         focusNode: focusNode,
         child: child,
-      ),
-    );
-  }
+      );
 }
 
 class _OMDKOutlinedButton extends StatelessWidget {
@@ -82,17 +85,17 @@ class _OMDKOutlinedButton extends StatelessWidget {
       onFocusChange: onFocusChange,
       style: state.enabled
           ? style
-          : style?.copyWith(
-              overlayColor: MaterialStateProperty.all<Color>(
-                context.theme!.disabledColor.withOpacity(0.8),
-              ),
-              side: MaterialStateProperty.all<BorderSide>(
-                BorderSide(
-                  width: 1.5,
-                  color: context.theme!.disabledColor.withOpacity(0.8),
+          : Theme.of(context).outlinedButtonTheme.style?.copyWith(
+                overlayColor: WidgetStateProperty.all<Color>(
+                  Theme.of(context).disabledColor.withOpacity(0.8),
+                ),
+                side: WidgetStateProperty.all<BorderSide>(
+                  BorderSide(
+                    width: 1.5,
+                    color: Theme.of(context).disabledColor.withOpacity(0.8),
+                  ),
                 ),
               ),
-            ),
       autofocus: autofocus,
       focusNode: focusNode,
       child: child,

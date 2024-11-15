@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:omdk_inspecta/elements/alerts/alerts.dart';
 import 'package:omdk_inspecta/elements/elements.dart';
-import 'package:omdk_repo/omdk_repo.dart';
 
 /// OMDK default alert example
 class OMDKAlert extends StatelessWidget {
@@ -16,18 +15,18 @@ class OMDKAlert extends StatelessWidget {
     required this.type,
     this.close,
     this.onClose,
-    this.isDismissible = false,
+    this.executePop = true,
     this.buttonAlignment = ActionButtonAlignment.horizontal,
     super.key,
   });
 
   /// Method to call to show alert
   static void show(
-    BuildContext context,
-    OMDKAlert alert, {
-    bool barrierDismissible = false,
-    Color? barrierColor,
-  }) =>
+      BuildContext context,
+      OMDKAlert alert, {
+        bool barrierDismissible = false,
+        Color? barrierColor,
+      }) =>
       showDialog<void>(
         barrierColor: barrierColor ?? Colors.black.withOpacity(0.5),
         barrierDismissible: false,
@@ -39,22 +38,19 @@ class OMDKAlert extends StatelessWidget {
 
   /// Example widget
   static OMDKAlert get example => OMDKAlert(
-        title: 'Example',
-        message: const Text(
-          'Example body widget',
-          style: TextStyle(color: Colors.white),
-        ),
-        confirm: 'Confirm',
-        close: 'Close',
-        onConfirm: () {
-          debugPrint('Confirm button pressed');
-        },
-        onClose: () {
-          debugPrint('Close button pressed');
-        },
-        buttonAlignment: ActionButtonAlignment.vertical,
-        type: AlertType.info,
-      );
+    title: 'Example',
+    message: const Text('Example body widget'),
+    confirm: 'Confirm',
+    close: 'Close',
+    onConfirm: () {
+      debugPrint('Confirm button pressed');
+    },
+    onClose: () {
+      debugPrint('Close button pressed');
+    },
+    buttonAlignment: ActionButtonAlignment.vertical,
+    type: AlertType.info,
+  );
 
   final AlertType type;
 
@@ -77,7 +73,7 @@ class OMDKAlert extends StatelessWidget {
   final VoidCallback? onClose;
 
   /// Auto pop route
-  final bool isDismissible;
+  final bool executePop;
 
   /// Choose display mode of action buttons
   final ActionButtonAlignment buttonAlignment;
@@ -95,12 +91,12 @@ class OMDKAlert extends StatelessWidget {
           children: <Widget>[
             Material(
               borderRadius: BorderRadius.circular(14),
-              elevation: context.theme?.dialogTheme.elevation ?? 20,
-              shadowColor: context.theme?.dialogTheme.shadowColor,
-              color: context.theme?.dialogTheme.backgroundColor,
+              elevation: Theme.of(context).dialogTheme.elevation ?? 20,
+              shadowColor: Theme.of(context).dialogTheme.shadowColor,
+              color: Theme.of(context).dialogTheme.backgroundColor,
               child: SizedBox(
                 width: min(300, MediaQuery.of(context).size.width - 40),
-                child: _content(context, () {}),
+                child: _content(context),
               ),
             ),
             Positioned(
@@ -122,112 +118,109 @@ class OMDKAlert extends StatelessWidget {
     );
   }
 
-  Column _content(BuildContext context, VoidCallback clear) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          const Space.vertical(_circleRadius + 18),
-          _titleWidget(context),
-          const Space.vertical(14),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: message,
+  Column _content(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: <Widget>[
+      const Space.vertical(_circleRadius + 18),
+      _titleWidget,
+      const Space.vertical(14),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: message,
+      ),
+      const Space.vertical(20),
+      if (buttonAlignment == ActionButtonAlignment.horizontal)
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(child: _actionButton(context)),
+              if (close != null) const Space.horizontal(10),
+              if (close != null)
+                Expanded(child: _closeButton(context)),
+            ],
           ),
-          const Space.vertical(20),
-          if (buttonAlignment == ActionButtonAlignment.horizontal)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        )
+      else
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Expanded(child: _actionButton(context, clear)),
-                  if (close != null) const Space.horizontal(10),
-                  if (close != null)
-                    Expanded(child: _closeButton(context, clear)),
-                ],
-              ),
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _actionButton(context, clear),
-                      ),
-                    ],
+                  Expanded(
+                    child: _actionButton(context),
                   ),
-                  if (close != null)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _closeButton(context, clear),
-                        ),
-                      ],
-                    ),
                 ],
               ),
-            ),
-          const Space.vertical(20),
-        ],
-      );
+              const Space.vertical(10),
+              if (close != null)
+                Row(
+                  children: [
+                    Expanded(
+                      child: _closeButton(context),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+      const Space.vertical(20),
+    ],
+  );
 
   Widget _iconCircle(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          color: switch (type) {
-            AlertType.info => Colors.blue,
-            AlertType.warning => Colors.yellow,
-            AlertType.error => Colors.red,
-            AlertType.fatalError => Colors.red,
-            AlertType.success => Colors.green,
-          },
-          borderRadius: BorderRadius.circular(_circleRadius),
+    decoration: BoxDecoration(
+      color: switch (type) {
+        AlertType.info => Colors.blue,
+        AlertType.warning => Colors.yellow,
+        AlertType.error => Colors.red,
+        AlertType.fatalError => Colors.red,
+        AlertType.success => Colors.green,
+      },
+      borderRadius: BorderRadius.circular(_circleRadius),
+    ),
+    width: _circleRadius * 2,
+    height: _circleRadius * 2,
+    child: Center(
+      child: switch(type){
+        AlertType.info => Icon(
+          Icons.info_outline,
+          size: 40,
+          color: Theme.of(context).colorScheme.onInverseSurface,
         ),
-        width: _circleRadius * 2,
-        height: _circleRadius * 2,
-        child: Center(
-          child: switch (type) {
-            AlertType.info => Icon(
-                Icons.info_outline,
-                size: 40,
-                color: context.theme?.dialogTheme.iconColor,
-              ),
-            AlertType.warning => Icon(
-                Icons.warning_amber_rounded,
-                size: 40,
-                color: context.theme?.dialogTheme.iconColor,
-              ),
-            AlertType.error => Icon(
-                Icons.report_gmailerrorred_outlined,
-                size: 40,
-                color: context.theme?.dialogTheme.iconColor,
-              ),
-            AlertType.fatalError => Icon(
-                Icons.bug_report_outlined,
-                size: 40,
-                color: context.theme?.dialogTheme.iconColor,
-              ),
-            AlertType.success => Icon(
-                Icons.done,
-                size: 40,
-                color: context.theme?.dialogTheme.iconColor,
-              ),
-          },
+        AlertType.warning => Icon(
+          Icons.warning_amber_rounded,
+          size: 40,
+          color: Theme.of(context).colorScheme.onInverseSurface,
         ),
-      );
+        AlertType.error => Icon(
+          Icons.report_gmailerrorred_outlined,
+          size: 40,
+          color: Theme.of(context).colorScheme.onInverseSurface,
+        ),
+        AlertType.fatalError => Icon(
+          Icons.bug_report_outlined,
+          size: 40,
+          color: Theme.of(context).colorScheme.onInverseSurface,
+        ),
+        AlertType.success => Icon(
+          Icons.done,
+          size: 40,
+          color: Theme.of(context).colorScheme.onInverseSurface,
+        ),
+      },
+    ),
+  );
 
   // Widgets
 
-  Widget _actionButton(BuildContext context, VoidCallback onWillPop) {
+  Widget _actionButton(BuildContext context) {
     return OMDKElevatedButton(
-      child: Text(
-        confirm,
-        style: TextStyle(color: context.theme?.colorScheme.onSurface),
-      ),
+      child: Text(confirm),
       onPressed: () {
-        onWillPop();
-        if (isDismissible) {
+        if (executePop) {
           Navigator.pop(context);
         }
         onConfirm();
@@ -235,29 +228,24 @@ class OMDKAlert extends StatelessWidget {
     );
   }
 
-  Widget _closeButton(BuildContext context, VoidCallback onWillPop) {
+  Widget _closeButton(BuildContext context) {
     return OMDKOutlinedButton(
       onPressed: () {
-        onWillPop();
         Navigator.of(context).pop();
         onClose?.call();
       },
-      child: Text(
-        close!,
-        //style: TextStyle(color: context.theme?.colorScheme.onSurface),
-      ),
+      child: Text(close!),
     );
   }
 
-  Widget _titleWidget(BuildContext context) => Text(
-        title,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 20,
-          color: context.theme?.colorScheme.onBackground,
-        ),
-      );
+  Widget get _titleWidget => Text(
+    title,
+    maxLines: 2,
+    overflow: TextOverflow.ellipsis,
+    textAlign: TextAlign.center,
+    style: const TextStyle(
+      fontWeight: FontWeight.w600,
+      fontSize: 20,
+    ),
+  );
 }

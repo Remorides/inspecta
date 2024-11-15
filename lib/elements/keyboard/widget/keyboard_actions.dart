@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
-import 'package:omdk_inspecta/elements/keyboard/keyboard.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 
 /// Custom keyboard actions class to extend classic behaviour
 class CustomKeyboardActions extends StatelessWidget {
@@ -35,7 +35,8 @@ class CustomKeyboardActions extends StatelessWidget {
       autoScroll: autoScroll,
       disableScroll: disableScroll,
       config: KeyboardActionsConfig(
-        keyboardBarColor: keyboardBarColor ?? Colors.grey[200],
+        keyboardBarColor: keyboardBarColor ??
+            Theme.of(context).colorScheme.surface,
         actions: <KeyboardActionsItem>[
           for (final FocusNode node in focusNodes)
             KeyboardActionsItem(

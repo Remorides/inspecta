@@ -11,7 +11,7 @@ final class PoolListState extends Equatable {
   });
 
   final LoadingStatus status;
-  final List<String> listItem;
+  final List<String?> listItem;
   final String? selectedItem;
   final String errorText;
   final bool isEnabled;

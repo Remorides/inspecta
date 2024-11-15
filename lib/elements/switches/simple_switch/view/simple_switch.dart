@@ -27,15 +27,13 @@ class OMDKSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          cubit ??
-          SwitchCubit(
-            isEnabled: isEnabled,
-            isActive: isActive,
-          ),
-      child: _OMDKSwitch(focusNode),
-    );
+    return cubit != null
+        ? BlocProvider.value(value: cubit!, child: _OMDKSwitch(focusNode))
+        : BlocProvider(
+            create: (context) =>
+                SwitchCubit(isEnabled: isEnabled, isActive: isActive),
+            child: _OMDKSwitch(focusNode),
+          );
   }
 }
 
@@ -55,15 +53,12 @@ class _OMDKSwitch extends StatelessWidget {
           child: Switch(
             focusNode: focusNode,
             value: state.isActive,
-            onChanged: (bool value) {
-              context.read<SwitchCubit>().toggle(value);
-            },
-            inactiveTrackColor: Colors.grey,
-            inactiveThumbColor: Colors.white.withOpacity(0.3),
+            onChanged: (value) => context.read<SwitchCubit>().toggle(value),
+            trackColor: Theme.of(context).switchTheme.trackColor,
+            thumbColor: Theme.of(context).switchTheme.thumbColor,
           ),
         ),
       ),
     );
   }
-
 }

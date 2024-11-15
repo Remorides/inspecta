@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk_inspecta/elements/elements.dart';
-import 'package:omdk_inspecta/elements/radio_buttons/multi_radio_buttons/multi_radio_button.dart';
-import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_inspecta/elements/radio_buttons/multi_radio_buttons/cubit/mrb_cubit.dart';
 
-class MultiRadioButtons extends StatelessWidget {
-  const MultiRadioButtons({
+class PriorityButtons extends StatelessWidget {
+  const PriorityButtons({
     required this.labelText,
-    this.focusNode,
+    required this.focusNode,
     super.key,
     this.cubit,
     this.nextFocusNode,
@@ -17,7 +15,7 @@ class MultiRadioButtons extends StatelessWidget {
   });
 
   final String labelText;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
   final FocusNode? nextFocusNode;
   final bool isEnabled;
   final MrbCubit? cubit;
@@ -26,25 +24,27 @@ class MultiRadioButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          cubit ??
-          MrbCubit(
-            isEnabled: isEnabled,
-            selected: indexSelectedRadio,
-          ),
-      child: _MultiRadioButtons(
+    return cubit != null
+        ? BlocProvider.value(value: cubit!, child: _child)
+        : BlocProvider(
+            create: (_) => MrbCubit(
+              isEnabled: isEnabled,
+              selected: indexSelectedRadio,
+            ),
+            child: _child,
+          );
+  }
+
+  Widget get _child => _PriorityButtons(
         labelText: labelText,
         onSelectedPriority: onSelectedPriority,
         focusNode: focusNode,
         nextFocusNode: nextFocusNode,
-      ),
-    );
-  }
+      );
 }
 
-class _MultiRadioButtons extends StatelessWidget {
-  const _MultiRadioButtons({
+class _PriorityButtons extends StatelessWidget {
+  const _PriorityButtons({
     required this.labelText,
     required this.focusNode,
     this.onSelectedPriority,
@@ -53,126 +53,105 @@ class _MultiRadioButtons extends StatelessWidget {
 
   final String labelText;
   final void Function(int?)? onSelectedPriority;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
   final FocusNode? nextFocusNode;
 
   @override
   Widget build(BuildContext context) {
     final state = context.select((MrbCubit cubit) => cubit.state);
-    return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  labelText.toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.theme?.textTheme.labelLarge?.copyWith(
-                    color: context.theme?.colorScheme.onSurface,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Opacity(
-            opacity: (!state.isEnabled) ? 0.5 : 1,
-            child: AbsorbPointer(
-              absorbing: !state.isEnabled,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: (MediaQuery.of(context).size.width / 3) < 480
-                    ? Column(
-                  children: [
-                    highButton(context, state),
-                    mediumButton(context, state),
-                    lowButton(context, state),
-                  ],
-                )
-                    : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    highButton(context, state),
-                    mediumButton(context, state),
-                    lowButton(context, state),
-                  ],
-                ),
+    return Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                labelText.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelLarge,
               ),
             ),
+          ],
+        ),
+        Opacity(
+          opacity: (!state.isEnabled) ? 0.5 : 1,
+          child: AbsorbPointer(
+            absorbing: !state.isEnabled,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(child: highButton(context, state)),
+                Expanded(child: mediumButton(context, state)),
+                Expanded(child: lowButton(context, state)),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget highButton(BuildContext context, MrbState state) => SizedBox(
-        width: 150,
-        child: RadioListTile<String>(
-          title: const Text(
-            'HIGH',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.w600,
-            ),
+  Widget highButton(BuildContext context, MrbState state) => RadioListTile<int>(
+        title: const Text(
+          'ALTA',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.red,
+            fontWeight: FontWeight.w600,
           ),
-          activeColor: context.theme?.primaryColor,
-          value: '3',
-          shape: const RoundedRectangleBorder(),
-          controlAffinity: ListTileControlAffinity.trailing,
-          groupValue: state.selectedRadio.toString(),
-          onChanged: (value) {
-            context.read<MrbCubit>().switchRadio(int.parse(value!));
-            onSelectedPriority?.call(3);
-          },
         ),
+        value: 3,
+        shape: const RoundedRectangleBorder(),
+        controlAffinity: ListTileControlAffinity.trailing,
+        groupValue: state.selectedRadio,
+        onChanged: (value) {
+          if (value != null) {
+            context.read<MrbCubit>().switchRadio(value);
+            onSelectedPriority?.call(value);
+          }
+        },
       );
 
-  Widget mediumButton(BuildContext context, MrbState state) => SizedBox(
-        width: 150,
-        child: RadioListTile<String>(
-          title: const Text(
-            'MEDIUM',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.yellow,
-              fontWeight: FontWeight.w600,
-            ),
+  Widget mediumButton(BuildContext context, MrbState state) =>
+      RadioListTile<int>(
+        title: const Text(
+          'MEDIA',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.yellow,
+            fontWeight: FontWeight.w600,
           ),
-          activeColor: context.theme?.primaryColor,
-          value: '2',
-          shape: const RoundedRectangleBorder(),
-          controlAffinity: ListTileControlAffinity.trailing,
-          groupValue: state.selectedRadio.toString(),
-          onChanged: (value) {
-            context.read<MrbCubit>().switchRadio(int.parse(value!));
-            onSelectedPriority?.call(2);
-          },
         ),
+        value: 2,
+        shape: const RoundedRectangleBorder(),
+        controlAffinity: ListTileControlAffinity.trailing,
+        groupValue: state.selectedRadio,
+        onChanged: (value) {
+          if (value != null) {
+            context.read<MrbCubit>().switchRadio(value);
+            onSelectedPriority?.call(value);
+          }
+        },
       );
 
-  Widget lowButton(BuildContext context, MrbState state) => SizedBox(
-        width: 150,
-        child: RadioListTile<String>(
-          title: const Text(
-            'LOW',
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.green,
-              fontWeight: FontWeight.w600,
-            ),
+  Widget lowButton(BuildContext context, MrbState state) => RadioListTile<int>(
+        title: const Text(
+          'BASSA',
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.green,
+            fontWeight: FontWeight.w600,
           ),
-          activeColor: context.theme?.primaryColor,
-          value: '1',
-          shape: const RoundedRectangleBorder(),
-          controlAffinity: ListTileControlAffinity.trailing,
-          groupValue: state.selectedRadio.toString(),
-          onChanged: (value) {
-            context.read<MrbCubit>().switchRadio(int.parse(value!));
-            onSelectedPriority?.call(1);
-          },
         ),
+        value: 1,
+        shape: const RoundedRectangleBorder(),
+        controlAffinity: ListTileControlAffinity.trailing,
+        groupValue: state.selectedRadio,
+        onChanged: (value) {
+          if (value != null) {
+            context.read<MrbCubit>().switchRadio(value);
+            onSelectedPriority?.call(value);
+          }
+        },
       );
 }

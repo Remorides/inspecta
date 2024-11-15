@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk_inspecta/elements/elements.dart';
 import 'package:omdk_inspecta/elements/keyboard/virtual_keyboard/bloc/virtual_keyboard_bloc.dart';
-import 'package:omdk_repo/omdk_repo.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 class CustomVirtualKeyboard extends StatefulWidget {
@@ -73,9 +72,10 @@ class _CustomVirtualKeyboardState extends State<CustomVirtualKeyboard> {
                       ],
                       //reverseLayout :true,
                       type: state.keyboardType,
-                      onKeyPress: widget.onKeyPress,
+                      postKeyPress: widget.onKeyPress,
                       textColor:
-                          context.theme?.colorScheme.onSurface ?? Colors.black,
+                          Theme.of(context).textTheme.labelLarge?.color ??
+                              Colors.white,
                     ),
                   ],
                 )

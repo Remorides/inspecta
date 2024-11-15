@@ -7,13 +7,6 @@ class OTPFailsPage extends StatefulWidget {
   /// Create [OTPFailsPage] instance
   const OTPFailsPage({super.key});
 
-  /// Global route of login page
-  static Route<void> route() {
-    return CupertinoPageRoute<void>(
-      builder: (_) => const OTPFailsPage(),
-    );
-  }
-
   @override
   State<OTPFailsPage> createState() => _OTPFailsPageState();
 }
@@ -43,13 +36,7 @@ class _OTPFailsPageState extends State<OTPFailsPage> {
                   message: const Text('OTP is not valid'),
                   confirm: 'OK',
                   type: AlertType.warning,
-                  onConfirm: () async {
-                    // await Navigator.pushAndRemoveUntil(
-                    //   context,
-                    //   LoginPage.route(),
-                    //   (route) => false,
-                    // );
-                  },
+                  onConfirm: () async {},
                 ),
               ),
             ),

@@ -5,10 +5,12 @@ final class OMDKSimplePageState extends Equatable {
   const OMDKSimplePageState({
     this.isDrawerExpanded = false,
     this.xOffsetDrawer = 0,
+    this.initialXOffsetDrawer = -300,
   });
 
   final bool isDrawerExpanded;
   final double xOffsetDrawer;
+  final double initialXOffsetDrawer;
 
   OMDKSimplePageState copyWith({
     bool? isDrawerExpanded,

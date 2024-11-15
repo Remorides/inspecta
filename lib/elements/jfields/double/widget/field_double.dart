@@ -7,9 +7,9 @@ class FieldDouble extends StatefulWidget {
   const FieldDouble({
     required this.labelText,
     required this.onChanged,
+    required this.focusNode,
     super.key,
     this.onSubmit,
-    this.focusNode,
     this.bloc,
     this.nextFocusNode,
     this.fieldValue,
@@ -30,7 +30,7 @@ class FieldDouble extends StatefulWidget {
   final bool isEnabled;
   final bool isNullable;
   final bool isEmptyAllowed;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
   final FocusNode? nextFocusNode;
   final void Function(double?) onChanged;
   final void Function(double?)? onSubmit;
@@ -46,7 +46,6 @@ class FieldDouble extends StatefulWidget {
 }
 
 class _FieldDoubleState extends State<FieldDouble> {
-
   late SimpleTextBloc widgetBloc;
 
   @override
@@ -74,11 +73,11 @@ class _FieldDoubleState extends State<FieldDouble> {
       isInputTextEnabled: widget.isEnabled,
       simpleTextBloc: widgetBloc,
       onChanged: (newValue) {
-        if(newValue == null) return widget.onChanged(null);
+        if (newValue == null) return widget.onChanged(null);
         widget.onChanged(double.parse(newValue));
       },
       onSubmit: (newValue) {
-        if(newValue == null) return widget.onSubmit?.call(null);
+        if (newValue == null) return widget.onSubmit?.call(null);
         widget.onSubmit?.call(double.parse(newValue));
       },
       onFocusChange: (focus) {
@@ -96,9 +95,9 @@ class _FieldDoubleState extends State<FieldDouble> {
       labelText: widget.labelText.toUpperCase(),
       textFocusNode: widget.focusNode,
       nextFocusNode: widget.nextFocusNode,
-      onTap: (){
+      onTap: () {
         widget.onTapBloc?.call(widgetBloc);
-        if(widget.keyboardBloc != null){
+        if (widget.keyboardBloc != null) {
           widget.keyboardBloc
             ?..add(
               ChangeType(keyboardType: VirtualKeyboardType.Numeric),

@@ -4,20 +4,19 @@ import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:omdk_inspecta/common/enums/enums.dart';
-import 'package:omdk_inspecta/elements/jfields/multi_pool_list/cubit/multi_pool_list_cubit.dart';
-import 'package:omdk_inspecta/elements/jfields/multi_pool_list/models/pool_item.dart';
-import 'package:omdk_repo/omdk_repo.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 
 class FieldMultiPoolList extends StatelessWidget {
   const FieldMultiPoolList({
     required this.listItem,
     required this.labelText,
+    required this.focusNode,
     required this.onSelected,
-    this.focusNode,
     super.key,
     this.cubit,
     this.isEnabled = true,
     this.selectedItems,
+    this.fieldNote,
   });
 
   final String labelText;
@@ -25,114 +24,130 @@ class FieldMultiPoolList extends StatelessWidget {
   final List<String>? selectedItems;
   final bool isEnabled;
   final MultiPoolListCubit? cubit;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
   final void Function(List<PoolItem?> selectedItems) onSelected;
+  final String? fieldNote;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          cubit ??
-          MultiPoolListCubit(
-            isEnabled: isEnabled,
-            listItem: listItem,
-            selectedItems: selectedItems ?? [],
-          ),
-      child: _FieldMultiPoolList(
+    return cubit != null
+        ? BlocProvider.value(value: cubit!, child: _child)
+        : BlocProvider(
+            create: (_) => MultiPoolListCubit(
+              isEnabled: isEnabled,
+              listItem: listItem,
+              selectedItems: selectedItems ?? [],
+            ),
+            child: _child,
+          );
+  }
+
+  Widget get _child => _FieldMultiPoolList(
         labelText: labelText,
         focusNode: focusNode,
         onSelected: onSelected,
-      ),
-    );
-  }
+        fieldNote: fieldNote,
+      );
 }
 
 class _FieldMultiPoolList extends StatelessWidget {
   const _FieldMultiPoolList({
     required this.labelText,
+    required this.focusNode,
     required this.onSelected,
-    this.focusNode,
+    this.fieldNote,
   });
 
   final String labelText;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
   final void Function(List<PoolItem?> selectedItems) onSelected;
+  final String? fieldNote;
 
   @override
   Widget build(BuildContext context) {
     final state = context.select((MultiPoolListCubit cubit) => cubit.state);
     return Container(
       margin: const EdgeInsets.only(top: 20),
-      child: Stack(
+      child: Column(
         children: [
           Row(
-            children: <Widget>[
+            children: [
               Expanded(
                 child: Text(
                   labelText.toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: context.theme?.colorScheme.onSurface,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ),
+            ],
+          ),
+          const Space.vertical(3),
+          Row(
+            children: [
+              Expanded(
+                child: Opacity(
+                  opacity: !state.isEnabled ? 0.5 : 1,
+                  child: AbsorbPointer(
+                    absorbing: !state.isEnabled,
+                    child: MultiSelectDialogField<PoolItem?>(
+                      buttonIcon: const Icon(
+                        Icons.expand_more_outlined,
+                      ),
+                      buttonText: Text(
+                        'Selected fields:',
+                        style:
+                            Theme.of(context).inputDecorationTheme.labelStyle,
+                      ),
+                      selectedColor: Theme.of(context).colorScheme.primary,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      items: selectableOptions(state.listItem)
+                          .map(
+                            (PoolItem? poolItem) => MultiSelectItem<PoolItem?>(
+                              poolItem,
+                              poolItem!.value,
+                            ),
+                          )
+                          .toList(),
+                      initialValue: defaultSelectedOptions(state.selectedItems),
+                      chipDisplay: MultiSelectChipDisplay<PoolItem?>(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        chipColor: Theme.of(context).colorScheme.primary,
+                        textStyle: Theme.of(context)
+                            .inputDecorationTheme
+                            .labelStyle
+                            ?.copyWith(
+                              color: Theme.of(context)
+                                  .inputDecorationTheme
+                                  .fillColor,
+                            ),
+                      ),
+                      onConfirm: onSelected,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          Opacity(
-            opacity: !state.isEnabled ? 0.5 : 1,
-            child: AbsorbPointer(
-              absorbing: !state.isEnabled,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: context.theme?.colorScheme.background,
-                  borderRadius: BorderRadius.circular(8),
+          if (fieldNote != null)
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '$fieldNote',
+                    textAlign: TextAlign.end,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
                 ),
-                margin: const EdgeInsets.only(top: 20),
-                child: MultiSelectDialogField<PoolItem?>(
-                  title: Text(
-                    labelText,
-                    style: TextStyle(
-                      color: context.theme?.colorScheme.onBackground,
-                    ),
-                  ),
-                  buttonIcon: const Icon(
-                    Icons.expand_more_outlined,
-                  ),
-                  buttonText: Text(
-                    'Selected fields:',
-                    style:  TextStyle(
-                      color: context.theme?.colorScheme.onBackground,
-                    ),
-                  ),
-                  selectedColor: context.theme?.primaryColor,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffffffff),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  items: selectableOptions(state.listItem)
-                      .map(
-                        (PoolItem? poolItem) => MultiSelectItem<PoolItem?>(
-                          poolItem,
-                          poolItem!.value,
-                        ),
-                      )
-                      .toList(),
-                  initialValue: defaultSelectedOptions(state.selectedItems),
-                  chipDisplay: MultiSelectChipDisplay<PoolItem?>(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    chipColor: context.theme?.primaryColor,
-                    textStyle: TextStyle(
-                      color: context.theme?.colorScheme.onBackground,
-                    ),
-                  ),
-                  onConfirm: onSelected,
-                ),
-              ),
+              ],
             ),
-          ),
           if (state.status == LoadingStatus.failure)
             Positioned(
               bottom: 5,
@@ -140,9 +155,7 @@ class _FieldMultiPoolList extends StatelessWidget {
                 state.errorText,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: context.theme?.colorScheme.onError,
-                ),
+                style: Theme.of(context).inputDecorationTheme.errorStyle,
               ),
             ),
         ],

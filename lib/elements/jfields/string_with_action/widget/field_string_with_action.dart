@@ -7,7 +7,6 @@ class FieldStringWithAction extends StatefulWidget {
     required this.labelText,
     required this.focusNode,
     required this.actionIcon,
-    required this.onSubmit,
     super.key,
     this.initialText,
     this.bloc,
@@ -21,9 +20,11 @@ class FieldStringWithAction extends StatefulWidget {
     this.onTap,
     this.onCursorPosition,
     this.onChanged,
+    this.onSubmit,
     this.onBuildedBloc,
     this.placeholder,
     this.onTapAction,
+    this.fieldNote,
   });
 
   final String labelText;
@@ -37,7 +38,7 @@ class FieldStringWithAction extends StatefulWidget {
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
   final void Function(String?)? onChanged;
-  final void Function(String?) onSubmit;
+  final void Function(String?)? onSubmit;
   final void Function()? onTap;
   final void Function()? onTapAction;
   final void Function(SimpleTextBloc)? onBuildedBloc;
@@ -45,6 +46,7 @@ class FieldStringWithAction extends StatefulWidget {
   final String? initialText;
   final String? placeholder;
   final Icon actionIcon;
+  final String? fieldNote;
 
   @override
   State<FieldStringWithAction> createState() => _FieldStringWithActionState();
@@ -69,12 +71,6 @@ class _FieldStringWithActionState extends State<FieldStringWithAction> {
       );
     }
     widget.onBuildedBloc?.call(widgetBloc);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.focusNode.dispose();
   }
 
   @override
@@ -103,6 +99,7 @@ class _FieldStringWithActionState extends State<FieldStringWithAction> {
       onTapAction: widget.onTapAction,
       onSubmit: widget.onSubmit,
       onChanged: widget.onChanged,
+      fieldNote: widget.fieldNote,
     );
   }
 }

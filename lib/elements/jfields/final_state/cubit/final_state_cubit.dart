@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:omdk_inspecta/common/enums/enums.dart';
+import 'package:omdk_inspecta/common/common.dart';
 import 'package:omdk_opera_api/omdk_opera_api.dart';
 
 part 'final_state_state.dart';

@@ -31,7 +31,7 @@ class FieldSliderImagesBloc
     try {
       final imageList = <Uint8List>[];
       for (final i in event.images!) {
-        final imageRequest = await _attachmentRepo.download(i);
+        final imageRequest = await _attachmentRepo.download(guidAttachment: i);
         imageRequest.fold(
           imageList.add,
           (r) => null,

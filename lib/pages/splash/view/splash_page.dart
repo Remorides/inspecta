@@ -9,28 +9,20 @@ class SplashPage extends StatelessWidget {
     this.alert,
   });
 
-  /// Define navigation route
-  static Route<void> route() {
-    return MaterialPageRoute<void>(builder: (_) => const SplashPage());
-  }
-
   final OMDKAlert? alert;
 
   @override
   Widget build(BuildContext context) {
-    if(alert != null){
+    if (alert != null) {
       OMDKAlert.show(
         context,
         alert!,
       );
     }
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
-        child: alert != null
-            ? const CircularProgressIndicator()
-            : Container(
-                color: Colors.transparent,
-              ),
+        child: alert != null ? const CircularProgressIndicator() : null,
       ),
     );
   }

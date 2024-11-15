@@ -1,4 +1,5 @@
 export 'bool/bool.dart';
+export 'datetime/datetime.dart';
 export 'double/double.dart';
 export 'final_state/final_state.dart';
 export 'image/image.dart';

@@ -1,17 +1,20 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:omdk_inspecta/elements/search_bars/simple_search_bar/bloc/simple_search_bar_bloc.dart';
+import 'package:omdk_inspecta/elements/elements.dart';
 
 /// Generic input text field
-class OMDKSearchBar extends StatelessWidget {
+class OMDKSearchBar extends StatefulWidget {
   /// Create [OMDKSearchBar] instance
   const OMDKSearchBar({
     required this.isEnabled,
     super.key,
     this.focusNode,
     this.onTap,
+    this.onSuffixTap,
     this.onChanged,
     this.onSubmitted,
+    this.bloc,
   });
 
   /// Enable or not widget
@@ -20,47 +23,80 @@ class OMDKSearchBar extends StatelessWidget {
   /// If needed, you can provide focus node
   final FocusNode? focusNode;
   final void Function()? onTap;
-  final void Function(String)? onChanged;
-  final void Function(String)? onSubmitted;
+  final void Function()? onSuffixTap;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final SimpleSearchBarBloc? bloc;
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SimpleSearchBarBloc(),
-      child: _OMDKSearchBar(
-        focusNode: focusNode,
-        onTap: onTap,
-        onChanged: onChanged,
-        onSubmitted: onSubmitted,
-      ),
-    );
-  }
+  State<OMDKSearchBar> createState() => _OMDKSearchBarState();
 }
 
-class _OMDKSearchBar extends StatefulWidget {
-  const _OMDKSearchBar({
-    this.focusNode,
-    this.onTap,
-    this.onChanged,
-    this.onSubmitted,
-  });
-
-  final FocusNode? focusNode;
-  final void Function()? onTap;
-  final void Function(String)? onChanged;
-  final void Function(String)? onSubmitted;
-
-  @override
-  State<_OMDKSearchBar> createState() => _OMDKSearchBarState();
-}
-
-class _OMDKSearchBarState extends State<_OMDKSearchBar> {
-  late TextEditingController _controller;
+class _OMDKSearchBarState extends State<OMDKSearchBar> {
+  late SimpleSearchBarBloc widgetBloc;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: '');
+    widgetBloc = widget.bloc ?? SimpleSearchBarBloc();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.bloc != null
+        ? BlocProvider.value(value: widget.bloc!, child: _child)
+        : BlocProvider(
+            create: (context) => SimpleSearchBarBloc(),
+            child: _child,
+          );
+  }
+
+  Widget get _child => _OMDKSearchBarWidget(
+        bloc: widgetBloc,
+        focusNode: widget.focusNode,
+        onTap: widget.onTap,
+        onSuffixTap: widget.onSuffixTap,
+        onChanged: widget.onChanged,
+        onSubmitted: widget.onSubmitted,
+        searchText: widgetBloc.state.searchText,
+      );
+}
+
+class _OMDKSearchBarWidget extends StatefulWidget {
+  const _OMDKSearchBarWidget({
+    required this.bloc,
+    this.focusNode,
+    this.onTap,
+    this.onSuffixTap,
+    this.onChanged,
+    this.onSubmitted,
+    this.searchText,
+  });
+
+  final SimpleSearchBarBloc bloc;
+  final FocusNode? focusNode;
+  final void Function()? onTap;
+  final void Function()? onSuffixTap;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final String? searchText;
+
+  @override
+  State<_OMDKSearchBarWidget> createState() => _OMDKSearchBarWidgetState();
+}
+
+class _OMDKSearchBarWidgetState extends State<_OMDKSearchBarWidget> {
+  final TextEditingController _controller = TextEditingController();
+  int _cursorPosition = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller
+      ..text = widget.searchText ?? ''
+      ..addListener(() {
+        _cursorPosition = _controller.selection.baseOffset;
+      });
   }
 
   @override
@@ -71,46 +107,49 @@ class _OMDKSearchBarState extends State<_OMDKSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SimpleSearchBarBloc, SimpleSearchBarState>(
-      builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 20),
-          child: Opacity(
-            opacity: !state.isEnabled ? 0.5 : 1,
-            child: AbsorbPointer(
-              absorbing: !state.isEnabled,
-              child: Container(
-                margin: const EdgeInsets.only(
-                  top: 24,
-                  right: 5,
+    return BlocConsumer<SimpleSearchBarBloc, SimpleSearchBarState>(
+      bloc: widget.bloc,
+      listener: (context, state) {
+        if (mounted) {
+          _controller.value = TextEditingValue(
+            text: state.searchText,
+            selection: TextSelection.fromPosition(
+              TextPosition(offset: _cursorPosition),
+            ),
+          );
+        }
+      },
+      builder: (context, state) => Card(
+        elevation: 0,
+        child: Row(
+          children: [
+            Expanded(
+              child: CupertinoSearchTextField(
+                enabled: state.isEnabled,
+                controller: _controller,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: CupertinoSearchTextField(
-                  controller: _controller,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffffffff),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusNode: widget.focusNode,
-                  onTap: widget.onTap,
-                  onChanged: widget.onChanged,
-                  onSubmitted: widget.onSubmitted,
-                  style: const TextStyle(
-                    fontSize: 18,
-                  ),
-                  prefixIcon: const Icon(
-                    CupertinoIcons.search,
-                    size: 22,
-                  ),
-                  suffixIcon: const Icon(
-                    CupertinoIcons.xmark_circle_fill,
-                    size: 22,
-                  ),
-                ),
+                onTap: widget.onTap,
+                onChanged: (s) {
+                  widget.onChanged?.call(s);
+                  widget.bloc.add(NewSearch(s));
+                },
+                onSubmitted: (s) {
+                  widget.onSubmitted?.call(s);
+                  widget.bloc.add(NewSearch(s));
+                },
+                onSuffixTap: () {
+                  widget.bloc.add(const NewSearch(''));
+                  widget.onSuffixTap?.call();
+                },
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:omdk_inspecta/elements/drawers/models/drawer_item.dart';
-import 'package:omdk_repo/omdk_repo.dart';
 
 class OMDKDrawer extends StatelessWidget {
   /// Create [OMDKDrawer] instance
@@ -21,7 +20,7 @@ class OMDKDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: context.theme?.primaryColor,
+              color: Theme.of(context).colorScheme.primary,
             ),
             child: headerWidget,
           ),
@@ -29,7 +28,7 @@ class OMDKDrawer extends StatelessWidget {
             ListTile(
               title: Text(
                 i.title,
-                style: context.theme?.textTheme.labelMedium,
+                style: Theme.of(context).textTheme.labelMedium,
               ),
               onTap: () {
                 Scaffold.of(context).closeDrawer();
@@ -37,7 +36,7 @@ class OMDKDrawer extends StatelessWidget {
             ),
           Divider(
             height: 1,
-            color: context.theme?.dividerColor,
+            color: Theme.of(context).dividerColor,
           ),
         ],
       ),
