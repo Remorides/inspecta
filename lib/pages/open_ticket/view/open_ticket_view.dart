@@ -1,7 +1,7 @@
 part of 'open_ticket_page.dart';
 
 /// Login form class provide all required field to login
-class _OpenTicketView extends StatefulWidget {
+class _OpenTicketView extends StatelessWidget {
   /// Build [_OpenTicketView] instance
   const _OpenTicketView({
     required this.closePage,
@@ -10,229 +10,213 @@ class _OpenTicketView extends StatefulWidget {
   final bool closePage;
 
   @override
-  State<_OpenTicketView> createState() => _OpenTicketViewState();
+  Widget build(BuildContext context) {
+    return BlocListener<OpenTicketBloc, OpenTicketState>(
+      listenWhen: (previous, current) =>
+          previous.loadingStatus != current.loadingStatus,
+      listener: (context, state) {
+        if (state.loadingStatus == LoadingStatus.done) {
+          if (closePage && kIsWeb) {
+            return web.window.close();
+          }
+          OMDKAlert.show(context, _successAlert(context));
+        }
+        if (state.loadingStatus == LoadingStatus.failure) {
+          OMDKAlert.show(
+            context,
+            _failureAlert(context, state.failureText),
+          );
+        }
+      },
+      child: OMDKSimplePage(
+        withBottomBar: false,
+        withDrawer: false,
+        isForm: true,
+        leading: FilledButton(
+          style: const ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.red),
+          ),
+          onPressed: () {
+            context.read<AuthRepo>().logOut();
+            if (closePage && kIsWeb) {
+              return web.window.close();
+            }
+          },
+          child: Text(
+            context.l.alert_btn_cancel,
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge
+                ?.copyWith(color: Colors.white),
+          ),
+        ),
+        bodyPage: const _LayoutBuilder(),
+      ),
+    );
+  }
+
+  OMDKAlert _failureAlert(BuildContext context, String? failureText) =>
+      OMDKAlert(
+        title: AppLocalizations.of(context)!.alert_title_warning,
+        type: AlertType.warning,
+        message: Text(
+          '$failureText',
+          style: const TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        confirm: AppLocalizations.of(context)!.alert_btn_ok,
+        onConfirm: () => context.read<OpenTicketBloc>().add(ResetWarning()),
+      );
+
+  OMDKAlert _successAlert(BuildContext context) => OMDKAlert(
+        title: AppLocalizations.of(context)!.alert_title_done,
+        type: AlertType.success,
+        message: const Text('SUCCESSO', style: TextStyle(color: Colors.black)),
+        confirm: AppLocalizations.of(context)!.alert_btn_ok,
+        onConfirm: () => context.read<AuthRepo>().logOut(),
+      );
 }
 
-class _OpenTicketViewState extends State<_OpenTicketView> {
-  final _controllerKeyboard = TextEditingController();
-
-  final blocKeyboard = VirtualKeyboardBloc();
-
-  final blocAssetReference = SimpleTextBloc();
-  final blocName = SimpleTextBloc();
-  final blocDesc = SimpleTextBloc();
-  final blocPriority = SimpleTextBloc();
-
-  final focusKeyboard = FocusNode();
+class _LayoutBuilder extends StatefulWidget {
+  const _LayoutBuilder();
 
   @override
-  void dispose() {
-    super.dispose();
-    focusKeyboard.dispose();
+  State<_LayoutBuilder> createState() => _LayoutBuilderState();
+}
+
+class _LayoutBuilderState extends State<_LayoutBuilder>
+    with LoadingHandler<_LayoutBuilder> {
+  late final VirtualKeyboardCubit _keyboardCubit;
+
+  late TextEditingController _activeController;
+  late SimpleTextCubit? _activeFieldCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _keyboardCubit = VirtualKeyboardCubit();
+    _activeController = TextEditingController();
   }
 
   @override
   Widget build(BuildContext context) {
-    late SimpleTextBloc activeBloc;
-    return OMDKSimplePage(
-      withBottomBar: false,
-      withDrawer: false,
-      leading: FilledButton(
-        style: const ButtonStyle(
-          backgroundColor: WidgetStatePropertyAll(Colors.red),
-        ),
-        focusNode: FocusNode(),
-        onPressed: () {
-          context.read<AuthRepo>().logOut();
-          if (widget.closePage && kIsWeb) {
-            return web.window.close();
-          }
-        },
-        child: Text(
-          context.l.alert_btn_cancel,
-          style: Theme.of(context)
-              .textTheme
-              .labelLarge
-              ?.copyWith(color: Colors.white),
-        ),
-      ),
-      bodyPage: BlocListener<OpenTicketBloc, OpenTicketState>(
-        listenWhen: (previous, current) =>
-            previous.loadingStatus != current.loadingStatus ||
-            previous.activeFieldBloc != current.activeFieldBloc,
-        listener: (context, state) {
-          if (state.loadingStatus == LoadingStatus.done) {
-            if (widget.closePage && kIsWeb) {
-              return web.window.close();
-            }
-            OMDKAlert.show(
-              context,
-              OMDKAlert(
-                title: AppLocalizations.of(context)!.alert_title_done,
-                type: AlertType.success,
-                message: Text(
-                  '${state.failureText}',
-                  style: const TextStyle(
-                    color: Colors.black,
+    return BlocConsumer<OpenTicketBloc, OpenTicketState>(
+      listenWhen: (previous, current) =>
+          previous.activeFieldCubit != current.activeFieldCubit,
+      listener: (context, state) {
+        if (state.activeFieldCubit != null) {
+          _activeFieldCubit = state.activeFieldCubit;
+          _activeController = state.activeFieldCubit!.controller;
+        }
+        switch (state.loadingStatus) {
+          case LoadingStatus.initial:
+            showLoading();
+          case LoadingStatus.inProgress:
+          case LoadingStatus.updated:
+          case LoadingStatus.done:
+          case LoadingStatus.failure:
+          case LoadingStatus.fatal:
+            hideLoading();
+        }
+      },
+      buildWhen: (previous, current) =>
+          previous.loadingStatus != current.loadingStatus,
+      builder: (context, state) => state.loadingStatus == LoadingStatus.fatal
+          ? Container()
+          : Padding(
+              padding: const EdgeInsets.only(top: 20, left: 14, right: 14),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: (ResponsiveWidget.isSmallScreen(context))
+                        ? singleColumnLayout(context)
+                        : Center(
+                            child: twoColumnLayout(context, _keyboardCubit),
+                          ),
                   ),
-                ),
-                confirm: AppLocalizations.of(context)!.alert_btn_ok,
-                onConfirm: () => context.read<AuthRepo>().logOut(),
-              ),
-            );
-          }
-          if (state.loadingStatus == LoadingStatus.failure) {
-            OMDKAlert.show(
-              context,
-              OMDKAlert(
-                title: AppLocalizations.of(context)!.alert_title_warning,
-                type: AlertType.warning,
-                message: Text(
-                  '${state.failureText}',
-                  style: const TextStyle(
-                    color: Colors.black,
+                  CustomVirtualKeyboard(
+                    cubit: _keyboardCubit,
+                    controller: _activeController,
+                    onKeyPress: (key) => _onKeyPress(context, key),
                   ),
-                ),
-                confirm: AppLocalizations.of(context)!.alert_btn_ok,
-                onConfirm: () =>
-                    context.read<OpenTicketBloc>().add(ResetWarning()),
+                ],
               ),
-            );
-          }
-          if (state.activeFieldBloc != null) {
-            activeBloc = state.activeFieldBloc!;
-          }
-        },
-        child: (context.read<OpenTicketBloc>().state.loadingStatus !=
-                LoadingStatus.fatal)
-            ? Padding(
-                padding: const EdgeInsets.only(top: 20, left: 14, right: 14),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: (ResponsiveWidget.isSmallScreen(context))
-                          ? singleColumnLayout(context)
-                          : Center(
-                              child: twoColumnLayout(context, blocKeyboard),
-                            ),
-                    ),
-                    CustomVirtualKeyboard(
-                      bloc: blocKeyboard,
-                      focusNode: focusKeyboard,
-                      controller: _controllerKeyboard,
-                      onKeyPress: (key) => _onKeyPress(
-                        context,
-                        key,
-                        activeBloc,
-                        blocKeyboard,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : Center(
-                child: OMDKAlert(
-                  title: AppLocalizations.of(context)!.alert_title_fatal_error,
-                  message: Text(
-                    '${context.read<OpenTicketBloc>().state.failureText}',
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  type: AlertType.fatalError,
-                  confirm: AppLocalizations.of(context)!.alert_btn_ok,
-                  onConfirm: () {},
-                ),
-              ),
-      ),
+            ),
     );
   }
 
   void _onKeyPress(
     BuildContext context,
     VirtualKeyboardKey key,
-    SimpleTextBloc bloc,
-    VirtualKeyboardBloc keyboardBloc,
   ) {
-    final text = bloc.state.text ?? '';
-    final arrayText =
-        List<String>.generate(text.length, (index) => text[index]);
+    var text = _activeFieldCubit?.controller.text ?? _activeController.text;
 
     if (key.keyType == VirtualKeyboardKeyType.String) {
-      arrayText.insert(
-        bloc.state.cursorPosition,
-        (keyboardBloc.state.isShiftEnabled
-            ? key.capsText.toString()
-            : key.text.toString()),
-      );
+      text = text +
+          ((_keyboardCubit.state.isShiftEnabled ? key.capsText : key.text) ??
+              '');
     } else if (key.keyType == VirtualKeyboardKeyType.Action) {
       switch (key.action) {
         case VirtualKeyboardKeyAction.Backspace:
           if (text.isEmpty) return;
-          arrayText.removeAt(bloc.state.cursorPosition - 1);
-          return bloc.add(
-            TextChanged(arrayText.join(), bloc.state.cursorPosition - 1),
-          );
+          text = text.substring(0, text.length - 1);
         case VirtualKeyboardKeyAction.Return:
-          arrayText.insert(
-            bloc.state.cursorPosition,
-            '\n',
-          );
+          text = '$text\n';
         case VirtualKeyboardKeyAction.Space:
-          arrayText.insert(
-            bloc.state.cursorPosition,
-            key.text.toString(),
-          );
+          text = text + (key.text ?? '');
         case VirtualKeyboardKeyAction.Shift:
-          return keyboardBloc.add(ChangeShift());
+          _keyboardCubit.toggleShift();
         case VirtualKeyboardKeyAction.SwithLanguage:
         case null:
           break;
       }
     }
-    bloc.add(TextChanged(arrayText.join(), bloc.state.cursorPosition + 1));
+    _activeFieldCubit?.setText(text);
   }
+
+  Widget singleColumnLayout(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ListView(
+          children: [
+            _TicketNameInput(keyboardBloc: _keyboardCubit),
+            _TicketDescInput(keyboardBloc: _keyboardCubit),
+            const _TicketPriorityInput(),
+            _TicketStepList(keyboardBloc: _keyboardCubit),
+          ],
+        ),
+      );
 
   Widget twoColumnLayout(
     BuildContext context,
-    VirtualKeyboardBloc keyboardBloc,
+    VirtualKeyboardCubit keyboardBloc,
   ) {
     return Row(
       children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width / 3,
-          child: ListView(
-            children: [
-              const _AssetReference(),
-              _TicketNameInput(keyboardBloc: blocKeyboard),
-              _TicketDescInput(keyboardBloc: blocKeyboard),
-              const Space.vertical(10),
-              const _TicketPriorityInput(),
-              const _TicketSchemaInput(),
-            ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width / 3,
+            child: ListView(
+              children: [
+                const _AssetReference(),
+                _TicketNameInput(keyboardBloc: _keyboardCubit),
+                _TicketDescInput(keyboardBloc: _keyboardCubit),
+                const _TicketPriorityInput(),
+                const _TicketSchemaInput(),
+              ],
+            ),
           ),
         ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: _TicketStepList(keyboardBloc: blocKeyboard),
+            padding: const EdgeInsets.only(right: 20),
+            child: _TicketStepList(keyboardBloc: _keyboardCubit),
           ),
         ),
       ],
     );
   }
-
-  Widget singleColumnLayout(BuildContext context) => ListView(
-        children: [
-          const _AssetReference(),
-          _TicketNameInput(keyboardBloc: blocKeyboard),
-          _TicketDescInput(keyboardBloc: blocKeyboard),
-          const Space.vertical(10),
-          const _TicketPriorityInput(),
-          const _TicketSchemaInput(),
-          _TicketStepList(keyboardBloc: blocKeyboard),
-        ],
-      );
 }
 
 class _AssetReference extends StatelessWidget {
@@ -245,14 +229,15 @@ class _AssetReference extends StatelessWidget {
       buildWhen: (previous, current) => previous.jMainNode != current.jMainNode,
       builder: (context, state) => (state.jMainNode != null)
           ? FieldString(
-              key: const Key('assetReference_textField'),
               isEnabled: false,
-              onChanged: (text) {},
               labelText: context.l.ticket_label_asset_reference,
               initialText: state.jMainNode?.name,
-              focusNode: FocusNode(),
             )
-          : const Center(child: CircularProgressIndicator()),
+          : FieldString(
+              key: const Key('assetReference_textField'),
+              isEnabled: false,
+              labelText: context.l.ticket_label_asset_reference,
+            ),
     );
   }
 }
@@ -261,22 +246,17 @@ class _TicketNameInput extends StatelessWidget {
   /// Create [_TicketNameInput] instance
   const _TicketNameInput({required this.keyboardBloc});
 
-  final VirtualKeyboardBloc keyboardBloc;
+  final VirtualKeyboardCubit keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
-      builder: (context, state) => FieldString(
-        key: const Key('ticketNameInput_textField'),
-        initialText: state.ticketName,
-        onChanged: (text) =>
-            context.read<OpenTicketBloc>().add(TicketNameChanged(text)),
-        labelText: context.l.ticket_label_name,
-        keyboardBloc: keyboardBloc,
-        onTapBloc: (bloc) =>
-            context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
-        focusNode: FocusNode(),
-      ),
+    return FieldString(
+      onChanged: (text) =>
+          context.read<OpenTicketBloc>().add(TicketNameChanged(text)),
+      labelText: context.l.ticket_label_name,
+      keyboardCubit: keyboardBloc,
+      onTapCubit: (bloc) =>
+          context.read<OpenTicketBloc>().add(TicketEditing(cubit: bloc)),
     );
   }
 }
@@ -285,22 +265,17 @@ class _TicketDescInput extends StatelessWidget {
   /// Create [_TicketDescInput] instance
   const _TicketDescInput({required this.keyboardBloc});
 
-  final VirtualKeyboardBloc keyboardBloc;
+  final VirtualKeyboardCubit keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OpenTicketBloc, OpenTicketState>(
-      builder: (context, state) => FieldString(
-        key: const Key('ticketDescInput_textField'),
-        initialText: state.ticketDescription,
-        onChanged: (text) =>
-            context.read<OpenTicketBloc>().add(TicketDescChanged(text)),
-        labelText: context.l.ticket_label_description,
-        keyboardBloc: keyboardBloc,
-        onTapBloc: (bloc) =>
-            context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
-        focusNode: FocusNode(),
-      ),
+    return FieldString(
+      onChanged: (text) =>
+          context.read<OpenTicketBloc>().add(TicketDescChanged(text)),
+      labelText: context.l.ticket_label_description,
+      keyboardCubit: keyboardBloc,
+      onTapCubit: (bloc) =>
+          context.read<OpenTicketBloc>().add(TicketEditing(cubit: bloc)),
     );
   }
 }
@@ -321,7 +296,6 @@ class _TicketPriorityInput extends StatelessWidget {
             .add(TicketPriorityChanged(priorityCode)),
         labelText: context.l.ticket_label_priority,
         indexSelectedRadio: state.ticketPriority,
-        focusNode: FocusNode(),
       ),
     );
   }
@@ -409,7 +383,7 @@ class _TicketStepList extends StatelessWidget {
     this.keyboardBloc,
   });
 
-  final VirtualKeyboardBloc? keyboardBloc;
+  final VirtualKeyboardCubit? keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -458,7 +432,7 @@ class _TicketStepList extends StatelessWidget {
     required BuildContext context,
     required JStepEntity stepEntity,
     required MappingVersion schemaMapping,
-    VirtualKeyboardBloc? keyboardBloc,
+    VirtualKeyboardCubit? keyboardBloc,
   }) {
     // Widget list to show
     final fieldWidgets = <Widget>[];
@@ -492,7 +466,7 @@ class _TicketStepList extends StatelessWidget {
     required JFieldMapping jFieldMapping,
     required String stepGuid,
     JFieldEntity? jFieldEntity,
-    VirtualKeyboardBloc? keyboardBloc,
+    VirtualKeyboardCubit? keyboardBloc,
   }) {
     switch (jFieldMapping.type) {
       case FieldType.String:
@@ -540,10 +514,10 @@ class _TicketStepList extends StatelessWidget {
               return FieldString(
                 labelText: '${context.localizeLabel(jFieldMapping.title)}',
                 initialText: jFieldEntity?.value?.stringValue,
-                keyboardBloc: keyboardBloc,
-                onTapBloc: (bloc) => context
+                keyboardCubit: keyboardBloc,
+                onTapCubit: (bloc) => context
                     .read<OpenTicketBloc>()
-                    .add(TicketEditing(bloc: bloc)),
+                    .add(TicketEditing(cubit: bloc)),
                 isEnabled: jFieldMapping.operations!.design.checkU,
                 focusNode: FocusNode(),
                 onChanged: (String? s) => context.read<OpenTicketBloc>().add(
@@ -578,9 +552,8 @@ class _TicketStepList extends StatelessWidget {
       case FieldType.Double:
         return FieldDouble(
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
-          keyboardBloc: keyboardBloc,
-          onTapBloc: (bloc) =>
-              context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
+          onTapCubit: (bloc) =>
+              context.read<OpenTicketBloc>().add(TicketEditing(cubit: bloc)),
           focusNode: FocusNode(),
           isEnabled: jFieldMapping.operations!.design.checkU,
           onChanged: (double? d) => context.read<OpenTicketBloc>().add(
@@ -595,11 +568,9 @@ class _TicketStepList extends StatelessWidget {
       case FieldType.Int32:
         return FieldInt(
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
-          focusNode: FocusNode(),
-          keyboardBloc: keyboardBloc,
           isEnabled: jFieldMapping.operations!.design.checkU,
-          onTapBloc: (bloc) =>
-              context.read<OpenTicketBloc>().add(TicketEditing(bloc: bloc)),
+          onTapCubit: (bloc) =>
+              context.read<OpenTicketBloc>().add(TicketEditing(cubit: bloc)),
           onChanged: (int? i) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,

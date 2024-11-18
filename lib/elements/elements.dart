@@ -9,6 +9,7 @@ export 'floating_action_button/floating_action_button.dart';
 export 'jfields/jfields.dart';
 export 'keyboard/keyboard.dart';
 export 'loaders/loaders.dart';
+export 'overlay/overlay.dart';
 export 'pages/pages.dart';
 export 'radio_buttons/radio_buttons.dart';
 export 'responsive/responsive_widget.dart';

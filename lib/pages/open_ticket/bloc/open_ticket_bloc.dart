@@ -24,8 +24,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     required this.mappingRepo,
     required this.scheduledRepo,
   }) : super(const OpenTicketState()) {
-    on<InitAssetReference>(_onInitAssetReference);
-    on<InitSchemas>(_onInitSchemas);
+    on<Init>(_onInit);
     on<SelectedSchemaChanged>(_onSchemaChanges);
     on<TicketNameChanged>(_onTicketNameChanged);
     on<TicketDescChanged>(_onTicketDescChanged);
@@ -54,23 +53,50 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
   /// [EntityRepo] of [MappingVersion] instance
   final EntityRepo<MappingVersion> mappingRepo;
 
-  Future<void> _onInitAssetReference(
-    InitAssetReference event,
+  Future<void> _onInit(
+    Init event,
     Emitter<OpenTicketState> emit,
   ) async {
-    emit(state.copyWith(loadingStatus: LoadingStatus.initial));
     if (event.guid == null) {
-      return emit(
+      emit(
         state.copyWith(
           loadingStatus: LoadingStatus.fatal,
           failureText: 'Asset guid is required',
         ),
       );
+      return;
     }
+
+    // Get enabled schemas
+    final schemasRequest = await schemaListRepo.getAPIItems(
+      0,
+      15,
+      optionalParams: {
+        'IsEnabled': true,
+        'EntityType': JEntityType.Ticket.name,
+      },
+    );
+    final schemas = schemasRequest.fold(
+      (schemas) => schemas,
+      (failure) => null,
+    );
+    if (schemas == null || schemas.isEmpty) {
+      emit(
+        state.copyWith(
+          loadingStatus: LoadingStatus.fatal,
+          failureText: schemas == null
+              ? 'There was a problem retrieving schemas data..'
+              : 'There are no available schemas',
+        ),
+      );
+    }
+
     final assetRequest = await assetRepo.getAPIItem(guid: event.guid!);
     assetRequest.fold(
       (asset) => emit(
         state.copyWith(
+          loadingStatus: LoadingStatus.inProgress,
+          schemas: schemas,
           jMainNode: JMainNode(
             id: asset.entity.id,
             guid: asset.entity.guid,
@@ -85,29 +111,6 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         state.copyWith(
           loadingStatus: LoadingStatus.fatal,
           failureText: 'There was a problem retrieving asset data..',
-        ),
-      ),
-    );
-  }
-
-  Future<void> _onInitSchemas(
-    InitSchemas event,
-    Emitter<OpenTicketState> emit,
-  ) async {
-    final schemasRequest = await schemaListRepo.getAPIItems(
-      0,
-      15,
-      optionalParams: {
-        'IsEnabled': true,
-        'EntityType': JEntityType.Ticket.name,
-      },
-    );
-    schemasRequest.fold(
-      (schemas) => emit(state.copyWith(schemas: schemas)),
-      (failure) => emit(
-        state.copyWith(
-          loadingStatus: LoadingStatus.fatal,
-          failureText: 'There was a problem retrieving schemas data..',
         ),
       ),
     );
@@ -222,7 +225,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
     TicketEditing event,
     Emitter<OpenTicketState> emit,
   ) {
-    emit(state.copyWith(activeFieldBloc: event.bloc));
+    emit(state.copyWith(activeFieldCubit: event.cubit));
   }
 
   void _onResetWarning(

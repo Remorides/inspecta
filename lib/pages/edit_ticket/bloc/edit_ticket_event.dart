@@ -58,7 +58,7 @@ final class TicketEditing extends EditTicketEvent {
     required this.bloc,
   });
 
-  final SimpleTextBloc bloc;
+  final SimpleTextCubit bloc;
 
   @override
   List<Object?> get props => [bloc];

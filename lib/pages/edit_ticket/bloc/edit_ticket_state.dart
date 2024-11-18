@@ -7,27 +7,27 @@ final class EditTicketState extends Equatable {
     this.loadingStatus = LoadingStatus.initial,
     this.ticketMapping,
     this.ticketEntity,
-    this.activeFieldBloc,
+    this.activeFieldCubit,
     this.failureText,
   });
 
   final LoadingStatus loadingStatus;
   final MappingVersion? ticketMapping;
-  final SimpleTextBloc? activeFieldBloc;
+  final SimpleTextCubit? activeFieldCubit;
   final ScheduledActivity? ticketEntity;
   final String? failureText;
 
-  EditTicketState copyWith(
-      {LoadingStatus? loadingStatus,
-      MappingVersion? ticketMapping,
-      SimpleTextBloc? activeFieldBloc,
-      ScheduledActivity? ticketEntity,
-      String? failureText,
-      }) {
+  EditTicketState copyWith({
+    LoadingStatus? loadingStatus,
+    MappingVersion? ticketMapping,
+    SimpleTextCubit? activeFieldCubit,
+    ScheduledActivity? ticketEntity,
+    String? failureText,
+  }) {
     return EditTicketState(
       loadingStatus: loadingStatus ?? this.loadingStatus,
       ticketMapping: ticketMapping ?? this.ticketMapping,
-      activeFieldBloc: activeFieldBloc ?? this.activeFieldBloc,
+      activeFieldCubit: activeFieldCubit ?? this.activeFieldCubit,
       ticketEntity: ticketEntity ?? this.ticketEntity,
       failureText: failureText ?? this.failureText,
     );
@@ -37,7 +37,7 @@ final class EditTicketState extends Equatable {
   List<Object?> get props => [
         loadingStatus,
         ticketMapping,
-        activeFieldBloc,
+        activeFieldCubit,
         ticketEntity,
         failureText,
       ];

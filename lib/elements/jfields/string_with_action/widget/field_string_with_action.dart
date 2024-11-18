@@ -1,105 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk_inspecta/elements/elements.dart';
 
-class FieldStringWithAction extends StatefulWidget {
+class FieldStringWithAction extends StatelessWidget {
   /// Create [FieldStringWithAction] instance
   const FieldStringWithAction({
     required this.labelText,
-    required this.focusNode,
     required this.actionIcon,
     super.key,
+    this.focusNode,
+    this.actionFocusNode,
     this.initialText,
-    this.bloc,
+    this.cubit,
     this.nextFocusNode,
-    this.fieldValue,
     this.isInputTextEnabled = false,
     this.isActionEnabled = true,
-    this.isNullable = true,
-    this.isEmptyAllowed = true,
-    this.withBorder = false,
+    this.withBorder = true,
+    this.autofocus = false,
     this.onTap,
-    this.onCursorPosition,
     this.onChanged,
     this.onSubmit,
-    this.onBuildedBloc,
+    this.onBuildedCubit,
     this.placeholder,
     this.onTapAction,
     this.fieldNote,
+    this.suffixText,
+    this.validator,
   });
 
   final String labelText;
-  final SimpleTextBloc? bloc;
-  final double? fieldValue;
+  final SimpleTextCubit? cubit;
   final bool isInputTextEnabled;
   final bool isActionEnabled;
-  final bool isNullable;
-  final bool isEmptyAllowed;
   final bool withBorder;
-  final FocusNode focusNode;
+  final bool autofocus;
+  final FocusNode? focusNode;
+  final FocusNode? actionFocusNode;
   final FocusNode? nextFocusNode;
   final void Function(String?)? onChanged;
   final void Function(String?)? onSubmit;
   final void Function()? onTap;
   final void Function()? onTapAction;
-  final void Function(SimpleTextBloc)? onBuildedBloc;
-  final void Function(int)? onCursorPosition;
+  final void Function(SimpleTextCubit)? onBuildedCubit;
   final String? initialText;
   final String? placeholder;
   final Icon actionIcon;
   final String? fieldNote;
-
-  @override
-  State<FieldStringWithAction> createState() => _FieldStringWithActionState();
-}
-
-class _FieldStringWithActionState extends State<FieldStringWithAction> {
-  late SimpleTextBloc widgetBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    widgetBloc = widget.bloc ??
-        SimpleTextBloc(
-          isInputTextEnabled: widget.isInputTextEnabled,
-          isActionEnabled: widget.isActionEnabled,
-          isNullable: widget.isNullable,
-          isEmptyAllowed: widget.isEmptyAllowed,
-        );
-    if (widget.initialText != null) {
-      widgetBloc.add(
-        TextChanged(widget.initialText!, 0),
-      );
-    }
-    widget.onBuildedBloc?.call(widgetBloc);
-  }
+  final String? suffixText;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
-    return SimpleTextField(
-      key: widget.key,
-      isInputTextEnabled: widget.isInputTextEnabled,
-      simpleTextBloc: widgetBloc,
-      actionIcon: widget.actionIcon,
-      onCursorPosition: (position) {
-        widgetBloc.add(
-          TextChanged(
-            widgetBloc.state.text ?? '',
-            position,
-          ),
+    final wCubit = cubit ??
+        SimpleTextCubit(
+          initialText: initialText,
+          isInputTextEnabled: isInputTextEnabled,
+          isActionEnabled: isActionEnabled,
         );
-        widget.onCursorPosition?.call(position);
-      },
-      labelText: widget.labelText.toUpperCase(),
-      placeholder: widget.placeholder,
-      textFocusNode: widget.focusNode,
-      nextFocusNode: widget.nextFocusNode,
-      withBorder: widget.withBorder,
-      withAction: true,
-      onTap: widget.onTap,
-      onTapAction: widget.onTapAction,
-      onSubmit: widget.onSubmit,
-      onChanged: widget.onChanged,
-      fieldNote: widget.fieldNote,
+    onBuildedCubit?.call(wCubit);
+    return BlocProvider.value(
+      value: wCubit,
+      child: SimpleTextField(
+        key: key,
+        actionIcon: actionIcon,
+        autofocus: autofocus,
+        labelText: labelText,
+        placeholder: placeholder,
+        actionFocusNode: actionFocusNode,
+        textFocusNode: focusNode,
+        nextFocusNode: nextFocusNode,
+        withBorder: withBorder,
+        withAction: true,
+        onTap: onTap,
+        onTapAction: onTapAction,
+        onSubmit: onSubmit,
+        onChanged: onChanged,
+        fieldNote: fieldNote,
+        suffixText: suffixText,
+        validator: validator,
+      ),
     );
   }
 }

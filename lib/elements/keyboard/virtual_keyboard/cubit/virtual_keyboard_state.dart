@@ -1,4 +1,4 @@
-part of 'virtual_keyboard_bloc.dart';
+part of 'virtual_keyboard_cubit.dart';
 
 @immutable
 final class VirtualKeyboardState extends Equatable {

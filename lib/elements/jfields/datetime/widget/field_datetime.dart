@@ -3,98 +3,73 @@ import 'package:flutter/material.dart';
 import 'package:omdk_inspecta/elements/elements.dart';
 import 'package:omdk_inspecta/elements/jfields/string_with_action/string_with_action.dart';
 
-class FieldDateTime extends StatefulWidget {
+class FieldDateTime extends StatelessWidget {
   /// Create [FieldDateTime] instance
   const FieldDateTime({
     required this.labelText,
     required this.focusNode,
     super.key,
     this.initialDate,
+    this.nextFocusNode,
     this.fieldNote,
     this.isInputTextEnabled = false,
     this.isActionEnabled = true,
-    this.isNullable = true,
-    this.isEmptyAllowed = true,
-    this.bloc,
+    this.cubit,
     this.onChanged,
     this.onSubmit,
     this.onTap,
-    this.onBuildedBloc,
+    this.onBuildedCubit,
+    this.suffixText,
+    this.firstDate,
+    this.lastDate,
   });
 
   final String labelText;
   final DateTime? initialDate;
   final FocusNode focusNode;
+  final FocusNode? nextFocusNode;
   final String? fieldNote;
-  final SimpleTextBloc? bloc;
+  final String? suffixText;
+  final SimpleTextCubit? cubit;
   final bool isInputTextEnabled;
   final bool isActionEnabled;
-  final bool isNullable;
-  final bool isEmptyAllowed;
   final void Function()? onTap;
-  final void Function(SimpleTextBloc)? onBuildedBloc;
+  final void Function(SimpleTextCubit)? onBuildedCubit;
   final void Function(DateTime?)? onChanged;
   final void Function(String?)? onSubmit;
 
-  @override
-  State<FieldDateTime> createState() => _FieldDateTimeState();
-}
-
-class _FieldDateTimeState extends State<FieldDateTime> {
-  late SimpleTextBloc widgetBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    widgetBloc = widget.bloc ??
-        SimpleTextBloc(
-          isInputTextEnabled: widget.isInputTextEnabled,
-          isActionEnabled: widget.isActionEnabled,
-          isNullable: widget.isNullable,
-          isEmptyAllowed: widget.isEmptyAllowed,
-        );
-    if (widget.initialDate != null) {
-      widgetBloc.add(
-        TextChanged(widget.initialDate!.toUtc().toString(), 0),
-      );
-    }
-    widget.onBuildedBloc?.call(widgetBloc);
-  }
+  final DateTime? firstDate;
+  final DateTime? lastDate;
 
   @override
   Widget build(BuildContext context) {
-    return FieldStringWithAction(
-      key: widget.key,
-      labelText: widget.labelText,
-      focusNode: widget.focusNode,
-      isInputTextEnabled: widget.isInputTextEnabled,
-      isActionEnabled: widget.isActionEnabled,
-      isNullable: widget.isNullable,
-      isEmptyAllowed: widget.isEmptyAllowed,
-      actionIcon: const Icon(CupertinoIcons.calendar),
-      fieldNote: widget.fieldNote,
-      bloc: widgetBloc,
-      onSubmit: widget.onSubmit,
-      onTapAction: _datePicker,
+    final wCubit = cubit ?? SimpleTextCubit(
+      initialText: initialDate?.toUtc().toString(),
+      isActionEnabled: isActionEnabled,
+      isInputTextEnabled: isInputTextEnabled,
     );
-  }
-
-  Future<void> _datePicker() async {
-    await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    ).then((date) {
-      if (date != null) {
-        widgetBloc.add(
-          TextChanged(
-            date.toString(),
-            date.toString().length,
-          ),
-        );
-        widget.onChanged?.call(date);
-      }
-    });
+    return FieldStringWithAction(
+      labelText: labelText,
+      focusNode: focusNode,
+      isInputTextEnabled: isInputTextEnabled,
+      isActionEnabled: isActionEnabled,
+      actionIcon: const Icon(CupertinoIcons.calendar),
+      fieldNote: fieldNote,
+      onSubmit: onSubmit,
+      suffixText: suffixText,
+      cubit: wCubit,
+      onBuildedCubit: onBuildedCubit,
+      onTapAction: () async => showDatePicker(
+        context: context,
+        initialDate: initialDate ?? DateTime.now(),
+        firstDate: firstDate ?? DateTime(2000),
+        lastDate: lastDate ?? DateTime(2100),
+      ).then((date) {
+        if (date != null) {
+          wCubit.changeText(date.toString());
+          onChanged?.call(date);
+        }
+      }),
+    );
   }
 }

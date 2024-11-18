@@ -10,7 +10,7 @@ class FieldMultiPoolList extends StatelessWidget {
   const FieldMultiPoolList({
     required this.listItem,
     required this.labelText,
-    required this.focusNode,
+    this.focusNode,
     required this.onSelected,
     super.key,
     this.cubit,
@@ -24,7 +24,7 @@ class FieldMultiPoolList extends StatelessWidget {
   final List<String>? selectedItems;
   final bool isEnabled;
   final MultiPoolListCubit? cubit;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final void Function(List<PoolItem?> selectedItems) onSelected;
   final String? fieldNote;
 
@@ -53,13 +53,13 @@ class FieldMultiPoolList extends StatelessWidget {
 class _FieldMultiPoolList extends StatelessWidget {
   const _FieldMultiPoolList({
     required this.labelText,
-    required this.focusNode,
+    this.focusNode,
     required this.onSelected,
     this.fieldNote,
   });
 
   final String labelText;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final void Function(List<PoolItem?> selectedItems) onSelected;
   final String? fieldNote;
 

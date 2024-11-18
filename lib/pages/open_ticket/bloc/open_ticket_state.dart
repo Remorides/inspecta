@@ -13,7 +13,7 @@ final class OpenTicketState extends Equatable {
     this.ticketName = '',
     this.ticketDescription = '',
     this.ticketPriority = 0,
-    this.activeFieldBloc,
+    this.activeFieldCubit,
     this.ticketEntity,
     this.failureText,
   });
@@ -29,7 +29,7 @@ final class OpenTicketState extends Equatable {
   final String ticketName;
   final String ticketDescription;
   final int? ticketPriority;
-  final SimpleTextBloc? activeFieldBloc;
+  final SimpleTextCubit? activeFieldCubit;
   final ScheduledActivity? ticketEntity;
 
   final String? failureText;
@@ -44,7 +44,7 @@ final class OpenTicketState extends Equatable {
     String? ticketName,
     String? ticketDescription,
     int? ticketPriority,
-    SimpleTextBloc? activeFieldBloc,
+    SimpleTextCubit? activeFieldCubit,
     ScheduledActivity? ticketEntity,
     Widget? stepListWidget,
     String? failureText,
@@ -59,7 +59,7 @@ final class OpenTicketState extends Equatable {
       ticketName: ticketName ?? this.ticketName,
       ticketDescription: ticketDescription ?? this.ticketDescription,
       ticketPriority: ticketPriority ?? this.ticketPriority,
-      activeFieldBloc: activeFieldBloc ?? this.activeFieldBloc,
+      activeFieldCubit: activeFieldCubit ?? this.activeFieldCubit,
       ticketEntity: ticketEntity ?? this.ticketEntity,
       failureText: failureText ?? this.failureText,
     );
@@ -76,7 +76,7 @@ final class OpenTicketState extends Equatable {
         ticketName,
         ticketDescription,
         ticketPriority,
-        activeFieldBloc,
+        activeFieldCubit,
         ticketEntity,
         failureText,
       ];

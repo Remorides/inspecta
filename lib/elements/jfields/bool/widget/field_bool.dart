@@ -7,7 +7,7 @@ class FieldBool extends StatelessWidget {
   const FieldBool({
     required this.labelText,
     required this.onChanged,
-    required this.focusNode,
+    this.focusNode,
     this.cubit,
     super.key,
     this.fieldValue = true,
@@ -18,7 +18,7 @@ class FieldBool extends StatelessWidget {
   final FieldBoolCubit? cubit;
   final bool fieldValue;
   final bool isEnabled;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final void Function(bool?) onChanged;
 
   @override

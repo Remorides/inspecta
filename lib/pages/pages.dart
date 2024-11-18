@@ -1,4 +1,3 @@
-export 'auth_login/login.dart';
 export 'edit_ticket/edit_ticket.dart';
 export 'open_ticket/open_ticket.dart';
 export 'otp_fails/otp_fails.dart';

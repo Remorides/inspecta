@@ -6,8 +6,8 @@ sealed class OpenTicketEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class InitAssetReference extends OpenTicketEvent {
-  InitAssetReference({required this.guid});
+final class Init extends OpenTicketEvent {
+  Init({required this.guid});
 
   final String? guid;
 
@@ -15,7 +15,6 @@ final class InitAssetReference extends OpenTicketEvent {
   List<Object?> get props => [guid];
 }
 
-final class InitSchemas extends OpenTicketEvent {}
 
 final class SubmitTicket extends OpenTicketEvent {}
 
@@ -49,13 +48,13 @@ final class TicketNameChanged extends OpenTicketEvent {
 
 final class TicketEditing extends OpenTicketEvent {
   TicketEditing({
-    required this.bloc,
+    required this.cubit,
   });
 
-  final SimpleTextBloc bloc;
+  final SimpleTextCubit cubit;
 
   @override
-  List<Object?> get props => [bloc];
+  List<Object?> get props => [cubit];
 }
 
 final class ResetWarning extends OpenTicketEvent {}

@@ -30,9 +30,7 @@ class OpenTicketPage extends StatelessWidget {
         mappingRepo: context.read<EntityRepo<MappingVersion>>(),
         operaUtils: context.read<OperaUtils>(),
         schemaRepo: context.read<EntityRepo<OSchema>>(),
-      )
-        ..add(InitAssetReference(guid: Uri.base.queryParameters['guid']))
-        ..add(InitSchemas()),
+      )..add(Init(guid: Uri.base.queryParameters['guid'])),
       child: _OpenTicketView(
         closePage: Uri.base.queryParameters['close'] != null,
       ),

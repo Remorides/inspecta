@@ -1,7 +1,7 @@
 part of 'edit_ticket_page.dart';
 
 /// Login form class provide all required field to login
-class _EditTicketView extends StatefulWidget {
+class _EditTicketView extends StatelessWidget {
   /// Build [_EditTicketView] instance
   const _EditTicketView({
     required this.closePage,
@@ -10,219 +10,199 @@ class _EditTicketView extends StatefulWidget {
   final bool closePage;
 
   @override
-  State<_EditTicketView> createState() => _OpenTicketViewState();
+  Widget build(BuildContext context) {
+    return BlocListener<EditTicketBloc, EditTicketState>(
+      listener: (context, state) {
+        if (state.loadingStatus == LoadingStatus.failure) {
+          OMDKAlert.show(context, _warningAlert(context, state.failureText));
+        }
+        if (state.loadingStatus == LoadingStatus.done) {
+          if (closePage && kIsWeb) {
+            context.read<AuthRepo>().logOut();
+            return web.window.close();
+          }
+          OMDKAlert.show(context, _successAlert(context));
+        }
+        if (state.loadingStatus == LoadingStatus.fatal) {
+          if (state.ticketEntity?.scheduled?.state == ActivityState.Scheduled) {
+            OMDKAlert.show(context, _executeAlert(context));
+          } else {
+            OMDKAlert.show(context, _failureAlert(context, state.failureText));
+          }
+        }
+      },
+      child: OMDKSimplePage(
+        withBottomBar: false,
+        withDrawer: false,
+        leading: FilledButton(
+          style: const ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.red),
+          ),
+          focusNode: FocusNode(),
+          onPressed: () {
+            context.read<AuthRepo>().logOut();
+            if (closePage && kIsWeb) {
+              return web.window.close();
+            }
+          },
+          child: Text(
+            context.l.alert_btn_cancel,
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge
+                ?.copyWith(color: Colors.white),
+          ),
+        ),
+        bodyPage: const _LayoutBuilder(),
+      ),
+    );
+  }
+
+  OMDKAlert _warningAlert(BuildContext context, String? warningText) =>
+      OMDKAlert(
+        title: AppLocalizations.of(context)!.alert_title_warning,
+        type: AlertType.warning,
+        message:
+            Text('$warningText', style: const TextStyle(color: Colors.black)),
+        confirm: AppLocalizations.of(context)!.alert_btn_ok,
+        onConfirm: () => context.read<EditTicketBloc>().add(ResetWarning()),
+      );
+
+  OMDKAlert _successAlert(BuildContext context) => OMDKAlert(
+        title: AppLocalizations.of(context)!.alert_title_done,
+        type: AlertType.success,
+        message: const Text('SUCCESSO', style: TextStyle(color: Colors.black)),
+        confirm: AppLocalizations.of(context)!.alert_btn_ok,
+        onConfirm: () => context.read<AuthRepo>().logOut(),
+      );
+
+  OMDKAlert _executeAlert(BuildContext context) => OMDKAlert(
+        title: AppLocalizations.of(context)!.ticket_btn_alert_execute_title,
+        message: Text(
+          AppLocalizations.of(context)!.ticket_btn_alert_execute_msg,
+          style: const TextStyle(color: Colors.black),
+        ),
+        type: AlertType.info,
+        confirm: AppLocalizations.of(context)!.ticket_btn_execute,
+        onConfirm: () => context.read<EditTicketBloc>().add(
+              ExecuteTicket(guid: Uri.base.queryParameters['guid']!),
+            ),
+        close: AppLocalizations.of(context)!.alert_btn_cancel,
+        onClose: () {
+          context.read<AuthRepo>().logOut();
+          if (closePage && kIsWeb) {
+            return web.window.close();
+          }
+        },
+      );
+
+  OMDKAlert _failureAlert(BuildContext context, String? failureText) =>
+      OMDKAlert(
+        title: AppLocalizations.of(context)!.alert_title_fatal_error,
+        message:
+            Text('$failureText', style: const TextStyle(color: Colors.black)),
+        type: AlertType.fatalError,
+        confirm: context.l.alert_btn_ok,
+        executePop: false,
+        onConfirm: () {},
+      );
 }
 
-class _OpenTicketViewState extends State<_EditTicketView> {
-  final _controllerKeyboard = TextEditingController();
-
-  final blocKeyboard = VirtualKeyboardBloc();
-  final blocName = SimpleTextBloc();
-  final blocDesc = SimpleTextBloc();
-  final cubitPriority = MrbCubit();
-
-  final focusKeyboard = FocusNode();
+class _LayoutBuilder extends StatefulWidget {
+  const _LayoutBuilder();
 
   @override
-  void dispose() {
-    super.dispose();
-    focusKeyboard.dispose();
+  State<_LayoutBuilder> createState() => _LayoutBuilderState();
+}
+
+class _LayoutBuilderState extends State<_LayoutBuilder> {
+  late final VirtualKeyboardCubit _keyboardCubit;
+  TextEditingController? _activeController;
+
+  @override
+  void initState() {
+    super.initState();
+    _keyboardCubit = VirtualKeyboardCubit();
   }
 
   @override
   Widget build(BuildContext context) {
-    late SimpleTextBloc activeBloc;
-    return OMDKSimplePage(
-      withBottomBar: false,
-      withDrawer: false,
-      leading: FilledButton(
-        style: const ButtonStyle(
-          backgroundColor: WidgetStatePropertyAll(Colors.red),
-        ),
-        focusNode: FocusNode(),
-        onPressed: () {
-          context.read<AuthRepo>().logOut();
-          if (widget.closePage && kIsWeb) {
-            return web.window.close();
-          }
-        },
-        child: Text(
-          context.l.alert_btn_cancel,
-          style: Theme.of(context)
-              .textTheme
-              .labelLarge
-              ?.copyWith(color: Colors.white),
-        ),
-      ),
-      bodyPage: BlocConsumer<EditTicketBloc, EditTicketState>(
-        listener: (context, state) {
-          if (state.loadingStatus == LoadingStatus.failure) {
-            OMDKAlert.show(
-              context,
-              OMDKAlert(
-                title: AppLocalizations.of(context)!.alert_title_warning,
-                type: AlertType.warning,
-                message: Text(
-                  '${state.failureText}',
-                  style: const TextStyle(
-                    color: Colors.black,
+    return BlocConsumer<EditTicketBloc, EditTicketState>(
+      listenWhen: (previous, current) =>
+          previous.activeFieldCubit != current.activeFieldCubit,
+      listener: (context, state) {
+        _activeController = state.activeFieldCubit?.controller;
+      },
+      buildWhen: (previous, current) =>
+          previous.loadingStatus != current.loadingStatus,
+      builder: (context, state) => state.loadingStatus == LoadingStatus.fatal
+          ? Container()
+          : Padding(
+              padding: const EdgeInsets.only(top: 20, left: 14, right: 14),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: (ResponsiveWidget.isSmallScreen(context))
+                        ? singleColumnLayout(context)
+                        : Center(
+                            child: twoColumnLayout(context, _keyboardCubit),
+                          ),
                   ),
-                ),
-                confirm: AppLocalizations.of(context)!.alert_btn_ok,
-                onConfirm: () =>
-                    context.read<EditTicketBloc>().add(ResetWarning()),
-              ),
-            );
-          }
-          if (state.loadingStatus == LoadingStatus.done) {
-            if (widget.closePage && kIsWeb) {
-              context.read<AuthRepo>().logOut();
-              return web.window.close();
-            }
-            OMDKAlert.show(
-              context,
-              OMDKAlert(
-                title: AppLocalizations.of(context)!.alert_title_done,
-                type: AlertType.success,
-                message: Text(
-                  '${state.failureText}',
-                  style: const TextStyle(
-                    color: Colors.black,
+                  CustomVirtualKeyboard(
+                    cubit: _keyboardCubit,
+                    controller: _activeController!,
+                    onKeyPress: (key) => _onKeyPress(context, key),
                   ),
-                ),
-                confirm: AppLocalizations.of(context)!.alert_btn_ok,
-                onConfirm: () => context.read<AuthRepo>().logOut(),
+                ],
               ),
-            );
-          }
-          if (state.activeFieldBloc != null) {
-            activeBloc = state.activeFieldBloc!;
-          }
-          if (state.loadingStatus == LoadingStatus.fatal &&
-              state.ticketEntity?.scheduled?.state == ActivityState.Scheduled) {
-            OMDKAlert.show(
-              context,
-              OMDKAlert(
-                title: AppLocalizations.of(context)!
-                    .ticket_btn_alert_execute_title,
-                message: Text(
-                  AppLocalizations.of(context)!.ticket_btn_alert_execute_msg,
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-                type: AlertType.info,
-                confirm: AppLocalizations.of(context)!.ticket_btn_execute,
-                onConfirm: () => context.read<EditTicketBloc>().add(
-                      ExecuteTicket(
-                        guid: Uri.base.queryParameters['guid']!,
-                      ),
-                    ),
-                close: AppLocalizations.of(context)!.alert_btn_cancel,
-                onClose: () {
-                  context.read<AuthRepo>().logOut();
-                  if (widget.closePage && kIsWeb) {
-                    return web.window.close();
-                  }
-                },
-              ),
-            );
-          }
-        },
-        builder: (context, state) => state.loadingStatus ==
-                    LoadingStatus.fatal &&
-                state.ticketEntity?.scheduled?.state != ActivityState.Scheduled
-            ? Center(
-                child: OMDKAlert(
-                  title: AppLocalizations.of(context)!.alert_title_fatal_error,
-                  message: Text(
-                    '${context.read<EditTicketBloc>().state.failureText}',
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  type: AlertType.fatalError,
-                  confirm: AppLocalizations.of(context)!.alert_btn_ok,
-                  onConfirm: () {},
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.only(top: 20, left: 14, right: 14),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: (ResponsiveWidget.isSmallScreen(context))
-                          ? singleColumnLayout(context)
-                          : Center(
-                              child: twoColumnLayout(context, blocKeyboard),
-                            ),
-                    ),
-                    CustomVirtualKeyboard(
-                      bloc: blocKeyboard,
-                      focusNode: focusKeyboard,
-                      controller: _controllerKeyboard,
-                      onKeyPress: (key) => _onKeyPress(
-                        context,
-                        key,
-                        activeBloc,
-                        blocKeyboard,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-      ),
+            ),
     );
   }
 
   void _onKeyPress(
     BuildContext context,
     VirtualKeyboardKey key,
-    SimpleTextBloc bloc,
-    VirtualKeyboardBloc keyboardBloc,
   ) {
-    final text = bloc.state.text ?? '';
-    final arrayText =
-        List<String>.generate(text.length, (index) => text[index]);
+    var text = _activeController?.text ?? '';
 
     if (key.keyType == VirtualKeyboardKeyType.String) {
-      arrayText.insert(
-        bloc.state.cursorPosition,
-        (keyboardBloc.state.isShiftEnabled
-            ? key.capsText.toString()
-            : key.text.toString()),
-      );
+      text = text +
+          ((_keyboardCubit.state.isShiftEnabled ? key.capsText : key.text) ??
+              '');
     } else if (key.keyType == VirtualKeyboardKeyType.Action) {
       switch (key.action) {
         case VirtualKeyboardKeyAction.Backspace:
           if (text.isEmpty) return;
-          arrayText.removeAt(bloc.state.cursorPosition - 1);
-          return bloc.add(
-            TextChanged(arrayText.join(), bloc.state.cursorPosition - 1),
-          );
+          text = text.substring(0, text.length - 1);
         case VirtualKeyboardKeyAction.Return:
-          arrayText.insert(
-            bloc.state.cursorPosition,
-            '\n',
-          );
+          text = '$text\n';
         case VirtualKeyboardKeyAction.Space:
-          arrayText.insert(
-            bloc.state.cursorPosition,
-            key.text.toString(),
-          );
+          text = text + (key.text ?? '');
         case VirtualKeyboardKeyAction.Shift:
-          return keyboardBloc.add(ChangeShift());
+          _keyboardCubit.toggleShift();
         case VirtualKeyboardKeyAction.SwithLanguage:
         case null:
           break;
       }
     }
-    bloc.add(TextChanged(arrayText.join(), bloc.state.cursorPosition + 1));
+    _activeController?.text = text;
   }
+
+  Widget singleColumnLayout(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ListView(
+          children: [
+            _TicketNameInput(keyboardBloc: _keyboardCubit),
+            _TicketDescInput(keyboardBloc: _keyboardCubit),
+            const _TicketPriorityInput(),
+            _TicketStepList(keyboardBloc: _keyboardCubit),
+          ],
+        ),
+      );
 
   Widget twoColumnLayout(
     BuildContext context,
-    VirtualKeyboardBloc keyboardBloc,
+    VirtualKeyboardCubit keyboardBloc,
   ) {
     return Row(
       children: [
@@ -232,8 +212,8 @@ class _OpenTicketViewState extends State<_EditTicketView> {
             width: MediaQuery.of(context).size.width / 3,
             child: ListView(
               children: [
-                _TicketNameInput(keyboardBloc: blocKeyboard),
-                _TicketDescInput(keyboardBloc: blocKeyboard),
+                _TicketNameInput(keyboardBloc: _keyboardCubit),
+                _TicketDescInput(keyboardBloc: _keyboardCubit),
                 const _TicketPriorityInput(),
               ],
             ),
@@ -242,31 +222,19 @@ class _OpenTicketViewState extends State<_EditTicketView> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(right: 20),
-            child: _TicketStepList(keyboardBloc: blocKeyboard),
+            child: _TicketStepList(keyboardBloc: _keyboardCubit),
           ),
         ),
       ],
     );
   }
-
-  Widget singleColumnLayout(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ListView(
-          children: [
-            _TicketNameInput(keyboardBloc: blocKeyboard),
-            _TicketDescInput(keyboardBloc: blocKeyboard),
-            const _TicketPriorityInput(),
-            _TicketStepList(keyboardBloc: blocKeyboard),
-          ],
-        ),
-      );
 }
 
 class _TicketNameInput extends StatelessWidget {
   /// Create [_TicketNameInput] instance
   const _TicketNameInput({required this.keyboardBloc});
 
-  final VirtualKeyboardBloc keyboardBloc;
+  final VirtualKeyboardCubit keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -277,12 +245,12 @@ class _TicketNameInput extends StatelessWidget {
       builder: (context, state) => (state.ticketEntity != null)
           ? FieldString(
               key: const Key('ticketNameInput_textField'),
-              keyboardBloc: keyboardBloc,
+              keyboardCubit: keyboardBloc,
               focusNode: FocusNode(),
               onChanged: (text) =>
                   context.read<EditTicketBloc>().add(TicketNameChanged(text)),
               labelText: AppLocalizations.of(context)!.ticket_label_name,
-              onTapBloc: (bloc) =>
+              onTapCubit: (bloc) =>
                   context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
               initialText: state.ticketEntity?.scheduled?.name,
             )
@@ -295,7 +263,7 @@ class _TicketDescInput extends StatelessWidget {
   /// Create [_TicketDescInput] instance
   const _TicketDescInput({required this.keyboardBloc});
 
-  final VirtualKeyboardBloc keyboardBloc;
+  final VirtualKeyboardCubit keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -306,11 +274,11 @@ class _TicketDescInput extends StatelessWidget {
       builder: (context, state) => (state.ticketEntity != null)
           ? FieldString(
               key: const Key('ticketDescInput_textField'),
-              keyboardBloc: keyboardBloc,
+              keyboardCubit: keyboardBloc,
               onChanged: (text) =>
                   context.read<EditTicketBloc>().add(TicketDescChanged(text)),
               labelText: AppLocalizations.of(context)!.ticket_label_description,
-              onTapBloc: (bloc) =>
+              onTapCubit: (bloc) =>
                   context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
               initialText: state.ticketEntity?.scheduled?.description,
               focusNode: FocusNode(),
@@ -341,7 +309,6 @@ class _TicketPriorityInput extends StatelessWidget {
               },
               labelText: AppLocalizations.of(context)!.ticket_label_priority,
               indexSelectedRadio: state.ticketEntity?.template?.urgencyCode,
-              focusNode: FocusNode(),
             )
           : Container(),
     );
@@ -354,7 +321,7 @@ class _TicketStepList extends StatelessWidget {
     this.keyboardBloc,
   });
 
-  final VirtualKeyboardBloc? keyboardBloc;
+  final VirtualKeyboardCubit? keyboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -398,7 +365,7 @@ class _TicketStepList extends StatelessWidget {
     required BuildContext context,
     required JStepEntity stepEntity,
     required MappingVersion schemaMapping,
-    VirtualKeyboardBloc? keyboardBloc,
+    VirtualKeyboardCubit? keyboardBloc,
   }) {
     // Widget list to show
     final fieldWidgets = <Widget>[];
@@ -433,7 +400,7 @@ class _TicketStepList extends StatelessWidget {
     required JFieldMapping jFieldMapping,
     required String stepGuid,
     JFieldEntity? jFieldEntity,
-    VirtualKeyboardBloc? keyboardBloc,
+    VirtualKeyboardCubit? keyboardBloc,
     List<JResultState>? finalStateList,
   }) {
     switch (jFieldMapping.type) {
@@ -472,7 +439,6 @@ class _TicketStepList extends StatelessWidget {
             } else if (jFieldMapping.poolListSettings?.multiSelect ?? false) {
               return FieldMultiPoolList(
                 labelText: '${context.localizeLabel(jFieldMapping.title)}',
-                focusNode: FocusNode(),
                 isEnabled: jFieldMapping.operations!.design.checkU,
                 listItem: jFieldMapping.poolListSettings!.value!,
                 onSelected: (List<PoolItem?> selectedItems) {},
@@ -480,11 +446,10 @@ class _TicketStepList extends StatelessWidget {
             } else {
               return FieldString(
                 labelText: '${context.localizeLabel(jFieldMapping.title)}',
-                focusNode: FocusNode(),
                 initialText: jFieldEntity?.value?.stringValue,
                 isEnabled: jFieldMapping.operations!.design.checkU,
-                keyboardBloc: keyboardBloc,
-                onTapBloc: (bloc) => context
+                keyboardCubit: keyboardBloc,
+                onTapCubit: (bloc) => context
                     .read<EditTicketBloc>()
                     .add(TicketEditing(bloc: bloc)),
                 onChanged: (String? s) => context.read<EditTicketBloc>().add(
@@ -511,10 +476,8 @@ class _TicketStepList extends StatelessWidget {
       case FieldType.Double:
         return FieldDouble(
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
-          keyboardBloc: keyboardBloc,
-          focusNode: FocusNode(),
-          onTapBloc: (bloc) =>
-              context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
+          onTapCubit: (cubit) =>
+              context.read<EditTicketBloc>().add(TicketEditing(bloc: cubit)),
           isEnabled: jFieldMapping.operations!.design.checkU,
           onChanged: (double? d) => context.read<EditTicketBloc>().add(
                 FieldChanged(
@@ -528,11 +491,9 @@ class _TicketStepList extends StatelessWidget {
       case FieldType.Int32:
         return FieldInt(
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
-          focusNode: FocusNode(),
-          keyboardBloc: keyboardBloc,
           isEnabled: jFieldMapping.operations!.design.checkU,
-          onTapBloc: (bloc) =>
-              context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
+          onTapCubit: (cubit) =>
+              context.read<EditTicketBloc>().add(TicketEditing(bloc: cubit)),
           onChanged: (int? i) => context.read<EditTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
@@ -544,7 +505,6 @@ class _TicketStepList extends StatelessWidget {
         );
       case FieldType.Bool:
         return FieldBool(
-          focusNode: FocusNode(),
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
           isEnabled: jFieldMapping.operations!.design.checkU,
           onChanged: (bool? b) => context.read<EditTicketBloc>().add(

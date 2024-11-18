@@ -356,7 +356,7 @@ class EditTicketBloc extends Bloc<EditTicketEvent, EditTicketState> {
     TicketEditing event,
     Emitter<EditTicketState> emit,
   ) {
-    emit(state.copyWith(activeFieldBloc: event.bloc));
+    emit(state.copyWith(activeFieldCubit: event.bloc));
   }
 
   Future<void> _onFieldChanged(

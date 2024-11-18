@@ -5,18 +5,14 @@ import 'package:omdk_inspecta/elements/radio_buttons/multi_radio_buttons/cubit/m
 class PriorityButtons extends StatelessWidget {
   const PriorityButtons({
     required this.labelText,
-    required this.focusNode,
     super.key,
     this.cubit,
-    this.nextFocusNode,
     this.isEnabled = true,
     this.onSelectedPriority,
     this.indexSelectedRadio,
   });
 
   final String labelText;
-  final FocusNode focusNode;
-  final FocusNode? nextFocusNode;
   final bool isEnabled;
   final MrbCubit? cubit;
   final int? indexSelectedRadio;
@@ -38,23 +34,17 @@ class PriorityButtons extends StatelessWidget {
   Widget get _child => _PriorityButtons(
         labelText: labelText,
         onSelectedPriority: onSelectedPriority,
-        focusNode: focusNode,
-        nextFocusNode: nextFocusNode,
       );
 }
 
 class _PriorityButtons extends StatelessWidget {
   const _PriorityButtons({
     required this.labelText,
-    required this.focusNode,
     this.onSelectedPriority,
-    this.nextFocusNode,
   });
 
   final String labelText;
   final void Function(int?)? onSelectedPriority;
-  final FocusNode focusNode;
-  final FocusNode? nextFocusNode;
 
   @override
   Widget build(BuildContext context) {
