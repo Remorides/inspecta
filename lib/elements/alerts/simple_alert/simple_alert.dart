@@ -22,11 +22,11 @@ class OMDKAlert extends StatelessWidget {
 
   /// Method to call to show alert
   static void show(
-      BuildContext context,
-      OMDKAlert alert, {
-        bool barrierDismissible = false,
-        Color? barrierColor,
-      }) =>
+    BuildContext context,
+    OMDKAlert alert, {
+    bool barrierDismissible = false,
+    Color? barrierColor,
+  }) =>
       showDialog<void>(
         barrierColor: barrierColor ?? Colors.black.withOpacity(0.5),
         barrierDismissible: false,
@@ -38,19 +38,19 @@ class OMDKAlert extends StatelessWidget {
 
   /// Example widget
   static OMDKAlert get example => OMDKAlert(
-    title: 'Example',
-    message: const Text('Example body widget'),
-    confirm: 'Confirm',
-    close: 'Close',
-    onConfirm: () {
-      debugPrint('Confirm button pressed');
-    },
-    onClose: () {
-      debugPrint('Close button pressed');
-    },
-    buttonAlignment: ActionButtonAlignment.vertical,
-    type: AlertType.info,
-  );
+        title: 'Example',
+        message: const Text('Example body widget'),
+        confirm: 'Confirm',
+        close: 'Close',
+        onConfirm: () {
+          debugPrint('Confirm button pressed');
+        },
+        onClose: () {
+          debugPrint('Close button pressed');
+        },
+        buttonAlignment: ActionButtonAlignment.vertical,
+        type: AlertType.info,
+      );
 
   final AlertType type;
 
@@ -90,7 +90,7 @@ class OMDKAlert extends StatelessWidget {
           alignment: Alignment.center,
           children: <Widget>[
             Material(
-              borderRadius: BorderRadius.circular(14),
+              //borderRadius: BorderRadius.circular(14),
               elevation: Theme.of(context).dialogTheme.elevation ?? 20,
               shadowColor: Theme.of(context).dialogTheme.shadowColor,
               color: Theme.of(context).dialogTheme.backgroundColor,
@@ -119,105 +119,104 @@ class OMDKAlert extends StatelessWidget {
   }
 
   Column _content(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.min,
-    children: <Widget>[
-      const Space.vertical(_circleRadius + 18),
-      _titleWidget,
-      const Space.vertical(14),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: message,
-      ),
-      const Space.vertical(20),
-      if (buttonAlignment == ActionButtonAlignment.horizontal)
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(child: _actionButton(context)),
-              if (close != null) const Space.horizontal(10),
-              if (close != null)
-                Expanded(child: _closeButton(context)),
-            ],
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const Space.vertical(_circleRadius + 18),
+          _titleWidget,
+          const Space.vertical(14),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: message,
           ),
-        )
-      else
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              Row(
+          const Space.vertical(20),
+          if (buttonAlignment == ActionButtonAlignment.horizontal)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: _actionButton(context),
-                  ),
+                  Expanded(child: _actionButton(context)),
+                  if (close != null) const Space.horizontal(10),
+                  if (close != null) Expanded(child: _closeButton(context)),
                 ],
               ),
-              const Space.vertical(10),
-              if (close != null)
-                Row(
-                  children: [
-                    Expanded(
-                      child: _closeButton(context),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _actionButton(context),
+                      ),
+                    ],
+                  ),
+                  const Space.vertical(10),
+                  if (close != null)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _closeButton(context),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-            ],
-          ),
-        ),
-      const Space.vertical(20),
-    ],
-  );
+                ],
+              ),
+            ),
+          const Space.vertical(20),
+        ],
+      );
 
   Widget _iconCircle(BuildContext context) => Container(
-    decoration: BoxDecoration(
-      color: switch (type) {
-        AlertType.info => Colors.blue,
-        AlertType.warning => Colors.yellow,
-        AlertType.error => Colors.red,
-        AlertType.fatalError => Colors.red,
-        AlertType.success => Colors.green,
-      },
-      borderRadius: BorderRadius.circular(_circleRadius),
-    ),
-    width: _circleRadius * 2,
-    height: _circleRadius * 2,
-    child: Center(
-      child: switch(type){
-        AlertType.info => Icon(
-          Icons.info_outline,
-          size: 40,
-          color: Theme.of(context).colorScheme.onInverseSurface,
+        decoration: BoxDecoration(
+          color: switch (type) {
+            AlertType.info => Colors.blue,
+            AlertType.warning => Colors.yellow,
+            AlertType.error => Colors.red,
+            AlertType.fatalError => Colors.red,
+            AlertType.success => Colors.green,
+          },
+          borderRadius: BorderRadius.circular(_circleRadius),
         ),
-        AlertType.warning => Icon(
-          Icons.warning_amber_rounded,
-          size: 40,
-          color: Theme.of(context).colorScheme.onInverseSurface,
+        width: _circleRadius * 2,
+        height: _circleRadius * 2,
+        child: Center(
+          child: switch (type) {
+            AlertType.info => Icon(
+                Icons.info_outline,
+                size: 40,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            AlertType.warning => Icon(
+                Icons.warning_amber_rounded,
+                size: 40,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            AlertType.error => Icon(
+                Icons.report_gmailerrorred_outlined,
+                size: 40,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            AlertType.fatalError => Icon(
+                Icons.bug_report_outlined,
+                size: 40,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            AlertType.success => Icon(
+                Icons.done,
+                size: 40,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+          },
         ),
-        AlertType.error => Icon(
-          Icons.report_gmailerrorred_outlined,
-          size: 40,
-          color: Theme.of(context).colorScheme.onInverseSurface,
-        ),
-        AlertType.fatalError => Icon(
-          Icons.bug_report_outlined,
-          size: 40,
-          color: Theme.of(context).colorScheme.onInverseSurface,
-        ),
-        AlertType.success => Icon(
-          Icons.done,
-          size: 40,
-          color: Theme.of(context).colorScheme.onInverseSurface,
-        ),
-      },
-    ),
-  );
+      );
 
   // Widgets
 
   Widget _actionButton(BuildContext context) {
-    return OMDKElevatedButton(
+    return FilledButton(
       child: Text(confirm),
       onPressed: () {
         if (executePop) {
@@ -229,7 +228,7 @@ class OMDKAlert extends StatelessWidget {
   }
 
   Widget _closeButton(BuildContext context) {
-    return OMDKOutlinedButton(
+    return FilledButton(
       onPressed: () {
         Navigator.of(context).pop();
         onClose?.call();
@@ -239,13 +238,13 @@ class OMDKAlert extends StatelessWidget {
   }
 
   Widget get _titleWidget => Text(
-    title,
-    maxLines: 2,
-    overflow: TextOverflow.ellipsis,
-    textAlign: TextAlign.center,
-    style: const TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: 20,
-    ),
-  );
+        title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
+        ),
+      );
 }

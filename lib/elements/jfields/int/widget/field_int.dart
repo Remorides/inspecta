@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk_inspecta/elements/elements.dart';
+import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 class FieldInt extends StatelessWidget {
   /// Create [FieldInt] instance
@@ -87,7 +88,7 @@ class FieldInt extends StatelessWidget {
         onTap: () {
           onTapCubit?.call(wCubit);
           keyboardCubit
-            ?..changeKeyboardType()
+            ?..changeKeyboardType(keyboardType: VirtualKeyboardType.Numeric)
             ..showKeyboard();
           onTap?.call();
         },

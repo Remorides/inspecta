@@ -97,13 +97,12 @@ class _LayoutBuilderState extends State<_LayoutBuilder>
     super.initState();
     _keyboardCubit = VirtualKeyboardCubit();
     _activeController = TextEditingController();
+    showLoading();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OpenTicketBloc, OpenTicketState>(
-      listenWhen: (previous, current) =>
-          previous.activeFieldCubit != current.activeFieldCubit,
       listener: (context, state) {
         if (state.activeFieldCubit != null) {
           _activeFieldCubit = state.activeFieldCubit;
@@ -180,8 +179,11 @@ class _LayoutBuilderState extends State<_LayoutBuilder>
         child: ListView(
           children: [
             _TicketNameInput(keyboardBloc: _keyboardCubit),
+            const Space.vertical(15),
             _TicketDescInput(keyboardBloc: _keyboardCubit),
+            const Space.vertical(15),
             const _TicketPriorityInput(),
+            const Space.vertical(15),
             _TicketStepList(keyboardBloc: _keyboardCubit),
           ],
         ),
@@ -200,9 +202,13 @@ class _LayoutBuilderState extends State<_LayoutBuilder>
             child: ListView(
               children: [
                 const _AssetReference(),
+                const Space.vertical(15),
                 _TicketNameInput(keyboardBloc: _keyboardCubit),
+                const Space.vertical(15),
                 _TicketDescInput(keyboardBloc: _keyboardCubit),
+                const Space.vertical(15),
                 const _TicketPriorityInput(),
+                const Space.vertical(15),
                 const _TicketSchemaInput(),
               ],
             ),
@@ -457,6 +463,7 @@ class _TicketStepList extends StatelessWidget {
           ),
         );
       }
+      fieldWidgets.add(const Space.vertical(15));
     }
     return fieldWidgets;
   }
@@ -554,7 +561,7 @@ class _TicketStepList extends StatelessWidget {
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
           onTapCubit: (bloc) =>
               context.read<OpenTicketBloc>().add(TicketEditing(cubit: bloc)),
-          focusNode: FocusNode(),
+          keyboardCubit: keyboardBloc,
           isEnabled: jFieldMapping.operations!.design.checkU,
           onChanged: (double? d) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
@@ -571,6 +578,7 @@ class _TicketStepList extends StatelessWidget {
           isEnabled: jFieldMapping.operations!.design.checkU,
           onTapCubit: (bloc) =>
               context.read<OpenTicketBloc>().add(TicketEditing(cubit: bloc)),
+          keyboardCubit: keyboardBloc,
           onChanged: (int? i) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
@@ -583,7 +591,6 @@ class _TicketStepList extends StatelessWidget {
       case FieldType.Bool:
         return FieldBool(
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
-          focusNode: FocusNode(),
           isEnabled: jFieldMapping.operations!.design.checkU,
           onChanged: (bool? b) => context.read<OpenTicketBloc>().add(
                 FieldChanged(
@@ -607,7 +614,6 @@ class _TicketStepList extends StatelessWidget {
                   fieldValue: date,
                 ),
               ),
-          focusNode: FocusNode(),
         );
       case FieldType.File:
       case FieldType.StepResult:
@@ -627,7 +633,6 @@ class _TicketStepList extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16),
             child: FilledButton(
-              focusNode: FocusNode(),
               onPressed: () =>
                   context.read<OpenTicketBloc>().add(SubmitTicket()),
               child: Text(context.l.ticket_btn_submit),

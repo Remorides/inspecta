@@ -150,7 +150,6 @@ class SimpleTextField extends StatelessWidget {
               margin: const EdgeInsets.only(left: 10),
               child: Material(
                 elevation: 1,
-                borderRadius: BorderRadius.circular(8),
                 child: InkWell(
                   focusNode: actionFocusNode,
                   borderRadius: BorderRadius.circular(8),
@@ -185,10 +184,15 @@ class SimpleTextField extends StatelessWidget {
           onFieldSubmitted: onSubmit,
           validator: validator,
           onTapOutside: (e) => FocusScope.of(context).unfocus(),
+          style: !state.isInputTextEnabled
+              ? Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  )
+              : null,
           decoration: InputDecoration(
-            border: withBorder
-                ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
-                : null,
+            // border: withBorder
+            //     ? OutlineInputBorder(borderRadius: BorderRadius.circular(10))
+            //     : null,
             hintText: placeholder,
             hintMaxLines: maxLines,
             errorText: state.errorText?.localizateError(context),

@@ -38,7 +38,6 @@ class _EditTicketView extends StatelessWidget {
           style: const ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(Colors.red),
           ),
-          focusNode: FocusNode(),
           onPressed: () {
             context.read<AuthRepo>().logOut();
             if (closePage && kIsWeb) {
@@ -115,23 +114,39 @@ class _LayoutBuilder extends StatefulWidget {
   State<_LayoutBuilder> createState() => _LayoutBuilderState();
 }
 
-class _LayoutBuilderState extends State<_LayoutBuilder> {
+class _LayoutBuilderState extends State<_LayoutBuilder>
+    with LoadingHandler<_LayoutBuilder> {
   late final VirtualKeyboardCubit _keyboardCubit;
-  TextEditingController? _activeController;
+
+  late TextEditingController _activeController;
+  late SimpleTextCubit? _activeFieldCubit;
 
   @override
   void initState() {
     super.initState();
     _keyboardCubit = VirtualKeyboardCubit();
+    _activeController = TextEditingController();
+    showLoading();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<EditTicketBloc, EditTicketState>(
-      listenWhen: (previous, current) =>
-          previous.activeFieldCubit != current.activeFieldCubit,
       listener: (context, state) {
-        _activeController = state.activeFieldCubit?.controller;
+        if (state.activeFieldCubit != null) {
+          _activeFieldCubit = state.activeFieldCubit;
+          _activeController = state.activeFieldCubit!.controller;
+        }
+        switch (state.loadingStatus) {
+          case LoadingStatus.initial:
+            showLoading();
+          case LoadingStatus.inProgress:
+          case LoadingStatus.updated:
+          case LoadingStatus.done:
+          case LoadingStatus.failure:
+          case LoadingStatus.fatal:
+            hideLoading();
+        }
       },
       buildWhen: (previous, current) =>
           previous.loadingStatus != current.loadingStatus,
@@ -150,7 +165,7 @@ class _LayoutBuilderState extends State<_LayoutBuilder> {
                   ),
                   CustomVirtualKeyboard(
                     cubit: _keyboardCubit,
-                    controller: _activeController!,
+                    controller: _activeController,
                     onKeyPress: (key) => _onKeyPress(context, key),
                   ),
                 ],
@@ -163,7 +178,7 @@ class _LayoutBuilderState extends State<_LayoutBuilder> {
     BuildContext context,
     VirtualKeyboardKey key,
   ) {
-    var text = _activeController?.text ?? '';
+    var text = _activeFieldCubit?.controller.text ?? _activeController.text;
 
     if (key.keyType == VirtualKeyboardKeyType.String) {
       text = text +
@@ -185,7 +200,7 @@ class _LayoutBuilderState extends State<_LayoutBuilder> {
           break;
       }
     }
-    _activeController?.text = text;
+    _activeFieldCubit?.setText(text);
   }
 
   Widget singleColumnLayout(BuildContext context) => Padding(
@@ -193,8 +208,11 @@ class _LayoutBuilderState extends State<_LayoutBuilder> {
         child: ListView(
           children: [
             _TicketNameInput(keyboardBloc: _keyboardCubit),
+            const Space.vertical(15),
             _TicketDescInput(keyboardBloc: _keyboardCubit),
+            const Space.vertical(15),
             const _TicketPriorityInput(),
+            const Space.vertical(15),
             _TicketStepList(keyboardBloc: _keyboardCubit),
           ],
         ),
@@ -213,7 +231,9 @@ class _LayoutBuilderState extends State<_LayoutBuilder> {
             child: ListView(
               children: [
                 _TicketNameInput(keyboardBloc: _keyboardCubit),
+                const Space.vertical(15),
                 _TicketDescInput(keyboardBloc: _keyboardCubit),
+                const Space.vertical(15),
                 const _TicketPriorityInput(),
               ],
             ),
@@ -244,9 +264,7 @@ class _TicketNameInput extends StatelessWidget {
           current.ticketEntity?.entity.name,
       builder: (context, state) => (state.ticketEntity != null)
           ? FieldString(
-              key: const Key('ticketNameInput_textField'),
               keyboardCubit: keyboardBloc,
-              focusNode: FocusNode(),
               onChanged: (text) =>
                   context.read<EditTicketBloc>().add(TicketNameChanged(text)),
               labelText: AppLocalizations.of(context)!.ticket_label_name,
@@ -254,7 +272,10 @@ class _TicketNameInput extends StatelessWidget {
                   context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
               initialText: state.ticketEntity?.scheduled?.name,
             )
-          : const Center(child: CircularProgressIndicator()),
+          : FieldString(
+              isEnabled: false,
+              labelText: AppLocalizations.of(context)!.ticket_label_name,
+            ),
     );
   }
 }
@@ -281,9 +302,11 @@ class _TicketDescInput extends StatelessWidget {
               onTapCubit: (bloc) =>
                   context.read<EditTicketBloc>().add(TicketEditing(bloc: bloc)),
               initialText: state.ticketEntity?.scheduled?.description,
-              focusNode: FocusNode(),
             )
-          : Container(),
+          : FieldString(
+              isEnabled: false,
+              labelText: AppLocalizations.of(context)!.ticket_label_description,
+            ),
     );
   }
 }
@@ -467,11 +490,9 @@ class _TicketStepList extends StatelessWidget {
         }
       case FieldType.Image:
         if (jFieldEntity?.value == null) return const Stack();
-        return FieldImage(
+        return FieldSliderImages(
           labelText: '${context.localizeLabel(jFieldMapping.title)}',
-          imageGuidList: jFieldEntity?.value?.imagesList,
-          entityType: JEntityType.ScheduledActivity,
-          entityGuid: '',
+          imageList: jFieldEntity?.value?.imagesList,
         );
       case FieldType.Double:
         return FieldDouble(
@@ -479,6 +500,7 @@ class _TicketStepList extends StatelessWidget {
           onTapCubit: (cubit) =>
               context.read<EditTicketBloc>().add(TicketEditing(bloc: cubit)),
           isEnabled: jFieldMapping.operations!.design.checkU,
+          keyboardCubit: keyboardBloc,
           onChanged: (double? d) => context.read<EditTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
@@ -494,6 +516,7 @@ class _TicketStepList extends StatelessWidget {
           isEnabled: jFieldMapping.operations!.design.checkU,
           onTapCubit: (cubit) =>
               context.read<EditTicketBloc>().add(TicketEditing(bloc: cubit)),
+          keyboardCubit: keyboardBloc,
           onChanged: (int? i) => context.read<EditTicketBloc>().add(
                 FieldChanged(
                   stepGuid: stepGuid,
@@ -547,7 +570,6 @@ class _TicketStepList extends StatelessWidget {
                   fieldValue: date,
                 ),
               ),
-          focusNode: FocusNode(),
         );
       case FieldType.File:
       case FieldType.InternalStep:
@@ -565,8 +587,7 @@ class _TicketStepList extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: OMDKElevatedButton(
-              focusNode: FocusNode(),
+            child: FilledButton(
               onPressed: () =>
                   context.read<EditTicketBloc>().add(SubmitTicket()),
               child: Text(context.l.ticket_btn_submit),

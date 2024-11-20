@@ -7,7 +7,7 @@ class FieldDateTime extends StatelessWidget {
   /// Create [FieldDateTime] instance
   const FieldDateTime({
     required this.labelText,
-    required this.focusNode,
+    this.focusNode,
     super.key,
     this.initialDate,
     this.nextFocusNode,
@@ -26,7 +26,7 @@ class FieldDateTime extends StatelessWidget {
 
   final String labelText;
   final DateTime? initialDate;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final FocusNode? nextFocusNode;
   final String? fieldNote;
   final String? suffixText;
@@ -43,11 +43,12 @@ class FieldDateTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wCubit = cubit ?? SimpleTextCubit(
-      initialText: initialDate?.toUtc().toString(),
-      isActionEnabled: isActionEnabled,
-      isInputTextEnabled: isInputTextEnabled,
-    );
+    final wCubit = cubit ??
+        SimpleTextCubit(
+          initialText: initialDate?.toUtc().toString(),
+          isActionEnabled: isActionEnabled,
+          isInputTextEnabled: isInputTextEnabled,
+        );
     return FieldStringWithAction(
       labelText: labelText,
       focusNode: focusNode,
@@ -66,10 +67,13 @@ class FieldDateTime extends StatelessWidget {
         lastDate: lastDate ?? DateTime(2100),
       ).then((date) {
         if (date != null) {
-          wCubit.changeText(date.toString());
+          wCubit.setText(formatDate(date));
           onChanged?.call(date);
         }
       }),
     );
   }
+
+  String? formatDate(DateTime? date) =>
+      '${date?.day}/${date?.month}/${date?.year}';
 }

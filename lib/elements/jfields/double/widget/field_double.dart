@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omdk_inspecta/elements/elements.dart';
+import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 class FieldDouble extends StatelessWidget {
   /// Create [FieldDouble] instance
@@ -70,7 +71,7 @@ class FieldDouble extends StatelessWidget {
           if (parsedValue != null) onChanged?.call(parsedValue);
         },
         onSubmit: (newValue) {
-          if (newValue == null){
+          if (newValue == null) {
             onSubmit?.call(null);
             return;
           }
@@ -87,7 +88,7 @@ class FieldDouble extends StatelessWidget {
         onTap: () {
           onTapCubit?.call(wCubit);
           keyboardCubit
-            ?..changeKeyboardType()
+            ?..changeKeyboardType(keyboardType: VirtualKeyboardType.Numeric)
             ..showKeyboard();
           onTap?.call();
         },

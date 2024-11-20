@@ -183,6 +183,7 @@ class OpenTicketBloc extends Bloc<OpenTicketEvent, OpenTicketState> {
         ),
       );
     }
+    final scheduledDate = operaUtils.getParticipationDate();
     final scheduledActivity = state.ticketEntity?.copyWith(
       entity: state.ticketEntity?.entity.copyWith(
         name: state.ticketName,

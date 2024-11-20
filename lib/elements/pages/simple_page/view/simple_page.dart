@@ -122,18 +122,16 @@ class OMDKSimplePage extends StatelessWidget {
                           size: 20,
                         ),
                       )
-                    : withDrawer
-                        ? leading ??
-                            IconButton(
-                              onPressed: onPopCallback ??
-                                  () => Navigator.of(context).pop(),
-                              icon: Icon(
-                                size: 22,
-                                CupertinoIcons.back,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            )
-                        : null,
+                    : leading ??
+                        IconButton(
+                          onPressed: onPopCallback ??
+                              () => Navigator.of(context).pop(),
+                          icon: Icon(
+                            size: 22,
+                            CupertinoIcons.back,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
                 middle: appBarTitle,
                 trailing: trailing,
                 previousPageTitle: previousRoute,

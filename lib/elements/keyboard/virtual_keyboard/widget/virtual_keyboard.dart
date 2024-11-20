@@ -26,6 +26,7 @@ class CustomVirtualKeyboard extends StatelessWidget {
           ? Column(
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
                       decoration: BoxDecoration(
@@ -34,7 +35,7 @@ class CustomVirtualKeyboard extends StatelessWidget {
                           color: Colors.red,
                         ),
                         borderRadius:
-                            const BorderRadius.all(Radius.circular(20)),
+                        const BorderRadius.all(Radius.circular(20)),
                       ),
                       child: IconButton(
                         onPressed: () => cubit.hiddenKeyboard(),

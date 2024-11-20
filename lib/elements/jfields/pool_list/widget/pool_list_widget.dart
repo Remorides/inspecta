@@ -76,96 +76,92 @@ class _FieldPoolList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.select((PoolListCubit cubit) => cubit.state);
-    return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: Column(
-        children: [
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                labelText.toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Opacity(
+                opacity: !state.isEnabled ? 0.5 : 1,
+                child: AbsorbPointer(
+                  absorbing: !state.isEnabled,
+                  child: DropdownButtonFormField(
+                    focusNode: focusNode,
+                    decoration: InputDecoration(
+                      // enabledBorder: OutlineInputBorder(
+                      //   //borderRadius: BorderRadius.circular(10),
+                      //   borderSide: BorderSide(
+                      //     color: backgroundColor ??
+                      //         Theme.of(context).colorScheme.surface,
+                      //   ),
+                      // ),
+                      // focusedBorder: OutlineInputBorder(
+                      //   //borderRadius: BorderRadius.circular(10),
+                      //   borderSide: BorderSide(
+                      //     color: backgroundColor ??
+                      //         Theme.of(context).colorScheme.surface,
+                      //   ),
+                      // ),
+                      hintText: hintText,
+                      filled: true,
+                      // fillColor: backgroundColor ??
+                      //     Theme.of(context).colorScheme.surface,
+                    ),
+                    items: state.listItem.map((map) {
+                      return DropdownMenuItem(
+                        value: map,
+                        child: Text(map ?? ''),
+                      );
+                    }).toList(),
+                    value: state.selectedItem,
+                    isExpanded: true,
+                    onChanged: (String? s) {
+                      context.read<PoolListCubit>().changeSelected(s);
+                      onChanged(s);
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (fieldNote != null)
           Row(
             children: [
               Expanded(
                 child: Text(
-                  labelText.toUpperCase(),
+                  '$fieldNote',
+                  textAlign: TextAlign.end,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelLarge,
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
             ],
           ),
-          Row(
-            children: [
-              Expanded(
-                child: Opacity(
-                  opacity: !state.isEnabled ? 0.5 : 1,
-                  child: AbsorbPointer(
-                    absorbing: !state.isEnabled,
-                    child: DropdownButtonFormField(
-                      focusNode: focusNode,
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Theme.of(context)
-                                    .inputDecorationTheme
-                                    .fillColor ??
-                                Colors.white,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                        ),
-                        hintText: hintText,
-                        filled: true,
-                        fillColor: backgroundColor ??
-                            Theme.of(context).colorScheme.surface,
-                      ),
-                      items: state.listItem.map((map) {
-                        return DropdownMenuItem(
-                          value: map,
-                          child: Text(map ?? ''),
-                        );
-                      }).toList(),
-                      value: state.selectedItem,
-                      isExpanded: true,
-                      onChanged: (String? s) {
-                        context.read<PoolListCubit>().changeSelected(s);
-                        onChanged(s);
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
+        if (state.status == LoadingStatus.failure)
+          Positioned(
+            bottom: 5,
+            child: Text(
+              state.errorText,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).inputDecorationTheme.errorStyle,
+            ),
           ),
-          if (fieldNote != null)
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '$fieldNote',
-                    textAlign: TextAlign.end,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelSmall,
-                  ),
-                ),
-              ],
-            ),
-          if (state.status == LoadingStatus.failure)
-            Positioned(
-              bottom: 5,
-              child: Text(
-                state.errorText,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).inputDecorationTheme.errorStyle,
-              ),
-            ),
-        ],
-      ),
+      ],
     );
   }
 }
